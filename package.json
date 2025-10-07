@@ -1,0 +1,31 @@
+{
+  "name": "saas-its",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install",
+    "ls:ws": "npm ls --workspaces --depth=0 --json | jq '.workspaces | keys' || npm pkg get workspaces"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "services/*",
+    "web/*",
+    "packages/*",
+    "infra/*",
+    "deploy/*",
+    "docs"
+  ],
+  "dependencies": {
+    "@nestjs/passport": "^11.0.5",
+    "jwks-rsa": "^3.2.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/passport-jwt": "^4.0.1"
+  }
+}

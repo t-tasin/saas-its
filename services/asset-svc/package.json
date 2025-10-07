@@ -1,0 +1,16 @@
+{
+  "name": "@saas-its/asset-svc",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "echo building asset-svc"
+  },
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}
