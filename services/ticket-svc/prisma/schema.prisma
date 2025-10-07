@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Ticket {
+  id            String          @id @default(uuid())
+  tenantId      String
+  number        Int             @default(autoincrement()) // readable number per tenant (we'll scope via unique)
+  title         String
+  description   String
+  status        String          @default("open") // open | in_progress | resolved | closed
+  type          String          @default("incident")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  TicketComment TicketComment[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, status, updatedAt])
+}
+
+model TicketComment {
+  id        String   @id @default(uuid())
+  tenantId  String
+  ticketId  String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+
+  @@index([tenantId, ticketId, createdAt])
+}
