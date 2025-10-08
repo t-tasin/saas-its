@@ -1,5 +1,7 @@
 generator client {
   provider = "prisma-client-js"
+  // Generate into the *service root* so runtime imports work from dist/
+  output   = "../generated/client"
 }
 
 datasource db {
@@ -7,6 +9,7 @@ datasource db {
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
+
 
 model Ticket {
   id            String          @id @default(uuid())

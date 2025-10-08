@@ -1,9 +1,8 @@
-import { Body, Controller, Get, Param, Post, Patch, Req } from '@nestjs/common';
+// services/ticket-svc/src/ticket.controller.ts
+import { Body, Controller, Get, Param, Post, Patch, Req, Headers } from '@nestjs/common';
 import { Request } from 'express';
-import { PrismaClient, Prisma } from '@prisma/client';
 import { withTenant } from './with-tenant';
-
-const prisma = new PrismaClient();
+import { Prisma } from '../generated/client';
 
 @Controller('tickets')
 export class TicketController {
@@ -11,10 +10,7 @@ export class TicketController {
   async list(@Req() req: Request) {
     const tenant = req.tenant!.tenantId;
     return withTenant(tenant, (tx) =>
-      tx.ticket.findMany({
-        orderBy: { updatedAt: 'desc' },
-        take: 50,
-      })
+      tx.ticket.findMany({ orderBy: { updatedAt: 'desc' }, take: 50 })
     );
   }
 
@@ -33,26 +29,13 @@ export class TicketController {
     );
   }
 
-  @Get(':id/comments')
-    async listComments(@Req() req: Request, @Param('id') id: string) {
+  @Get(':id')
+  async get(@Req() req: Request, @Param('id') id: string) {
     const tenant = req.tenant!.tenantId;
     return withTenant(tenant, (tx) =>
-        tx.ticketComment.findMany({
-        where: { tenantId: tenant, ticketId: id },
-        orderBy: { createdAt: 'asc' },
-        })
+      tx.ticket.findFirst({ where: { id, tenantId: tenant } })
     );
-    }
-
-    @Get(':id')
-    async get(@Req() req: Request, @Param('id') id: string) {
-      const tenant = req.tenant!.tenantId;
-      const t = await withTenant(tenant, (tx) =>
-        tx.ticket.findFirst({ where: { id, tenantId: tenant } })
-      );
-      if (!t) return { statusCode: 404, message: 'Ticket not found' };
-      return t;
-    }
+  }
 
   @Patch(':id/status')
   async setStatus(@Req() req: Request, @Param('id') id: string, @Body() dto: any) {
@@ -67,16 +50,29 @@ export class TicketController {
     const tenant = req.tenant!.tenantId;
     const author = req.tenant!.sub || 'system';
     return withTenant(tenant, async (tx) => {
-      // ensure ticket exists & belongs to tenant
-      const t = await tx.ticket.findFirst({ where: { id, tenantId: tenant } });
-      if (!t) return { error: 'Not found' };
+      const exists = await tx.ticket.findFirst({ where: { id, tenantId: tenant } });
+      if (!exists) return { statusCode: 404, message: 'Ticket not found' };
       return tx.ticketComment.create({
-        data: {
-          tenantId: tenant,
-          ticketId: id,
-          authorId: author,
-          body: dto.body,
-        },
+        data: { tenantId: tenant, ticketId: id, authorId: author, body: dto.body },
+      });
+    });
+  }
+
+  @Get(':id/comments')
+  async listComments(
+    @Param('id') id: string,
+    @Headers('x-tenant-id') tenantId?: string,
+  ) {
+    // In DEV_MODE, x-tenant-id must be present; in PROD you'll pull from JWT claims.
+    if (!tenantId) {
+      // keep consistent with your API error style; 400 is reasonable in dev
+      throw new Error('X-Tenant-Id header is required in dev');
+    }
+
+    return withTenant(tenantId, async (tx: Prisma.TransactionClient) => {
+      return tx.ticketComment.findMany({
+        where: { ticketId: id },
+        orderBy: { createdAt: 'asc' },
       });
     });
   }
