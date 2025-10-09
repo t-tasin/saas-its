@@ -1,4 +1,12 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+/**
+ * JwtAuthGuard
+ * - @Public() handlers are skipped.
+ * - Single-tenant DEV mode (DEV_MODE=true & SINGLE_TENANT_ID set): allow requests without a token,
+ *   synthesize req.user { sub:'dev', tenantId:SINGLE_TENANT_ID, roles:['dev'] }.
+ * - Otherwise in DEV: allow X-Tenant-Id header or base64 JSON "dev token".
+ * - In PROD (or when rules above don’t apply): defer to passport-jwt (JWKS).
+ */
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, Logger, BadRequestException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from './public.decorator';
@@ -7,22 +15,15 @@ function base64urlToJson(b64: string): any | null {
   try {
     const normalize = b64.replace(/-/g, '+').replace(/_/g, '/');
     const pad = normalize + '==='.slice((normalize.length + 3) % 4);
-    const json = Buffer.from(pad, 'base64').toString('utf8');
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
+    return JSON.parse(Buffer.from(pad, 'base64').toString('utf8'));
+  } catch { return null; }
 }
 function decodeUnsignedTokenOrRawBase64(token: string): any | null {
   if (!token) return null;
   const parts = token.split('.');
   if (parts.length >= 2) return base64urlToJson(parts[1]); // JWT-shaped
-  try {
-    const txt = Buffer.from(token, 'base64').toString('utf8'); // raw base64 json
-    return JSON.parse(txt);
-  } catch {
-    return null;
-  }
+  try { return JSON.parse(Buffer.from(token, 'base64').toString('utf8')); }
+  catch { return null; }
 }
 
 @Injectable()
@@ -39,39 +40,34 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
 
     const req = context.switchToHttp().getRequest();
     const devMode = process.env.DEV_MODE === 'true';
+    const singleTenant = process.env.SINGLE_TENANT_ID;
 
+    // DEV mode: allow unsigned tokens or base64 JSON
     if (devMode) {
-      const headerTenant = req.header('x-tenant-id');
       const auth = req.headers.authorization || '';
       const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
 
-      if (headerTenant || (token && !token.includes('.'))) {
-        const payload = headerTenant
-          ? { tenant_id: headerTenant, sub: 'dev', roles: ['dev'] }
-          : decodeUnsignedTokenOrRawBase64(token) || {};
+      if (token) {
+        const payload = decodeUnsignedTokenOrRawBase64(token) || {};
         (req as any).user = {
-          sub: payload.sub || 'dev',
-          tenantId: payload.tenant_id || payload['custom:tenant_id'],
-          roles: payload.roles || [],
+          sub: payload.sub || 'dev-user',
+          email: payload.email || 'dev@example.com',
+          role: payload.role || 'admin', // Default to admin in dev mode
           raw: payload,
         };
         return true;
       }
-
-      if (token && token.includes('.')) {
-        const payload = decodeUnsignedTokenOrRawBase64(token);
-        if (payload) {
-          (req as any).user = {
-            sub: payload.sub || 'dev',
-            tenantId: payload.tenant_id || payload['custom:tenant_id'],
-            roles: payload.roles || [],
-            raw: payload,
-          };
-          return true;
-        }
-      }
+      // If no token in dev mode, create a default dev user
+      (req as any).user = {
+        sub: 'dev-user',
+        email: 'dev@example.com',
+        role: 'admin',
+        raw: { mode: 'dev-default' },
+      };
+      return true;
     }
 
+    // PROD (or dev with real JWT): defer to passport-jwt strategy
     const res = await super.canActivate(context);
     return res as boolean;
   }

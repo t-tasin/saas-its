@@ -1,0 +1,31 @@
+name: build
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-services:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install root
+        run: npm ci
+
+      - name: Generate Prisma
+        run: |
+          npm -w services/asset-svc run prisma:gen
+          npm -w services/ticket-svc run prisma:gen
+          npm -w services/identity-svc run prisma:gen
+
+      - name: Build services
+        run: |
+          npm -w services/asset-svc run build
+          npm -w services/ticket-svc run build
+          npm -w services/identity-svc run build

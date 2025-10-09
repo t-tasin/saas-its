@@ -1,18 +1,25 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt.guard';
-import { TenantMiddleware } from './tenant.middleware';
+import { RolesGuard } from './auth/roles.guard';
 import { AppController } from './app.controller';
 import { HealthController } from './health.controller';
+import { UserService } from './user.service';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { IdempotencyMiddleware } from './shared/idempotency.middleware';
+import { MetricsMiddleware } from './shared/metrics.middleware';
 
 @Module({
   imports: [AuthModule],
   controllers: [AppController, HealthController],
-  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [
+    UserService,
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+  ],
 })
-export class AppModule {
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(TenantMiddleware).forRoutes('*');
+    consumer.apply(IdempotencyMiddleware, MetricsMiddleware).forRoutes('*');
   }
 }

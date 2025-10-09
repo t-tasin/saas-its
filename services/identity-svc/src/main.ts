@@ -1,21 +1,48 @@
-import 'reflect-metadata';
-import * as dotenv from 'dotenv';
-dotenv.config();
-
+/**
+ * Bootstraps Nest app with:
+ * - Global ValidationPipe (whitelist, forbid unknown)
+ * - Global error filter with uniform { error: { code, message } }
+ * - CORS for http://localhost:3000
+ * - Swagger (dev only) at /docs and /openapi.json
+ */
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './shared/http-exception.filter';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('v1');
 
-  // 👇 Enable CORS so the Next.js app (http://localhost:3000) can call this API
   app.enableCors({
     origin: ['http://localhost:3000'],
-    credentials: false,
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id', 'Idempotency-Key'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 
-  await app.listen(process.env.PORT || 3001);
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    transformOptions: { enableImplicitConversion: true },
+  }));
+
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('SaaS ITS API')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, document);
+  }
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
 }
+
 bootstrap();

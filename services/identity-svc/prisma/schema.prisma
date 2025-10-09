@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/client"   // service-local output
 }
 
 datasource db {
@@ -8,14 +9,22 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+enum UserRole {
+  general
+  operator
+  admin
+}
+
 model User {
   id        String   @id @default(uuid())
-  tenantId  String
   email     String   @unique
+  password  String   // hashed password
   name      String?
-  roles     String[]
+  role      UserRole @default(general)
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([tenantId])
+  @@index([email])
+  @@index([role])
 }

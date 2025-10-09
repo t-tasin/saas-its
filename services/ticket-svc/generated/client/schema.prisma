@@ -1,6 +1,6 @@
+// services/ticket-svc/prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
-  // Generate into the *service root* so runtime imports work from dist/
   output   = "../generated/client"
 }
 
@@ -10,31 +10,108 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-model Ticket {
-  id            String          @id @default(uuid())
-  tenantId      String
-  number        Int             @default(autoincrement()) // readable number per tenant (we'll scope via unique)
-  title         String
-  description   String
-  status        String          @default("open") // open | in_progress | resolved | closed
-  type          String          @default("incident")
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  TicketComment TicketComment[]
+enum TicketStatus {
+  open
+  in_progress
+  resolved
+  closed
+}
 
-  @@unique([tenantId, number])
-  @@index([tenantId, status, updatedAt])
+enum TicketType {
+  incident
+  request
+}
+
+enum TicketPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+model Ticket {
+  id              String         @id @default(uuid())
+  number          String         @unique // YYMMDD-#### globally unique
+  title           String
+  description     String?
+  type            TicketType     @default(incident)
+  status          TicketStatus   @default(open)
+  priority        TicketPriority @default(medium)
+  requestedBy     String? // email or name for general users (no login)
+  requestedByUser String? // user ID if authenticated
+  assignedTo      String? // operator/admin user ID
+  categoryId      String?
+  subcategoryId   String?
+  targetDate      DateTime? // SLA target
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  comments    TicketComment[]
+  category    Category?       @relation(fields: [categoryId], references: [id])
+  subcategory SubCategory?    @relation(fields: [subcategoryId], references: [id])
+
+  @@index([status, updatedAt])
+  @@index([assignedTo])
+  @@index([createdAt])
+  @@map("Ticket")
 }
 
 model TicketComment {
+  id         String   @id @default(uuid())
+  ticketId   String
+  authorId   String? // user ID if authenticated
+  authorName String? // name for unauthenticated comments
+  body       String
+  createdAt  DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+  @@map("TicketComment")
+}
+
+model Category {
   id        String   @id @default(uuid())
-  tenantId  String
-  ticketId  String
-  authorId  String
-  body      String
+  name      String   @unique
   createdAt DateTime @default(now())
 
-  ticket Ticket @relation(fields: [ticketId], references: [id])
+  tickets       Ticket[]
+  subcategories SubCategory[]
 
-  @@index([tenantId, ticketId, createdAt])
+  @@map("Category")
+}
+
+model SubCategory {
+  id         String   @id @default(uuid())
+  categoryId String
+  name       String
+  createdAt  DateTime @default(now())
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tickets  Ticket[]
+
+  @@unique([categoryId, name])
+  @@map("SubCategory")
+}
+
+// Per-day ticket counters for concurrent safe number generation
+model TicketDayCounter {
+  yymmdd String @id
+  seq    Int
+
+  @@map("TicketDayCounter")
+}
+
+// Append-only audit log for ticket service
+model AuditLog {
+  id       String   @id @default(uuid())
+  entity   String
+  entityId String
+  action   String
+  actorId  String?
+  at       DateTime @default(now())
+  metadata Json?
+
+  @@index([entity, entityId, at])
+  @@map("AuditLog")
 }

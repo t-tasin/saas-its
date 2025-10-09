@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+enum AssetStatus {
+  available
+  assigned
+  maintenance
+  retired
+}
+
+model AssetType {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  assets Asset[]
+
+  @@map("AssetType")
+}
+
+model Asset {
+  id          String      @id @default(uuid())
+  assetTag    String      @unique
+  assetTypeId String
+  summary     String?
+  location    String?
+  status      AssetStatus @default(available)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  assetType   AssetType         @relation(fields: [assetTypeId], references: [id])
+  assignments AssetAssignment[]
+  lifecycle   LifecycleEvent[]
+
+  @@index([status])
+  @@index([assetTypeId])
+  @@map("Asset")
+}
+
+model AssetAssignment {
+  id           String    @id @default(uuid())
+  assetId      String
+  personId     String // user ID
+  assignedAt   DateTime  @default(now())
+  unassignedAt DateTime?
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId, unassignedAt])
+  @@index([personId])
+  @@map("AssetAssignment")
+}
+
+model LifecycleEvent {
+  id         String   @id @default(uuid())
+  assetId    String
+  action     String // created, updated, assigned, unassigned, maintenance, retired
+  actorId    String?
+  metadata   Json?
+  occurredAt DateTime @default(now())
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([assetId, occurredAt])
+  @@map("LifecycleEvent")
+}
+
+// Append-only audit log
+model AuditLog {
+  id       String   @id @default(uuid())
+  entity   String
+  entityId String
+  action   String
+  actorId  String?
+  at       DateTime @default(now())
+  metadata Json?
+
+  @@index([entity, entityId, at])
+  @@map("AuditLog")
+}
