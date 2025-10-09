@@ -3,7 +3,7 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
-  private transporter: nodemailer.Transporter;
+  private transporter!: nodemailer.Transporter;
 
   constructor() {
     // For development, use Ethereal (fake SMTP)
@@ -14,7 +14,7 @@ export class EmailService {
   private async initializeTransporter() {
     if (process.env.SMTP_HOST && process.env.SMTP_USER) {
       // Production SMTP configuration
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || '587'),
         secure: process.env.SMTP_SECURE === 'true',
@@ -26,7 +26,7 @@ export class EmailService {
     } else {
       // Development: Use Ethereal (fake SMTP for testing)
       const testAccount = await nodemailer.createTestAccount();
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         host: 'smtp.ethereal.email',
         port: 587,
         secure: false,

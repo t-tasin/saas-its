@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { PrismaClient } from './generated/client';
+import { PrismaClient } from '../generated/client';
 import { EmailService } from './email.service';
 
 @Injectable()

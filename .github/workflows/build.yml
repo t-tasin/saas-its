@@ -23,9 +23,11 @@ jobs:
           npm -w services/asset-svc run prisma:gen
           npm -w services/ticket-svc run prisma:gen
           npm -w services/identity-svc run prisma:gen
+          npm -w services/reservation-svc run prisma:gen
 
       - name: Build services
         run: |
           npm -w services/asset-svc run build
           npm -w services/ticket-svc run build
           npm -w services/identity-svc run build
+          npm -w services/reservation-svc run build

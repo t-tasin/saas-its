@@ -61,6 +61,11 @@ export class UserService {
       throw new UnauthorizedException('Account is deactivated');
     }
 
+    // Check if user has a password (OTP users don't have passwords)
+    if (!user.password) {
+      throw new UnauthorizedException('This account uses OTP authentication. Please use OTP login.');
+    }
+
     // Verify password
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
 
@@ -133,6 +138,11 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+
+    // Check if user has a password (OTP users don't have passwords)
+    if (!user.password) {
+      throw new UnauthorizedException('This account uses OTP authentication and does not have a password to change.');
     }
 
     // Verify current password

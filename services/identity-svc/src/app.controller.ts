@@ -11,7 +11,7 @@ import {
   RequestOTPDto, VerifyOTPDto
 } from './dto/user.dto';
 import { generateToken, generateRefreshToken } from './jwt.util';
-import { PrismaClient } from './generated/client';
+import { PrismaClient } from '../generated/client';
 
 @ApiTags('auth')
 @Controller()
