@@ -195,6 +195,10 @@ const config = {
         "fromEnvVar": null,
         "value": "darwin-arm64",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -202,7 +206,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../.env"
   },
   "relativePath": "../../prisma",
@@ -221,8 +225,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/client\"\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nenum AssetStatus {\n  available\n  assigned\n  maintenance\n  retired\n}\n\nmodel AssetType {\n  id        String   @id @default(uuid())\n  name      String   @unique\n  createdAt DateTime @default(now())\n\n  assets Asset[]\n\n  @@map(\"AssetType\")\n}\n\nmodel Asset {\n  id          String      @id @default(uuid())\n  assetTag    String      @unique\n  assetTypeId String\n  summary     String?\n  location    String?\n  status      AssetStatus @default(available)\n  createdAt   DateTime    @default(now())\n  updatedAt   DateTime    @updatedAt\n\n  assetType   AssetType         @relation(fields: [assetTypeId], references: [id])\n  assignments AssetAssignment[]\n  lifecycle   LifecycleEvent[]\n\n  @@index([status])\n  @@index([assetTypeId])\n  @@map(\"Asset\")\n}\n\nmodel AssetAssignment {\n  id           String    @id @default(uuid())\n  assetId      String\n  personId     String // user ID\n  assignedAt   DateTime  @default(now())\n  unassignedAt DateTime?\n\n  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)\n\n  @@index([assetId, unassignedAt])\n  @@index([personId])\n  @@map(\"AssetAssignment\")\n}\n\nmodel LifecycleEvent {\n  id         String   @id @default(uuid())\n  assetId    String\n  action     String // created, updated, assigned, unassigned, maintenance, retired\n  actorId    String?\n  metadata   Json?\n  occurredAt DateTime @default(now())\n\n  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)\n\n  @@index([assetId, occurredAt])\n  @@map(\"LifecycleEvent\")\n}\n\n// Append-only audit log\nmodel AuditLog {\n  id       String   @id @default(uuid())\n  entity   String\n  entityId String\n  action   String\n  actorId  String?\n  at       DateTime @default(now())\n  metadata Json?\n\n  @@index([entity, entityId, at])\n  @@map(\"AuditLog\")\n}\n",
-  "inlineSchemaHash": "252ac55f6e1dc1995ea39fa8a6559939b794d77145dbcfe9bb96940848bd7a38",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/client\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nenum AssetStatus {\n  available\n  assigned\n  maintenance\n  retired\n}\n\nmodel AssetType {\n  id        String   @id @default(uuid())\n  name      String   @unique\n  createdAt DateTime @default(now())\n\n  assets Asset[]\n\n  @@map(\"AssetType\")\n}\n\nmodel Asset {\n  id          String      @id @default(uuid())\n  assetTag    String      @unique\n  assetTypeId String\n  summary     String?\n  location    String?\n  status      AssetStatus @default(available)\n  createdAt   DateTime    @default(now())\n  updatedAt   DateTime    @updatedAt\n\n  assetType   AssetType         @relation(fields: [assetTypeId], references: [id])\n  assignments AssetAssignment[]\n  lifecycle   LifecycleEvent[]\n\n  @@index([status])\n  @@index([assetTypeId])\n  @@map(\"Asset\")\n}\n\nmodel AssetAssignment {\n  id           String    @id @default(uuid())\n  assetId      String\n  personId     String // user ID\n  assignedAt   DateTime  @default(now())\n  unassignedAt DateTime?\n\n  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)\n\n  @@index([assetId, unassignedAt])\n  @@index([personId])\n  @@map(\"AssetAssignment\")\n}\n\nmodel LifecycleEvent {\n  id         String   @id @default(uuid())\n  assetId    String\n  action     String // created, updated, assigned, unassigned, maintenance, retired\n  actorId    String?\n  metadata   Json?\n  occurredAt DateTime @default(now())\n\n  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)\n\n  @@index([assetId, occurredAt])\n  @@map(\"LifecycleEvent\")\n}\n\n// Append-only audit log\nmodel AuditLog {\n  id       String   @id @default(uuid())\n  entity   String\n  entityId String\n  action   String\n  actorId  String?\n  at       DateTime @default(now())\n  metadata Json?\n\n  @@index([entity, entityId, at])\n  @@map(\"AuditLog\")\n}\n",
+  "inlineSchemaHash": "cabeda00acdcce63f652897de2d1e0691fb9b0879e1af610bcc961bfaf6c5ef5",
   "copyEngine": true
 }
 config.dirname = '/'

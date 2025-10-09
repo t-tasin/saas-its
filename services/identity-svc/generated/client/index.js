@@ -157,6 +157,10 @@ const config = {
         "fromEnvVar": null,
         "value": "darwin-arm64",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -183,8 +187,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/client\" // service-local output\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nenum UserRole {\n  general\n  operator\n  admin\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  email     String   @unique\n  password  String? // hashed password - optional for general users who use OTP\n  name      String?\n  role      UserRole @default(general)\n  isActive  Boolean  @default(true)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  otps OTP[]\n\n  @@index([email])\n  @@index([role])\n}\n\nmodel OTP {\n  id        String   @id @default(uuid())\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  code      String // 6-digit OTP code\n  expiresAt DateTime\n  used      Boolean  @default(false)\n  createdAt DateTime @default(now())\n\n  @@index([userId])\n  @@index([code])\n}\n",
-  "inlineSchemaHash": "6f733572ec235c721a97f898b5721d9decdb387273a379c3e379875946f3402c",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/client\" // service-local output\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nenum UserRole {\n  general\n  operator\n  admin\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  email     String   @unique\n  password  String? // hashed password - optional for general users who use OTP\n  name      String?\n  role      UserRole @default(general)\n  isActive  Boolean  @default(true)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  otps OTP[]\n\n  @@index([email])\n  @@index([role])\n}\n\nmodel OTP {\n  id        String   @id @default(uuid())\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  code      String // 6-digit OTP code\n  expiresAt DateTime\n  used      Boolean  @default(false)\n  createdAt DateTime @default(now())\n\n  @@index([userId])\n  @@index([code])\n}\n",
+  "inlineSchemaHash": "56ad1735b412448f5475cd8672978d0581ebce39465a864a6d307becf5838a5e",
   "copyEngine": true
 }
 
@@ -224,6 +228,10 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
 path.join(process.cwd(), "generated/client/libquery_engine-darwin-arm64.dylib.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/client/libquery_engine-debian-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/client/schema.prisma")

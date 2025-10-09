@@ -220,6 +220,10 @@ const config = {
         "fromEnvVar": null,
         "value": "darwin-arm64",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -237,6 +241,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -245,8 +250,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// services/ticket-svc/prisma/schema.prisma\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/client\"\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nenum TicketStatus {\n  open\n  in_progress\n  resolved\n  closed\n}\n\nenum TicketType {\n  incident\n  request\n}\n\nenum TicketPriority {\n  low\n  medium\n  high\n  urgent\n}\n\nmodel Ticket {\n  id              String         @id @default(uuid())\n  number          String         @unique // YYMMDD-#### globally unique\n  title           String\n  description     String?\n  type            TicketType     @default(incident)\n  status          TicketStatus   @default(open)\n  priority        TicketPriority @default(medium)\n  requestedBy     String? // email or name for general users (no login)\n  requestedByUser String? // user ID if authenticated\n  assignedTo      String? // operator/admin user ID\n  categoryId      String?\n  subcategoryId   String?\n  targetDate      DateTime? // SLA target\n  createdAt       DateTime       @default(now())\n  updatedAt       DateTime       @updatedAt\n\n  comments    TicketComment[]\n  category    Category?       @relation(fields: [categoryId], references: [id])\n  subcategory SubCategory?    @relation(fields: [subcategoryId], references: [id])\n\n  @@index([status, updatedAt])\n  @@index([assignedTo])\n  @@index([createdAt])\n  @@map(\"Ticket\")\n}\n\nmodel TicketComment {\n  id         String   @id @default(uuid())\n  ticketId   String\n  authorId   String? // user ID if authenticated\n  authorName String? // name for unauthenticated comments\n  body       String\n  createdAt  DateTime @default(now())\n\n  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)\n\n  @@index([ticketId, createdAt])\n  @@map(\"TicketComment\")\n}\n\nmodel Category {\n  id        String   @id @default(uuid())\n  name      String   @unique\n  createdAt DateTime @default(now())\n\n  tickets       Ticket[]\n  subcategories SubCategory[]\n\n  @@map(\"Category\")\n}\n\nmodel SubCategory {\n  id         String   @id @default(uuid())\n  categoryId String\n  name       String\n  createdAt  DateTime @default(now())\n\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n  tickets  Ticket[]\n\n  @@unique([categoryId, name])\n  @@map(\"SubCategory\")\n}\n\n// Per-day ticket counters for concurrent safe number generation\nmodel TicketDayCounter {\n  yymmdd String @id\n  seq    Int\n\n  @@map(\"TicketDayCounter\")\n}\n\n// Append-only audit log for ticket service\nmodel AuditLog {\n  id       String   @id @default(uuid())\n  entity   String\n  entityId String\n  action   String\n  actorId  String?\n  at       DateTime @default(now())\n  metadata Json?\n\n  @@index([entity, entityId, at])\n  @@map(\"AuditLog\")\n}\n",
-  "inlineSchemaHash": "dc1a7129522dfa8921144151d9718666a0ea5752afe6c2b116e6de7a311ffddd",
+  "inlineSchema": "// services/ticket-svc/prisma/schema.prisma\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/client\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nenum TicketStatus {\n  open\n  in_progress\n  resolved\n  closed\n}\n\nenum TicketType {\n  incident\n  request\n}\n\nenum TicketPriority {\n  low\n  medium\n  high\n  urgent\n}\n\nmodel Ticket {\n  id              String         @id @default(uuid())\n  number          String         @unique // YYMMDD-#### globally unique\n  title           String\n  description     String?\n  type            TicketType     @default(incident)\n  status          TicketStatus   @default(open)\n  priority        TicketPriority @default(medium)\n  requestedBy     String? // email or name for general users (no login)\n  requestedByUser String? // user ID if authenticated\n  assignedTo      String? // operator/admin user ID\n  categoryId      String?\n  subcategoryId   String?\n  targetDate      DateTime? // SLA target\n  createdAt       DateTime       @default(now())\n  updatedAt       DateTime       @updatedAt\n\n  comments    TicketComment[]\n  category    Category?       @relation(fields: [categoryId], references: [id])\n  subcategory SubCategory?    @relation(fields: [subcategoryId], references: [id])\n\n  @@index([status, updatedAt])\n  @@index([assignedTo])\n  @@index([createdAt])\n  @@map(\"Ticket\")\n}\n\nmodel TicketComment {\n  id         String   @id @default(uuid())\n  ticketId   String\n  authorId   String? // user ID if authenticated\n  authorName String? // name for unauthenticated comments\n  body       String\n  createdAt  DateTime @default(now())\n\n  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)\n\n  @@index([ticketId, createdAt])\n  @@map(\"TicketComment\")\n}\n\nmodel Category {\n  id        String   @id @default(uuid())\n  name      String   @unique\n  createdAt DateTime @default(now())\n\n  tickets       Ticket[]\n  subcategories SubCategory[]\n\n  @@map(\"Category\")\n}\n\nmodel SubCategory {\n  id         String   @id @default(uuid())\n  categoryId String\n  name       String\n  createdAt  DateTime @default(now())\n\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n  tickets  Ticket[]\n\n  @@unique([categoryId, name])\n  @@map(\"SubCategory\")\n}\n\n// Per-day ticket counters for concurrent safe number generation\nmodel TicketDayCounter {\n  yymmdd String @id\n  seq    Int\n\n  @@map(\"TicketDayCounter\")\n}\n\n// Append-only audit log for ticket service\nmodel AuditLog {\n  id       String   @id @default(uuid())\n  entity   String\n  entityId String\n  action   String\n  actorId  String?\n  at       DateTime @default(now())\n  metadata Json?\n\n  @@index([entity, entityId, at])\n  @@map(\"AuditLog\")\n}\n",
+  "inlineSchemaHash": "830d7c4af056d44ec6c7badcbedb5f4a76d302dcf3a7d35daed4931b6e8d025d",
   "copyEngine": true
 }
 
@@ -286,6 +291,10 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
 path.join(process.cwd(), "generated/client/libquery_engine-darwin-arm64.dylib.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/client/libquery_engine-debian-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/client/schema.prisma")
