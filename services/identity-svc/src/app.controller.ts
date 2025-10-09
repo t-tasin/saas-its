@@ -3,17 +3,25 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
+import { OTPService } from './otp.service';
 import { Public } from './auth/public.decorator';
 import { Roles } from './auth/roles.decorator';
 import { 
-  RegisterDto, LoginDto, UpdateUserDto, ChangePasswordDto, CreateUserDto 
+  RegisterDto, LoginDto, UpdateUserDto, ChangePasswordDto, CreateUserDto,
+  RequestOTPDto, VerifyOTPDto
 } from './dto/user.dto';
 import { generateToken, generateRefreshToken } from './jwt.util';
+import { PrismaClient } from './generated/client';
 
 @ApiTags('auth')
 @Controller()
 export class AppController {
-  constructor(private readonly userService: UserService) {}
+  private readonly prisma = new PrismaClient();
+
+  constructor(
+    private readonly userService: UserService,
+    private readonly otpService: OTPService,
+  ) {}
 
   /**
    * Register a new user (public - for general users self-registration)
@@ -80,6 +88,32 @@ export class AppController {
   async changePassword(@Req() req: any, @Body() dto: ChangePasswordDto) {
     const userId = req.user?.sub;
     return this.userService.changePassword(userId, dto);
+  }
+
+  /**
+   * Request OTP (passwordless auth for general users)
+   */
+  @Public()
+  @Post('/auth/otp/request')
+  async requestOTP(@Body() dto: RequestOTPDto) {
+    return this.otpService.requestOTP(this.prisma, dto.email);
+  }
+
+  /**
+   * Verify OTP and login (passwordless auth)
+   */
+  @Public()
+  @Post('/auth/otp/verify')
+  async verifyOTP(@Body() dto: VerifyOTPDto) {
+    const user = await this.otpService.verifyOTP(this.prisma, dto.email, dto.code);
+    const token = generateToken(user);
+    const refreshToken = generateRefreshToken();
+
+    return {
+      user,
+      token,
+      refreshToken,
+    };
   }
 
   /**

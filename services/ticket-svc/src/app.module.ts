@@ -13,6 +13,8 @@ import { JwtAuthGuard } from './auth/jwt.guard';
 import { RolesGuard } from './auth/roles.guard';
 
 import { TicketController } from './ticket.controller';
+import { CategoryController } from './category.controller';
+import { AnalyticsController } from './analytics.controller';
 import { TicketNumberService } from './ticket-number.service';
 import { AuditService } from './shared/audit.service';
 import { IdempotencyMiddleware } from './shared/idempotency.middleware';
@@ -21,7 +23,7 @@ import { HealthController } from './health.controller';
 
 @Module({
   imports: [AuthModule],
-  controllers: [TicketController, HealthController],
+  controllers: [TicketController, CategoryController, AnalyticsController, HealthController],
   providers: [
     TicketNumberService,
     AuditService,

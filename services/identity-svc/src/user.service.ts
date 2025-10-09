@@ -28,13 +28,13 @@ export class UserService {
     // Hash password
     const hashedPassword = await bcrypt.hash(dto.password, this.SALT_ROUNDS);
 
-    // Create user (default role is general)
+    // Create user (always default to general role for self-registration)
     const user = await prisma.user.create({
       data: {
         email: dto.email,
         password: hashedPassword,
         name: dto.name ?? null,
-        role: dto.role || 'general',
+        role: 'general', // Always general for public registration
       },
     });
 

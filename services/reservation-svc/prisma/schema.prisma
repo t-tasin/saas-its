@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+enum ReservationStatus {
+  pending
+  approved
+  denied
+  active      // Approved and currently in use
+  returned
+  cancelled
+}
+
+model Reservation {
+  id             String            @id @default(uuid())
+  requesterId    String            // User ID who requested
+  requesterEmail String?           // Email for tracking
+  requesterName  String?
+  status         ReservationStatus @default(pending)
+  requestDate    DateTime          // When they want to pick it up
+  approvedDate   DateTime?         // When approved
+  returnDate     DateTime?         // Expected return date
+  actualReturnDate DateTime?       // Actual return date
+  approvedBy     String?           // Operator/Admin user ID
+  deniedBy       String?           // Operator/Admin user ID
+  denialReason   String?
+  notes          String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  items ReservationItem[]
+
+  @@index([requesterId])
+  @@index([status, createdAt])
+  @@map("Reservation")
+}
+
+model ReservationItem {
+  id            String            @id @default(uuid())
+  reservationId String
+  assetTypeId   String            // Type of equipment requested
+  assetTypeName String            // Denormalized for history
+  assetId       String?           // Actual asset assigned (when approved)
+  quantity      Int               @default(1)
+  status        ReservationStatus @default(pending)
+  notes         String?
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+
+  @@index([reservationId])
+  @@index([assetTypeId])
+  @@index([assetId])
+  @@map("ReservationItem")
+}
+
+// Snapshot of equipment availability (for quick lookups)
+model EquipmentAvailability {
+  id            String   @id @default(uuid())
+  assetTypeId   String   @unique
+  assetTypeName String
+  totalCount    Int      @default(0)
+  assignedCount Int      @default(0)
+  reservedCount Int      @default(0)
+  availableCount Int     @default(0)
+  updatedAt     DateTime @updatedAt
+
+  @@map("EquipmentAvailability")
+}
+
+// Audit log for reservation service
+model AuditLog {
+  id       String   @id @default(uuid())
+  entity   String
+  entityId String
+  action   String
+  actorId  String?
+  at       DateTime @default(now())
+  metadata Json?
+
+  @@index([entity, entityId, at])
+  @@map("AuditLog")
+}
+

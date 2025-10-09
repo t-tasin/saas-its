@@ -26,11 +26,6 @@ export class RegisterDto {
   @IsString()
   @MaxLength(200)
   name?: string;
-
-  @ApiPropertyOptional({ enum: UserRole, default: UserRole.general })
-  @IsOptional()
-  @IsEnum(UserRole)
-  role?: UserRole;
 }
 
 export class LoginDto {
@@ -93,5 +88,24 @@ export class CreateUserDto {
   @ApiProperty({ enum: UserRole, default: UserRole.operator })
   @IsEnum(UserRole)
   role!: UserRole;
+}
+
+// OTP Authentication DTOs
+export class RequestOTPDto {
+  @ApiProperty({ example: 'user@example.com', description: 'Email address to send OTP to' })
+  @IsEmail()
+  email!: string;
+}
+
+export class VerifyOTPDto {
+  @ApiProperty({ example: 'user@example.com' })
+  @IsEmail()
+  email!: string;
+
+  @ApiProperty({ example: '123456', description: '6-digit OTP code' })
+  @IsString()
+  @MinLength(6)
+  @MaxLength(6)
+  code!: string;
 }
 

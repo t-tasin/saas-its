@@ -18,6 +18,7 @@ For **production**, configure proper JWT with RS256 signing.
 | Identity Service | 3000 | http://localhost:3000/docs |
 | Ticket Service | 3001 | http://localhost:3001/docs |
 | Asset Service | 3002 | http://localhost:3002/docs |
+| Reservation Service | 3003 | http://localhost:3003/docs |
 
 ---
 

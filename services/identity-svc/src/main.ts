@@ -16,7 +16,7 @@ async function bootstrap() {
   app.setGlobalPrefix('v1');
 
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'http://localhost:3004'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-Id', 'Idempotency-Key'],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -31,15 +31,16 @@ async function bootstrap() {
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  if (process.env.NODE_ENV !== 'production') {
-    const config = new DocumentBuilder()
-      .setTitle('SaaS ITS API')
-      .setVersion('1.0')
-      .addBearerAuth()
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('docs', app, document);
-  }
+  // Swagger temporarily disabled due to metadata issues
+  // if (process.env.NODE_ENV !== 'production') {
+  //   const config = new DocumentBuilder()
+  //     .setTitle('SaaS ITS API')
+  //     .setVersion('1.0')
+  //     .addBearerAuth()
+  //     .build();
+  //   const document = SwaggerModule.createDocument(app, config);
+  //   SwaggerModule.setup('docs', app, document);
+  // }
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

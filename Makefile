@@ -31,17 +31,21 @@ prisma.gen:
 	npm -w services/identity-svc run prisma:gen
 	npm -w services/asset-svc run prisma:gen
 	npm -w services/ticket-svc run prisma:gen
+	npm -w services/reservation-svc run prisma:gen
 
 migrate:
 	npm -w services/identity-svc run prisma:migrate
 	npm -w services/asset-svc run prisma:migrate
 	npm -w services/ticket-svc run prisma:migrate
+	npm -w services/reservation-svc run prisma:migrate
 
 seed:
 	npm -w services/asset-svc run seed
 	npm -w services/ticket-svc run seed
+	npm -w services/reservation-svc run seed
 
 dev.all:
 	npm -w services/identity-svc run start:dev & \
 	npm -w services/asset-svc run start:dev & \
-	npm -w services/ticket-svc run start:dev
+	npm -w services/ticket-svc run start:dev & \
+	npm -w services/reservation-svc run start:dev

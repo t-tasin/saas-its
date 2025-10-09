@@ -18,13 +18,28 @@ enum UserRole {
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
-  password  String // hashed password
+  password  String? // hashed password - optional for general users who use OTP
   name      String?
   role      UserRole @default(general)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  otps OTP[]
+
   @@index([email])
   @@index([role])
+}
+
+model OTP {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code      String // 6-digit OTP code
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([code])
 }
