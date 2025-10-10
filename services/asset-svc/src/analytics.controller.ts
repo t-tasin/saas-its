@@ -115,8 +115,8 @@ export class AnalyticsController {
 
         return {
           id: asset.id,
-          assetTag: asset.assetTag,
-          type: asset.assetType.name,
+          assetTag: asset.assetId,
+          type: asset.assetType?.name || 'Unknown',
           status: asset.status,
           ageDays,
           ageYears,
@@ -204,7 +204,7 @@ export class AnalyticsController {
 
       // Most frequently assigned types
       const typeAssignments = assignments.reduce((acc, assignment) => {
-        const type = assignment.asset.assetType.name;
+        const type = assignment.asset.assetType?.name || 'Unknown';
         acc[type] = (acc[type] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
@@ -269,8 +269,8 @@ export class AnalyticsController {
       const formattedEvents = events.map((event) => ({
         id: event.id,
         action: event.action,
-        assetTag: event.asset.assetTag,
-        assetType: event.asset.assetType.name,
+        assetTag: event.asset.assetId,
+        assetType: event.asset.assetType?.name || 'Unknown',
         actorId: event.actorId,
         metadata: event.metadata,
         occurredAt: event.occurredAt,

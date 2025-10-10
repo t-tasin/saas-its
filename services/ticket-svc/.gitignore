@@ -1,0 +1,5 @@
+# Railway Environment Files (contains secrets)
+railway-env-*.txt
+.railway.env.example
+.env
+.env.*

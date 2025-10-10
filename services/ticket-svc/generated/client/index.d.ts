@@ -1439,10 +1439,14 @@ export namespace Prisma {
     priority: $Enums.TicketPriority | null
     requestedBy: string | null
     requestedByUser: string | null
+    requesterName: string | null
+    requesterEmail: string | null
     assignedTo: string | null
     categoryId: string | null
     subcategoryId: string | null
     targetDate: Date | null
+    resolvedAt: Date | null
+    closedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1457,10 +1461,14 @@ export namespace Prisma {
     priority: $Enums.TicketPriority | null
     requestedBy: string | null
     requestedByUser: string | null
+    requesterName: string | null
+    requesterEmail: string | null
     assignedTo: string | null
     categoryId: string | null
     subcategoryId: string | null
     targetDate: Date | null
+    resolvedAt: Date | null
+    closedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1475,10 +1483,15 @@ export namespace Prisma {
     priority: number
     requestedBy: number
     requestedByUser: number
+    requesterName: number
+    requesterEmail: number
     assignedTo: number
     categoryId: number
     subcategoryId: number
     targetDate: number
+    resolvedAt: number
+    closedAt: number
+    attachments: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1495,10 +1508,14 @@ export namespace Prisma {
     priority?: true
     requestedBy?: true
     requestedByUser?: true
+    requesterName?: true
+    requesterEmail?: true
     assignedTo?: true
     categoryId?: true
     subcategoryId?: true
     targetDate?: true
+    resolvedAt?: true
+    closedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1513,10 +1530,14 @@ export namespace Prisma {
     priority?: true
     requestedBy?: true
     requestedByUser?: true
+    requesterName?: true
+    requesterEmail?: true
     assignedTo?: true
     categoryId?: true
     subcategoryId?: true
     targetDate?: true
+    resolvedAt?: true
+    closedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1531,10 +1552,15 @@ export namespace Prisma {
     priority?: true
     requestedBy?: true
     requestedByUser?: true
+    requesterName?: true
+    requesterEmail?: true
     assignedTo?: true
     categoryId?: true
     subcategoryId?: true
     targetDate?: true
+    resolvedAt?: true
+    closedAt?: true
+    attachments?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1622,10 +1648,15 @@ export namespace Prisma {
     priority: $Enums.TicketPriority
     requestedBy: string | null
     requestedByUser: string | null
+    requesterName: string | null
+    requesterEmail: string | null
     assignedTo: string | null
     categoryId: string | null
     subcategoryId: string | null
     targetDate: Date | null
+    resolvedAt: Date | null
+    closedAt: Date | null
+    attachments: JsonValue | null
     createdAt: Date
     updatedAt: Date
     _count: TicketCountAggregateOutputType | null
@@ -1657,10 +1688,15 @@ export namespace Prisma {
     priority?: boolean
     requestedBy?: boolean
     requestedByUser?: boolean
+    requesterName?: boolean
+    requesterEmail?: boolean
     assignedTo?: boolean
     categoryId?: boolean
     subcategoryId?: boolean
     targetDate?: boolean
+    resolvedAt?: boolean
+    closedAt?: boolean
+    attachments?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     comments?: boolean | Ticket$commentsArgs<ExtArgs>
@@ -1679,10 +1715,15 @@ export namespace Prisma {
     priority?: boolean
     requestedBy?: boolean
     requestedByUser?: boolean
+    requesterName?: boolean
+    requesterEmail?: boolean
     assignedTo?: boolean
     categoryId?: boolean
     subcategoryId?: boolean
     targetDate?: boolean
+    resolvedAt?: boolean
+    closedAt?: boolean
+    attachments?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     category?: boolean | Ticket$categoryArgs<ExtArgs>
@@ -1699,10 +1740,15 @@ export namespace Prisma {
     priority?: boolean
     requestedBy?: boolean
     requestedByUser?: boolean
+    requesterName?: boolean
+    requesterEmail?: boolean
     assignedTo?: boolean
     categoryId?: boolean
     subcategoryId?: boolean
     targetDate?: boolean
+    resolvedAt?: boolean
+    closedAt?: boolean
+    attachments?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -1735,10 +1781,15 @@ export namespace Prisma {
       priority: $Enums.TicketPriority
       requestedBy: string | null
       requestedByUser: string | null
+      requesterName: string | null
+      requesterEmail: string | null
       assignedTo: string | null
       categoryId: string | null
       subcategoryId: string | null
       targetDate: Date | null
+      resolvedAt: Date | null
+      closedAt: Date | null
+      attachments: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["ticket"]>
@@ -2146,10 +2197,15 @@ export namespace Prisma {
     readonly priority: FieldRef<"Ticket", 'TicketPriority'>
     readonly requestedBy: FieldRef<"Ticket", 'String'>
     readonly requestedByUser: FieldRef<"Ticket", 'String'>
+    readonly requesterName: FieldRef<"Ticket", 'String'>
+    readonly requesterEmail: FieldRef<"Ticket", 'String'>
     readonly assignedTo: FieldRef<"Ticket", 'String'>
     readonly categoryId: FieldRef<"Ticket", 'String'>
     readonly subcategoryId: FieldRef<"Ticket", 'String'>
     readonly targetDate: FieldRef<"Ticket", 'DateTime'>
+    readonly resolvedAt: FieldRef<"Ticket", 'DateTime'>
+    readonly closedAt: FieldRef<"Ticket", 'DateTime'>
+    readonly attachments: FieldRef<"Ticket", 'Json'>
     readonly createdAt: FieldRef<"Ticket", 'DateTime'>
     readonly updatedAt: FieldRef<"Ticket", 'DateTime'>
   }
@@ -2549,6 +2605,7 @@ export namespace Prisma {
     ticketId: string | null
     authorId: string | null
     authorName: string | null
+    authorRole: string | null
     body: string | null
     createdAt: Date | null
   }
@@ -2558,6 +2615,7 @@ export namespace Prisma {
     ticketId: string | null
     authorId: string | null
     authorName: string | null
+    authorRole: string | null
     body: string | null
     createdAt: Date | null
   }
@@ -2567,6 +2625,7 @@ export namespace Prisma {
     ticketId: number
     authorId: number
     authorName: number
+    authorRole: number
     body: number
     createdAt: number
     _all: number
@@ -2578,6 +2637,7 @@ export namespace Prisma {
     ticketId?: true
     authorId?: true
     authorName?: true
+    authorRole?: true
     body?: true
     createdAt?: true
   }
@@ -2587,6 +2647,7 @@ export namespace Prisma {
     ticketId?: true
     authorId?: true
     authorName?: true
+    authorRole?: true
     body?: true
     createdAt?: true
   }
@@ -2596,6 +2657,7 @@ export namespace Prisma {
     ticketId?: true
     authorId?: true
     authorName?: true
+    authorRole?: true
     body?: true
     createdAt?: true
     _all?: true
@@ -2678,6 +2740,7 @@ export namespace Prisma {
     ticketId: string
     authorId: string | null
     authorName: string | null
+    authorRole: string | null
     body: string
     createdAt: Date
     _count: TicketCommentCountAggregateOutputType | null
@@ -2704,6 +2767,7 @@ export namespace Prisma {
     ticketId?: boolean
     authorId?: boolean
     authorName?: boolean
+    authorRole?: boolean
     body?: boolean
     createdAt?: boolean
     ticket?: boolean | TicketDefaultArgs<ExtArgs>
@@ -2714,6 +2778,7 @@ export namespace Prisma {
     ticketId?: boolean
     authorId?: boolean
     authorName?: boolean
+    authorRole?: boolean
     body?: boolean
     createdAt?: boolean
     ticket?: boolean | TicketDefaultArgs<ExtArgs>
@@ -2724,6 +2789,7 @@ export namespace Prisma {
     ticketId?: boolean
     authorId?: boolean
     authorName?: boolean
+    authorRole?: boolean
     body?: boolean
     createdAt?: boolean
   }
@@ -2745,6 +2811,7 @@ export namespace Prisma {
       ticketId: string
       authorId: string | null
       authorName: string | null
+      authorRole: string | null
       body: string
       createdAt: Date
     }, ExtArgs["result"]["ticketComment"]>
@@ -3145,6 +3212,7 @@ export namespace Prisma {
     readonly ticketId: FieldRef<"TicketComment", 'String'>
     readonly authorId: FieldRef<"TicketComment", 'String'>
     readonly authorName: FieldRef<"TicketComment", 'String'>
+    readonly authorRole: FieldRef<"TicketComment", 'String'>
     readonly body: FieldRef<"TicketComment", 'String'>
     readonly createdAt: FieldRef<"TicketComment", 'DateTime'>
   }
@@ -7172,10 +7240,15 @@ export namespace Prisma {
     priority: 'priority',
     requestedBy: 'requestedBy',
     requestedByUser: 'requestedByUser',
+    requesterName: 'requesterName',
+    requesterEmail: 'requesterEmail',
     assignedTo: 'assignedTo',
     categoryId: 'categoryId',
     subcategoryId: 'subcategoryId',
     targetDate: 'targetDate',
+    resolvedAt: 'resolvedAt',
+    closedAt: 'closedAt',
+    attachments: 'attachments',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7188,6 +7261,7 @@ export namespace Prisma {
     ticketId: 'ticketId',
     authorId: 'authorId',
     authorName: 'authorName',
+    authorRole: 'authorRole',
     body: 'body',
     createdAt: 'createdAt'
   };
@@ -7259,14 +7333,6 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
-  export const NullsOrder: {
-    first: 'first',
-    last: 'last'
-  };
-
-  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
   export const JsonNullValueFilter: {
     DbNull: typeof DbNull,
     JsonNull: typeof JsonNull,
@@ -7274,6 +7340,14 @@ export namespace Prisma {
   };
 
   export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
   /**
@@ -7352,6 +7426,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -7362,13 +7443,6 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
     
 
 
@@ -7402,10 +7476,15 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFilter<"Ticket"> | $Enums.TicketPriority
     requestedBy?: StringNullableFilter<"Ticket"> | string | null
     requestedByUser?: StringNullableFilter<"Ticket"> | string | null
+    requesterName?: StringNullableFilter<"Ticket"> | string | null
+    requesterEmail?: StringNullableFilter<"Ticket"> | string | null
     assignedTo?: StringNullableFilter<"Ticket"> | string | null
     categoryId?: StringNullableFilter<"Ticket"> | string | null
     subcategoryId?: StringNullableFilter<"Ticket"> | string | null
     targetDate?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    attachments?: JsonNullableFilter<"Ticket">
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
     updatedAt?: DateTimeFilter<"Ticket"> | Date | string
     comments?: TicketCommentListRelationFilter
@@ -7423,10 +7502,15 @@ export namespace Prisma {
     priority?: SortOrder
     requestedBy?: SortOrderInput | SortOrder
     requestedByUser?: SortOrderInput | SortOrder
+    requesterName?: SortOrderInput | SortOrder
+    requesterEmail?: SortOrderInput | SortOrder
     assignedTo?: SortOrderInput | SortOrder
     categoryId?: SortOrderInput | SortOrder
     subcategoryId?: SortOrderInput | SortOrder
     targetDate?: SortOrderInput | SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    closedAt?: SortOrderInput | SortOrder
+    attachments?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     comments?: TicketCommentOrderByRelationAggregateInput
@@ -7447,10 +7531,15 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFilter<"Ticket"> | $Enums.TicketPriority
     requestedBy?: StringNullableFilter<"Ticket"> | string | null
     requestedByUser?: StringNullableFilter<"Ticket"> | string | null
+    requesterName?: StringNullableFilter<"Ticket"> | string | null
+    requesterEmail?: StringNullableFilter<"Ticket"> | string | null
     assignedTo?: StringNullableFilter<"Ticket"> | string | null
     categoryId?: StringNullableFilter<"Ticket"> | string | null
     subcategoryId?: StringNullableFilter<"Ticket"> | string | null
     targetDate?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    attachments?: JsonNullableFilter<"Ticket">
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
     updatedAt?: DateTimeFilter<"Ticket"> | Date | string
     comments?: TicketCommentListRelationFilter
@@ -7468,10 +7557,15 @@ export namespace Prisma {
     priority?: SortOrder
     requestedBy?: SortOrderInput | SortOrder
     requestedByUser?: SortOrderInput | SortOrder
+    requesterName?: SortOrderInput | SortOrder
+    requesterEmail?: SortOrderInput | SortOrder
     assignedTo?: SortOrderInput | SortOrder
     categoryId?: SortOrderInput | SortOrder
     subcategoryId?: SortOrderInput | SortOrder
     targetDate?: SortOrderInput | SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    closedAt?: SortOrderInput | SortOrder
+    attachments?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TicketCountOrderByAggregateInput
@@ -7492,10 +7586,15 @@ export namespace Prisma {
     priority?: EnumTicketPriorityWithAggregatesFilter<"Ticket"> | $Enums.TicketPriority
     requestedBy?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     requestedByUser?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
+    requesterName?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
+    requesterEmail?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     assignedTo?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     categoryId?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     subcategoryId?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     targetDate?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
+    closedAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
+    attachments?: JsonNullableWithAggregatesFilter<"Ticket">
     createdAt?: DateTimeWithAggregatesFilter<"Ticket"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Ticket"> | Date | string
   }
@@ -7508,6 +7607,7 @@ export namespace Prisma {
     ticketId?: StringFilter<"TicketComment"> | string
     authorId?: StringNullableFilter<"TicketComment"> | string | null
     authorName?: StringNullableFilter<"TicketComment"> | string | null
+    authorRole?: StringNullableFilter<"TicketComment"> | string | null
     body?: StringFilter<"TicketComment"> | string
     createdAt?: DateTimeFilter<"TicketComment"> | Date | string
     ticket?: XOR<TicketRelationFilter, TicketWhereInput>
@@ -7518,6 +7618,7 @@ export namespace Prisma {
     ticketId?: SortOrder
     authorId?: SortOrderInput | SortOrder
     authorName?: SortOrderInput | SortOrder
+    authorRole?: SortOrderInput | SortOrder
     body?: SortOrder
     createdAt?: SortOrder
     ticket?: TicketOrderByWithRelationInput
@@ -7531,6 +7632,7 @@ export namespace Prisma {
     ticketId?: StringFilter<"TicketComment"> | string
     authorId?: StringNullableFilter<"TicketComment"> | string | null
     authorName?: StringNullableFilter<"TicketComment"> | string | null
+    authorRole?: StringNullableFilter<"TicketComment"> | string | null
     body?: StringFilter<"TicketComment"> | string
     createdAt?: DateTimeFilter<"TicketComment"> | Date | string
     ticket?: XOR<TicketRelationFilter, TicketWhereInput>
@@ -7541,6 +7643,7 @@ export namespace Prisma {
     ticketId?: SortOrder
     authorId?: SortOrderInput | SortOrder
     authorName?: SortOrderInput | SortOrder
+    authorRole?: SortOrderInput | SortOrder
     body?: SortOrder
     createdAt?: SortOrder
     _count?: TicketCommentCountOrderByAggregateInput
@@ -7556,6 +7659,7 @@ export namespace Prisma {
     ticketId?: StringWithAggregatesFilter<"TicketComment"> | string
     authorId?: StringNullableWithAggregatesFilter<"TicketComment"> | string | null
     authorName?: StringNullableWithAggregatesFilter<"TicketComment"> | string | null
+    authorRole?: StringNullableWithAggregatesFilter<"TicketComment"> | string | null
     body?: StringWithAggregatesFilter<"TicketComment"> | string
     createdAt?: DateTimeWithAggregatesFilter<"TicketComment"> | Date | string
   }
@@ -7773,8 +7877,13 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentCreateNestedManyWithoutTicketInput
@@ -7792,10 +7901,15 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     categoryId?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentUncheckedCreateNestedManyWithoutTicketInput
@@ -7811,8 +7925,13 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUpdateManyWithoutTicketNestedInput
@@ -7830,10 +7949,15 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUncheckedUpdateManyWithoutTicketNestedInput
@@ -7849,10 +7973,15 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     categoryId?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -7867,8 +7996,13 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7883,10 +8017,15 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7895,6 +8034,7 @@ export namespace Prisma {
     id?: string
     authorId?: string | null
     authorName?: string | null
+    authorRole?: string | null
     body: string
     createdAt?: Date | string
     ticket: TicketCreateNestedOneWithoutCommentsInput
@@ -7905,6 +8045,7 @@ export namespace Prisma {
     ticketId: string
     authorId?: string | null
     authorName?: string | null
+    authorRole?: string | null
     body: string
     createdAt?: Date | string
   }
@@ -7913,6 +8054,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     authorId?: NullableStringFieldUpdateOperationsInput | string | null
     authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableStringFieldUpdateOperationsInput | string | null
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ticket?: TicketUpdateOneRequiredWithoutCommentsNestedInput
@@ -7923,6 +8065,7 @@ export namespace Prisma {
     ticketId?: StringFieldUpdateOperationsInput | string
     authorId?: NullableStringFieldUpdateOperationsInput | string | null
     authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableStringFieldUpdateOperationsInput | string | null
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7932,6 +8075,7 @@ export namespace Prisma {
     ticketId: string
     authorId?: string | null
     authorName?: string | null
+    authorRole?: string | null
     body: string
     createdAt?: Date | string
   }
@@ -7940,6 +8084,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     authorId?: NullableStringFieldUpdateOperationsInput | string | null
     authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableStringFieldUpdateOperationsInput | string | null
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -7949,6 +8094,7 @@ export namespace Prisma {
     ticketId?: StringFieldUpdateOperationsInput | string
     authorId?: NullableStringFieldUpdateOperationsInput | string | null
     authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableStringFieldUpdateOperationsInput | string | null
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8221,6 +8367,28 @@ export namespace Prisma {
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8268,10 +8436,15 @@ export namespace Prisma {
     priority?: SortOrder
     requestedBy?: SortOrder
     requestedByUser?: SortOrder
+    requesterName?: SortOrder
+    requesterEmail?: SortOrder
     assignedTo?: SortOrder
     categoryId?: SortOrder
     subcategoryId?: SortOrder
     targetDate?: SortOrder
+    resolvedAt?: SortOrder
+    closedAt?: SortOrder
+    attachments?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8286,10 +8459,14 @@ export namespace Prisma {
     priority?: SortOrder
     requestedBy?: SortOrder
     requestedByUser?: SortOrder
+    requesterName?: SortOrder
+    requesterEmail?: SortOrder
     assignedTo?: SortOrder
     categoryId?: SortOrder
     subcategoryId?: SortOrder
     targetDate?: SortOrder
+    resolvedAt?: SortOrder
+    closedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8304,10 +8481,14 @@ export namespace Prisma {
     priority?: SortOrder
     requestedBy?: SortOrder
     requestedByUser?: SortOrder
+    requesterName?: SortOrder
+    requesterEmail?: SortOrder
     assignedTo?: SortOrder
     categoryId?: SortOrder
     subcategoryId?: SortOrder
     targetDate?: SortOrder
+    resolvedAt?: SortOrder
+    closedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8391,6 +8572,31 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -8416,6 +8622,7 @@ export namespace Prisma {
     ticketId?: SortOrder
     authorId?: SortOrder
     authorName?: SortOrder
+    authorRole?: SortOrder
     body?: SortOrder
     createdAt?: SortOrder
   }
@@ -8425,6 +8632,7 @@ export namespace Prisma {
     ticketId?: SortOrder
     authorId?: SortOrder
     authorName?: SortOrder
+    authorRole?: SortOrder
     body?: SortOrder
     createdAt?: SortOrder
   }
@@ -8434,6 +8642,7 @@ export namespace Prisma {
     ticketId?: SortOrder
     authorId?: SortOrder
     authorName?: SortOrder
+    authorRole?: SortOrder
     body?: SortOrder
     createdAt?: SortOrder
   }
@@ -8556,28 +8765,6 @@ export namespace Prisma {
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
   }
-  export type JsonNullableFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type AuditLogCountOrderByAggregateInput = {
     id?: SortOrder
@@ -8605,31 +8792,6 @@ export namespace Prisma {
     action?: SortOrder
     actorId?: SortOrder
     at?: SortOrder
-  }
-  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedJsonNullableFilter<$PrismaModel>
-    _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
   export type TicketCommentCreateNestedManyWithoutTicketInput = {
@@ -9066,6 +9228,28 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -9107,33 +9291,12 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
   }
-  export type NestedJsonNullableFilter<$PrismaModel = never> = 
-    | PatchUndefined<
-        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonNullableFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type TicketCommentCreateWithoutTicketInput = {
     id?: string
     authorId?: string | null
     authorName?: string | null
+    authorRole?: string | null
     body: string
     createdAt?: Date | string
   }
@@ -9142,6 +9305,7 @@ export namespace Prisma {
     id?: string
     authorId?: string | null
     authorName?: string | null
+    authorRole?: string | null
     body: string
     createdAt?: Date | string
   }
@@ -9218,6 +9382,7 @@ export namespace Prisma {
     ticketId?: StringFilter<"TicketComment"> | string
     authorId?: StringNullableFilter<"TicketComment"> | string | null
     authorName?: StringNullableFilter<"TicketComment"> | string | null
+    authorRole?: StringNullableFilter<"TicketComment"> | string | null
     body?: StringFilter<"TicketComment"> | string
     createdAt?: DateTimeFilter<"TicketComment"> | Date | string
   }
@@ -9282,8 +9447,13 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     category?: CategoryCreateNestedOneWithoutTicketsInput
@@ -9300,10 +9470,15 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     categoryId?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9334,8 +9509,13 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: CategoryUpdateOneWithoutTicketsNestedInput
@@ -9352,10 +9532,15 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9370,8 +9555,13 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentCreateNestedManyWithoutTicketInput
@@ -9388,9 +9578,14 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentUncheckedCreateNestedManyWithoutTicketInput
@@ -9459,10 +9654,15 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFilter<"Ticket"> | $Enums.TicketPriority
     requestedBy?: StringNullableFilter<"Ticket"> | string | null
     requestedByUser?: StringNullableFilter<"Ticket"> | string | null
+    requesterName?: StringNullableFilter<"Ticket"> | string | null
+    requesterEmail?: StringNullableFilter<"Ticket"> | string | null
     assignedTo?: StringNullableFilter<"Ticket"> | string | null
     categoryId?: StringNullableFilter<"Ticket"> | string | null
     subcategoryId?: StringNullableFilter<"Ticket"> | string | null
     targetDate?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    attachments?: JsonNullableFilter<"Ticket">
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
     updatedAt?: DateTimeFilter<"Ticket"> | Date | string
   }
@@ -9522,8 +9722,13 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentCreateNestedManyWithoutTicketInput
@@ -9540,9 +9745,14 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     categoryId?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentUncheckedCreateNestedManyWithoutTicketInput
@@ -9603,6 +9813,7 @@ export namespace Prisma {
     id?: string
     authorId?: string | null
     authorName?: string | null
+    authorRole?: string | null
     body: string
     createdAt?: Date | string
   }
@@ -9611,6 +9822,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     authorId?: NullableStringFieldUpdateOperationsInput | string | null
     authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableStringFieldUpdateOperationsInput | string | null
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9619,6 +9831,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     authorId?: NullableStringFieldUpdateOperationsInput | string | null
     authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableStringFieldUpdateOperationsInput | string | null
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9627,6 +9840,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     authorId?: NullableStringFieldUpdateOperationsInput | string | null
     authorName?: NullableStringFieldUpdateOperationsInput | string | null
+    authorRole?: NullableStringFieldUpdateOperationsInput | string | null
     body?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9641,9 +9855,14 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9664,8 +9883,13 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUpdateManyWithoutTicketNestedInput
@@ -9682,9 +9906,14 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUncheckedUpdateManyWithoutTicketNestedInput
@@ -9700,9 +9929,14 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9737,9 +9971,14 @@ export namespace Prisma {
     priority?: $Enums.TicketPriority
     requestedBy?: string | null
     requestedByUser?: string | null
+    requesterName?: string | null
+    requesterEmail?: string | null
     assignedTo?: string | null
     categoryId?: string | null
     targetDate?: Date | string | null
+    resolvedAt?: Date | string | null
+    closedAt?: Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9754,8 +9993,13 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUpdateManyWithoutTicketNestedInput
@@ -9772,9 +10016,14 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUncheckedUpdateManyWithoutTicketNestedInput
@@ -9790,9 +10039,14 @@ export namespace Prisma {
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    attachments?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

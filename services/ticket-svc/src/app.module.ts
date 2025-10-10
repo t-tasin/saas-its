@@ -17,6 +17,7 @@ import { CategoryController } from './category.controller';
 import { AnalyticsController } from './analytics.controller';
 import { TicketNumberService } from './ticket-number.service';
 import { AuditService } from './shared/audit.service';
+import { StorageService } from './storage.service';
 import { IdempotencyMiddleware } from './shared/idempotency.middleware';
 import { MetricsMiddleware } from './shared/metrics.middleware';
 import { HealthController } from './health.controller';
@@ -27,6 +28,7 @@ import { HealthController } from './health.controller';
   providers: [
     TicketNumberService,
     AuditService,
+    StorageService,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],

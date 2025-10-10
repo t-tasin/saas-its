@@ -1,7 +1,7 @@
 generator client {
   provider      = "prisma-client-js"
   output        = "../generated/client"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
 }
 
 datasource db {
@@ -29,20 +29,68 @@ model AssetType {
 
 model Asset {
   id          String      @id @default(uuid())
-  assetTag    String      @unique
-  assetTypeId String
-  summary     String?
-  location    String?
-  status      AssetStatus @default(available)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  assetId     String      @unique // Renamed from assetTag (e.g., LAP-2024-001)
+  type        String              // Direct type string (e.g., "Laptop")
+  description String              // Renamed from summary - more detailed
+  
+  // Mandatory field
+  fundingDepartment String
+  
+  // Hardware details
+  manufacturer      String?
+  model             String?
+  modelGeneration   String?
+  serialNumber      String?  @unique
+  vendor            String?
+  
+  // Technical specifications
+  memory         String?
+  hddSize        String?
+  hddType        String?
+  cpuGeneration  String?
+  cpuSpeed       String?
+  gpuModel       String?
+  videoCard      String?
+  
+  // Network specifications
+  wiredMac       String?
+  wirelessMac    String?
+  
+  // Display outputs
+  output1        String?
+  output2        String?
+  
+  // Procurement information
+  receivedDate   DateTime?
+  cost           Float?
+  po             String?        // Purchase order number
+  
+  // Disposal information
+  disposalDate   DateTime?
+  disposalType   String?
+  
+  // Location and status
+  location       String?
+  status         AssetStatus @default(available)
+  
+  // Assignment tracking (flattened from AssetAssignment)
+  assignedToId   String?       // User ID
+  assignedDate   DateTime?
+  
+  // Timestamps
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
-  assetType   AssetType         @relation(fields: [assetTypeId], references: [id])
-  assignments AssetAssignment[]
-  lifecycle   LifecycleEvent[]
+  // Relations kept for backward compatibility
+  assetTypeId    String?    // Made optional for transition
+  assetType      AssetType?         @relation(fields: [assetTypeId], references: [id])
+  assignments    AssetAssignment[]
+  lifecycle      LifecycleEvent[]
 
   @@index([status])
   @@index([assetTypeId])
+  @@index([assignedToId])
+  @@index([type])
   @@map("Asset")
 }
 

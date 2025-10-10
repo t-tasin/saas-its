@@ -130,13 +130,38 @@ exports.Prisma.AssetTypeScalarFieldEnum = {
 
 exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
-  assetTag: 'assetTag',
-  assetTypeId: 'assetTypeId',
-  summary: 'summary',
+  assetId: 'assetId',
+  type: 'type',
+  description: 'description',
+  fundingDepartment: 'fundingDepartment',
+  manufacturer: 'manufacturer',
+  model: 'model',
+  modelGeneration: 'modelGeneration',
+  serialNumber: 'serialNumber',
+  vendor: 'vendor',
+  memory: 'memory',
+  hddSize: 'hddSize',
+  hddType: 'hddType',
+  cpuGeneration: 'cpuGeneration',
+  cpuSpeed: 'cpuSpeed',
+  gpuModel: 'gpuModel',
+  videoCard: 'videoCard',
+  wiredMac: 'wiredMac',
+  wirelessMac: 'wirelessMac',
+  output1: 'output1',
+  output2: 'output2',
+  receivedDate: 'receivedDate',
+  cost: 'cost',
+  po: 'po',
+  disposalDate: 'disposalDate',
+  disposalType: 'disposalType',
   location: 'location',
   status: 'status',
+  assignedToId: 'assignedToId',
+  assignedDate: 'assignedDate',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  assetTypeId: 'assetTypeId'
 };
 
 exports.Prisma.AssetAssignmentScalarFieldEnum = {

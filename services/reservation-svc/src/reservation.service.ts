@@ -10,11 +10,11 @@ export class ReservationService {
   /**
    * Check equipment availability
    */
-  async checkAvailability(assetTypeId: string, requestDate: Date, returnDate: Date): Promise<number> {
+  async checkAvailability(equipmentType: string, requestDate: Date, returnDate: Date): Promise<number> {
     return withTx(async (tx) => {
       // Get total available for this type
       const availability = await tx.equipmentAvailability.findUnique({
-        where: { assetTypeId },
+        where: { assetTypeName: equipmentType },
       });
 
       if (!availability) {
@@ -22,22 +22,21 @@ export class ReservationService {
       }
 
       // Count overlapping reservations that are approved or active
-      const overlappingReservations = await tx.reservationItem.count({
+      const overlappingReservations = await tx.reservation.findMany({
         where: {
-          assetTypeId,
+          equipmentType,
           status: { in: ['approved', 'active'] },
-          reservation: {
-            OR: [
-              {
-                requestDate: { lte: returnDate },
-                returnDate: { gte: requestDate },
-              },
-            ],
-          },
+          OR: [
+            {
+              requestDate: { lte: returnDate },
+              returnDate: { gte: requestDate },
+            },
+          ],
         },
       });
 
-      return Math.max(0, availability.availableCount - overlappingReservations);
+      const totalReserved = overlappingReservations.reduce((sum, r) => sum + r.quantity, 0);
+      return Math.max(0, availability.availableCount - totalReserved);
     });
   }
 

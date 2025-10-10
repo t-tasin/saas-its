@@ -8,9 +8,9 @@ import { Public } from './auth/public.decorator';
 import { Roles } from './auth/roles.decorator';
 import { 
   RegisterDto, LoginDto, UpdateUserDto, ChangePasswordDto, CreateUserDto,
-  RequestOTPDto, VerifyOTPDto
+  RequestOTPDto, VerifyOTPDto, UserRole
 } from './dto/user.dto';
-import { generateToken, generateRefreshToken } from './jwt.util';
+import { generateToken, generateRefreshToken, generateTempToken, verifyTempToken } from './jwt.util';
 import { PrismaClient } from '../generated/client';
 
 @ApiTags('auth')
@@ -25,35 +25,48 @@ export class AppController {
 
   /**
    * Register a new user (public - for general users self-registration)
+   * Creates user and sends OTP for verification
    */
   @Public()
   @Post('/auth/register')
   async register(@Body() dto: RegisterDto) {
     const user = await this.userService.register(dto);
-    const token = generateToken(user);
-    const refreshToken = generateRefreshToken();
+    
+    // Generate and send OTP
+    const otpResponse = await this.otpService.requestOTPForUser(this.prisma, user.id);
 
     return {
-      user,
-      token,
-      refreshToken,
+      success: true,
+      message: 'User registered successfully. Please verify OTP.',
+      userId: user.id,
     };
   }
 
   /**
-   * Login (public)
+   * Login for operators/admins (public)
+   * Validates password and sends OTP for two-factor authentication
    */
   @Public()
   @Post('/auth/login')
   async login(@Body() dto: LoginDto) {
+    // Validate credentials
     const user = await this.userService.login(dto);
-    const token = generateToken(user);
-    const refreshToken = generateRefreshToken();
+    
+    // Generate and send OTP
+    const otpResponse = await this.otpService.requestOTPForUser(this.prisma, user.id);
+    
+    // Generate temporary token for OTP verification
+    const tempToken = generateTempToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
     return {
-      user,
-      token,
-      refreshToken,
+      success: true,
+      message: 'OTP sent to email',
+      tempToken,
+      expiresIn: otpResponse.expiresIn,
     };
   }
 
@@ -94,38 +107,67 @@ export class AppController {
    * Request OTP (passwordless auth for general users)
    */
   @Public()
-  @Post('/auth/otp/request')
+  @Post('/auth/request-otp')
   async requestOTP(@Body() dto: RequestOTPDto) {
     return this.otpService.requestOTP(this.prisma, dto.email);
   }
 
   /**
-   * Verify OTP and login (passwordless auth)
+   * Verify OTP and login
+   * Supports both passwordless auth (general users) and two-factor auth (operators/admins with tempToken)
    */
   @Public()
-  @Post('/auth/otp/verify')
+  @Post('/auth/verify-otp')
   async verifyOTP(@Body() dto: VerifyOTPDto) {
-    const user = await this.otpService.verifyOTP(this.prisma, dto.email, dto.code);
+    let email = dto.email;
+    
+    // If tempToken provided, verify it first (for operator/admin two-factor auth)
+    if (dto.tempToken) {
+      const decoded = verifyTempToken(dto.tempToken);
+      if (!decoded) {
+        throw new Error('Invalid or expired temporary token');
+      }
+      email = decoded.email;
+    }
+    
+    // Verify OTP
+    const user = await this.otpService.verifyOTP(this.prisma, email, dto.otp);
+    
+    // Generate final JWT token
     const token = generateToken(user);
-    const refreshToken = generateRefreshToken();
 
     return {
-      user,
+      success: true,
       token,
-      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
     };
   }
 
   /**
-   * List all users (admin only)
+   * List all users (admin only) with pagination
    */
   @ApiBearerAuth()
   @Roles('admin')
   @Get('/users')
-  async listUsers(@Query('role') role?: string, @Query('isActive') isActive?: string) {
+  async listUsers(
+    @Query('role') role?: string,
+    @Query('isActive') isActive?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
     return this.userService.listUsers({
       role,
       isActive: isActive === 'true' ? true : isActive === 'false' ? false : undefined,
+      search,
+      page: page ? parseInt(page) : undefined,
+      limit: limit ? parseInt(limit) : undefined,
     });
   }
 
@@ -170,5 +212,22 @@ export class AppController {
   @Delete('/users/:id')
   async deactivateUser(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.deactivateUser(id);
+  }
+
+  /**
+   * Update user role (admin only)
+   */
+  @ApiBearerAuth()
+  @Roles('admin')
+  @Patch('/users/:userId/role')
+  async updateUserRole(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Body() body: { role: UserRole },
+  ) {
+    await this.userService.updateProfile(userId, { role: body.role });
+    return {
+      success: true,
+      message: 'User role updated successfully',
+    };
   }
 }

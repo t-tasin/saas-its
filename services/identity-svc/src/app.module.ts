@@ -10,6 +10,7 @@ import { OTPService } from './otp.service';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { IdempotencyMiddleware } from './shared/idempotency.middleware';
 import { MetricsMiddleware } from './shared/metrics.middleware';
+import { RateLimitMiddleware } from './shared/rate-limit.middleware';
 
 @Module({
   imports: [AuthModule],
@@ -18,12 +19,15 @@ import { MetricsMiddleware } from './shared/metrics.middleware';
     UserService,
     EmailService,
     OTPService,
+    RateLimitMiddleware,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(IdempotencyMiddleware, MetricsMiddleware).forRoutes('*');
+    consumer
+      .apply(RateLimitMiddleware, IdempotencyMiddleware, MetricsMiddleware)
+      .forRoutes('*');
   }
 }

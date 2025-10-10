@@ -1,16 +1,97 @@
-# dependencies
+# Dependencies
 node_modules/
-# builds
+package-lock.json
+
+# Builds
 dist/
-# env
+build/
+*.tsbuildinfo
+
+# Environment variables (contains secrets - DO NOT COMMIT)
 .env
+.env.*
 .env.local
 .env.*.local
-# editor
+!.env.example
+
+# Railway Environment Files (contains secrets - DO NOT COMMIT)
+.railway.env.example
+railway-env-*.txt
+
+# Editor
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+
 # OS
 .DS_Store
-# docker
+Thumbs.db
+
+# Docker
 localstack/
 pgdata/
+docker-compose.override.yml
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+
+# Documentation (only README.md goes to GitHub)
+# Keep README.md, ignore all other documentation
+*-GUIDE.md
+*-DEPLOYMENT*.md
+*-REQUIREMENTS.md
+*-SPECIFICATION.md
+*-METRICS.md
+*-SUMMARY.md
+*-CHECKLIST.md
+*-COMPLETE.md
+*-READY.md
+*-FIXES.md
+*-FIX*.md
+*-API*.md
+DEPLOY*.md
+TESTING*.md
+IMPLEMENTATION*.md
+REGISTRATION*.md
+RAILWAY*.md
+KUBERNETES*.md
+PRODUCTION*.md
+FRONTEND*.md
+BACKEND*.md
+PROJECT*.md
+QUICK*.md
+FINAL*.md
+V0*.md
+
+# Keep README.md
+!README.md
+
+# Prisma
+*.db
+*.db-journal
+prisma/migrations/*_manual/
+
+# Generated files
+generated/
+*.generated.ts
+*.generated.js
+
+# IDE
+.fleet/
+*.sublime-project
+*.sublime-workspace

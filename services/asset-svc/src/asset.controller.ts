@@ -10,8 +10,10 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -49,11 +51,24 @@ export class AssetController {
       }
 
       const where: any = {};
+      
+      // Search filter (assetId or description)
       if (q.q) {
         where.OR = [
-          { assetTag: { contains: q.q, mode: 'insensitive' } },
-          { summary:  { contains: q.q, mode: 'insensitive' } },
+          { assetId: { contains: q.q, mode: 'insensitive' } },
+          { description:  { contains: q.q, mode: 'insensitive' } },
+          { serialNumber:  { contains: q.q, mode: 'insensitive' } },
         ];
+      }
+      
+      // Type filter
+      if (q.type) {
+        where.type = { contains: q.type, mode: 'insensitive' };
+      }
+      
+      // Status filter
+      if (q.status) {
+        where.status = q.status;
       }
 
       const items = await tx.asset.findMany({
@@ -88,11 +103,34 @@ export class AssetController {
       try {
         const a = await tx.asset.create({
           data: {
-            assetTag: dto.assetTag,
-            assetTypeId: dto.assetTypeId,
-            summary: dto.summary ?? null,
+            assetId: dto.assetId,
+            type: dto.type,
+            description: dto.description,
+            fundingDepartment: dto.fundingDepartment,
+            manufacturer: dto.manufacturer ?? null,
+            model: dto.model ?? null,
+            modelGeneration: dto.modelGeneration ?? null,
+            serialNumber: dto.serialNumber ?? null,
+            vendor: dto.vendor ?? null,
+            memory: dto.memory ?? null,
+            hddSize: dto.hddSize ?? null,
+            hddType: dto.hddType ?? null,
+            cpuGeneration: dto.cpuGeneration ?? null,
+            cpuSpeed: dto.cpuSpeed ?? null,
+            gpuModel: dto.gpuModel ?? null,
+            videoCard: dto.videoCard ?? null,
+            wiredMac: dto.wiredMac ?? null,
+            wirelessMac: dto.wirelessMac ?? null,
+            output1: dto.output1 ?? null,
+            output2: dto.output2 ?? null,
+            receivedDate: dto.receivedDate ? new Date(dto.receivedDate) : null,
+            cost: dto.cost ?? null,
+            po: dto.po ?? null,
+            disposalDate: dto.disposalDate ? new Date(dto.disposalDate) : null,
+            disposalType: dto.disposalType ?? null,
             location: dto.location ?? null,
-            status: 'available',
+            status: (dto.status as any) || 'available',
+            assetTypeId: dto.assetTypeId ?? null, // Backward compatibility
           },
         });
 
@@ -106,7 +144,7 @@ export class AssetController {
         return a;
       } catch (e: any) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
-          throw new ConflictException('Asset tag already exists');
+          throw new ConflictException('Asset ID or serial number already exists');
         }
         throw e;
       }
@@ -121,28 +159,36 @@ export class AssetController {
     @Body() dto: AssignDto,
   ) {
     return withTx(async (tx) => {
-      const existing = await tx.assetAssignment.findFirst({
-        where: { assetId: id, unassignedAt: null },
-      });
-      if (existing) {
+      // Check if already assigned using flattened field
+      const asset = await tx.asset.findUnique({ where: { id } });
+      if (asset?.assignedToId) {
         throw new ConflictException('Asset already assigned');
       }
 
+      // Create assignment record (for history)
       const assignment = await tx.assetAssignment.create({
         data: {
           assetId: id,
-          personId: dto.personId,
+          personId: dto.userId,
         },
       });
 
-      await tx.asset.update({ where: { id }, data: { status: 'assigned' } });
+      // Update asset with flattened assignment fields
+      await tx.asset.update({
+        where: { id },
+        data: {
+          status: 'assigned',
+          assignedToId: dto.userId,
+          assignedDate: new Date(),
+        },
+      });
 
       await tx.lifecycleEvent.create({
         data: {
           assetId: id,
           action: 'assigned',
           actorId: req.user?.sub,
-          metadata: { personId: dto.personId },
+          metadata: { userId: dto.userId },
         },
       });
 
@@ -153,7 +199,15 @@ export class AssetController {
         actorId: req.user?.sub,
       });
 
-      return assignment;
+      return {
+        success: true,
+        message: 'Asset assigned successfully',
+        assignment: {
+          assetId: id,
+          userId: dto.userId,
+          assignedDate: new Date(),
+        },
+      };
     });
   }
 
@@ -161,28 +215,41 @@ export class AssetController {
   @Roles('operator', 'admin')
   async unassign(@Req() req: any, @Param('id', new ParseUUIDPipe()) id: string) {
     return withTx(async (tx) => {
+      const asset = await tx.asset.findUnique({ where: { id } });
+      
+      if (!asset?.assignedToId) {
+        return { success: true, message: 'No active assignment' };
+      }
+
+      // Mark assignment record as complete
       const active = await tx.assetAssignment.findFirst({
         where: { assetId: id, unassignedAt: null },
         orderBy: { assignedAt: 'desc' },
       });
 
-      if (!active) {
-        return { ok: true, message: 'No active assignment' };
+      if (active) {
+        await tx.assetAssignment.update({
+          where: { id: active.id },
+          data: { unassignedAt: new Date() },
+        });
       }
 
-      await tx.assetAssignment.update({
-        where: { id: active.id },
-        data: { unassignedAt: new Date() },
+      // Update asset with flattened fields
+      await tx.asset.update({
+        where: { id },
+        data: {
+          status: 'available',
+          assignedToId: null,
+          assignedDate: null,
+        },
       });
-
-      await tx.asset.update({ where: { id }, data: { status: 'available' } });
 
       await tx.lifecycleEvent.create({
         data: {
           assetId: id,
           action: 'unassigned',
           actorId: req.user?.sub,
-          metadata: { personId: active.personId },
+          metadata: { userId: asset.assignedToId },
         },
       });
 
@@ -193,7 +260,111 @@ export class AssetController {
         actorId: req.user?.sub,
       });
 
-      return { ok: true };
+      return { success: true, message: 'Asset unassigned successfully' };
+    });
+  }
+
+  @Get('types')
+  @Roles('operator', 'admin')
+  async getAssetTypes(@Req() _req: any) {
+    return withTx(async (tx) => {
+      // Get all asset types with counts
+      const types = await tx.asset.groupBy({
+        by: ['type'],
+        _count: true,
+      });
+
+      return {
+        types: types.map((t) => ({
+          name: t.type,
+          count: t._count,
+        })),
+      };
+    });
+  }
+
+  @Get('user/:userId')
+  @Roles('operator', 'admin')
+  async getUserAssets(@Req() _req: any, @Param('userId') userId: string) {
+    return withTx(async (tx) => {
+      const assets = await tx.asset.findMany({
+        where: { assignedToId: userId },
+        include: {
+          assetType: true,
+        },
+      });
+
+      return { assets };
+    });
+  }
+
+  @Patch(':id')
+  @Roles('operator', 'admin')
+  async update(
+    @Req() req: any,
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: any, // Using any for flexibility with UpdateAssetDto
+  ) {
+    return withTx(async (tx) => {
+      const updateData: any = {};
+      
+      // Only update fields that are provided
+      if (dto.description !== undefined) updateData.description = dto.description;
+      if (dto.fundingDepartment !== undefined) updateData.fundingDepartment = dto.fundingDepartment;
+      if (dto.manufacturer !== undefined) updateData.manufacturer = dto.manufacturer;
+      if (dto.model !== undefined) updateData.model = dto.model;
+      if (dto.serialNumber !== undefined) updateData.serialNumber = dto.serialNumber;
+      if (dto.memory !== undefined) updateData.memory = dto.memory;
+      if (dto.hddSize !== undefined) updateData.hddSize = dto.hddSize;
+      if (dto.location !== undefined) updateData.location = dto.location;
+      if (dto.status !== undefined) updateData.status = dto.status;
+      if (dto.cost !== undefined) updateData.cost = dto.cost;
+      if (dto.po !== undefined) updateData.po = dto.po;
+
+      const asset = await tx.asset.update({
+        where: { id },
+        data: updateData,
+      });
+
+      await this.audit.log(tx, {
+        entity: 'asset',
+        entityId: id,
+        action: 'update',
+        actorId: req.user?.sub,
+        metadata: updateData,
+      });
+
+      return {
+        success: true,
+        asset,
+      };
+    });
+  }
+
+  @Delete(':id')
+  @Roles('admin')
+  async delete(@Req() req: any, @Param('id', new ParseUUIDPipe()) id: string) {
+    return withTx(async (tx) => {
+      const asset = await tx.asset.findUnique({ where: { id } });
+      
+      // Cannot delete assigned assets
+      if (asset?.assignedToId) {
+        throw new ConflictException('Cannot delete assigned asset');
+      }
+
+      await tx.asset.delete({ where: { id } });
+
+      await this.audit.log(tx, {
+        entity: 'asset',
+        entityId: id,
+        action: 'delete',
+        actorId: req.user?.sub,
+      });
+
+      return {
+        success: true,
+        message: 'Asset deleted successfully',
+      };
     });
   }
 }

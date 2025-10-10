@@ -1,0 +1,35 @@
+# Production values for Ticket Service
+
+image:
+  repository: gcr.io/YOUR_PROJECT_ID/ticket-svc  # UPDATE THIS
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+replicaCount: 2  # High availability
+
+service:
+  type: ClusterIP
+  port: 3002
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+secrets:
+  existingSecret: ticket-svc-secrets
+
+env:
+  NODE_ENV: "production"
+  PORT: "3002"
+  LOG_LEVEL: "info"
+

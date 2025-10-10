@@ -1,0 +1,33 @@
+replicaCount: 2
+
+image:
+  repository: reservation-svc
+  pullPolicy: Never
+  tag: "v1"
+
+service:
+  type: ClusterIP
+  port: 5003
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+env:
+  NODE_ENV: production
+  PORT: "5003"
+
+secrets:
+  databaseUrl: ""
+  jwtSecret: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+

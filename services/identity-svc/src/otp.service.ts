@@ -16,23 +16,17 @@ export class OTPService {
   /**
    * Request an OTP for a user (for login or registration)
    */
-  async requestOTP(prisma: PrismaClient, email: string): Promise<{ message: string }> {
-    // Find or create user
-    let user = await prisma.user.findUnique({ where: { email } });
+  async requestOTP(prisma: PrismaClient, email: string): Promise<{ success: boolean; message: string; expiresIn: number }> {
+    // Find user
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      // Create new user with OTP-only authentication (no password)
-      user = await prisma.user.create({
-        data: {
-          email,
-          password: null,  // OTP users don't have passwords
-          role: 'general',
-          isActive: true,
-        },
-      });
+      throw new UnauthorizedException('User not found');
+    }
 
-      // Send welcome email
-      await this.email.sendWelcomeEmail(email, user.name || '');
+    // Check if user is active
+    if (!user.isActive) {
+      throw new UnauthorizedException('Account is deactivated');
     }
 
     // Check if there's a recent unexpired OTP
@@ -51,7 +45,8 @@ export class OTPService {
 
     // Generate new OTP
     const otpCode = this.generateOTPCode();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    const expiresInSeconds = 300; // 5 minutes
+    const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
 
     // Save OTP to database
     await prisma.oTP.create({
@@ -67,7 +62,45 @@ export class OTPService {
     await this.email.sendOTP(email, otpCode);
 
     return {
-      message: 'OTP sent to your email',
+      success: true,
+      message: 'OTP sent to email',
+      expiresIn: expiresInSeconds,
+    };
+  }
+
+  /**
+   * Request OTP for operator/admin after password validation
+   * Used in two-factor authentication flow
+   */
+  async requestOTPForUser(prisma: PrismaClient, userId: string): Promise<{ success: boolean; message: string; expiresIn: number }> {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Generate new OTP
+    const otpCode = this.generateOTPCode();
+    const expiresInSeconds = 300; // 5 minutes
+    const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
+
+    // Save OTP to database
+    await prisma.oTP.create({
+      data: {
+        userId: user.id,
+        code: otpCode,
+        expiresAt,
+        used: false,
+      },
+    });
+
+    // Send OTP via email
+    await this.email.sendOTP(user.email, otpCode);
+
+    return {
+      success: true,
+      message: 'OTP sent to email',
+      expiresIn: expiresInSeconds,
     };
   }
 
@@ -117,6 +150,7 @@ export class OTPService {
       name: user.name,
       role: user.role,
       isActive: user.isActive,
+      createdAt: user.createdAt,
     };
   }
 

@@ -14,29 +14,6 @@ export enum ReservationStatus {
   cancelled = 'cancelled',
 }
 
-export class ReservationItemDto {
-  @ApiProperty({ description: 'Asset Type ID (from asset service)' })
-  @IsUUID()
-  assetTypeId!: string;
-
-  @ApiProperty({ description: 'Asset Type Name' })
-  @IsString()
-  @MaxLength(100)
-  assetTypeName!: string;
-
-  @ApiPropertyOptional({ description: 'Quantity needed', default: 1 })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  quantity?: number;
-
-  @ApiPropertyOptional({ description: 'Notes for this item' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  notes?: string;
-}
-
 export class CreateReservationDto {
   @ApiPropertyOptional({ description: 'Requester email (for unauthenticated)' })
   @IsOptional()
@@ -49,19 +26,28 @@ export class CreateReservationDto {
   @MaxLength(200)
   requesterName?: string;
 
+  @ApiProperty({ description: 'Type of equipment to reserve (e.g., Laptop, Projector)' })
+  @IsString()
+  @MaxLength(100)
+  equipmentType!: string;
+
+  @ApiProperty({ description: 'Quantity needed', default: 1 })
+  @IsInt()
+  @Min(1)
+  quantity!: number;
+
+  @ApiProperty({ description: 'Purpose of reservation' })
+  @IsString()
+  @MaxLength(500)
+  purpose!: string;
+
   @ApiProperty({ description: 'When user wants to pick up equipment', example: '2025-10-15T10:00:00Z' })
   @IsDateString()
   requestDate!: string;
 
-  @ApiProperty({ description: 'Expected return date', example: '2025-10-20T17:00:00Z' })
+  @ApiProperty({ description: 'Expected return date (max 14 days from request)', example: '2025-10-20T17:00:00Z' })
   @IsDateString()
   returnDate!: string;
-
-  @ApiProperty({ description: 'Items to reserve', type: [ReservationItemDto] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ReservationItemDto)
-  items!: ReservationItemDto[];
 
   @ApiPropertyOptional({ description: 'Additional notes' })
   @IsOptional()
@@ -71,9 +57,9 @@ export class CreateReservationDto {
 }
 
 export class ApproveReservationDto {
-  @ApiProperty({ description: 'Asset IDs to assign to reservation items (in order)', type: [String] })
+  @ApiProperty({ description: 'Asset IDs to assign (comma-separated or array)', type: [String] })
   @IsArray()
-  @IsUUID('4', { each: true })
+  @IsString({ each: true })
   assetIds!: string[];
 
   @ApiPropertyOptional({ description: 'Notes from approver' })
@@ -81,6 +67,13 @@ export class ApproveReservationDto {
   @IsString()
   @MaxLength(1000)
   notes?: string;
+}
+
+export class CancelReservationDto {
+  @ApiProperty({ description: 'Reason for cancellation' })
+  @IsString()
+  @MaxLength(500)
+  reason!: string;
 }
 
 export class DenyReservationDto {

@@ -6,15 +6,15 @@ import { ApiBearerAuth, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { Roles } from './auth/roles.decorator';
 import { withTx } from './with-tenant';
 
-@ApiTags('analytics')
+@ApiTags('tickets')
 @ApiBearerAuth()
-@Controller('analytics')
+@Controller('tickets')
 export class AnalyticsController {
   /**
    * Get ticket health metrics (Operator/Admin only)
    */
   @Roles('operator', 'admin')
-  @Get('/tickets')
+  @Get('analytics')
   @ApiQuery({ name: 'days', required: false, description: 'Number of days to analyze (default 30)' })
   async getTicketHealth(@Query('days') days?: string) {
     const dayCount = parseInt(days || '30', 10);
@@ -154,7 +154,7 @@ export class AnalyticsController {
    * Get ticket status distribution
    */
   @Roles('operator', 'admin')
-  @Get('/tickets/status-distribution')
+  @Get('analytics/status-distribution')
   async getStatusDistribution() {
     return withTx(async (tx) => {
       const tickets = await tx.ticket.groupBy({
@@ -173,7 +173,7 @@ export class AnalyticsController {
    * Get recent ticket activity
    */
   @Roles('operator', 'admin')
-  @Get('/tickets/recent-activity')
+  @Get('analytics/recent-activity')
   @ApiQuery({ name: 'limit', required: false, description: 'Number of records (default 10)' })
   async getRecentActivity(@Query('limit') limit?: string) {
     const take = Math.min(parseInt(limit || '10', 10), 50);

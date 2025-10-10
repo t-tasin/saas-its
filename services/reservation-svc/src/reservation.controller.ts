@@ -10,16 +10,20 @@ import { withTx } from './with-tenant';
 import { Public } from './auth/public.decorator';
 import { Roles } from './auth/roles.decorator';
 import { ReservationService } from './reservation.service';
+import { ReservationNumberService } from './reservation-number.service';
 import {
   CreateReservationDto, ApproveReservationDto, DenyReservationDto,
-  ReturnReservationDto, ListReservationsQueryDto,
+  ReturnReservationDto, ListReservationsQueryDto, CancelReservationDto,
 } from './dto/reservation.dto';
 
 @ApiTags('reservations')
 @ApiBearerAuth()
 @Controller()
 export class ReservationController {
-  constructor(private readonly reservationService: ReservationService) {}
+  constructor(
+    private readonly reservationService: ReservationService,
+    private readonly reservationNumberService: ReservationNumberService,
+  ) {}
 
   /**
    * Create reservation request (public - anyone can request)
@@ -33,21 +37,46 @@ export class ReservationController {
       // Validate dates
       const requestDate = new Date(dto.requestDate);
       const returnDate = new Date(dto.returnDate);
+      const now = new Date();
       
       if (requestDate >= returnDate) {
         throw new BadRequestException('Return date must be after request date');
       }
       
-      if (requestDate < new Date()) {
+      if (requestDate < now) {
         throw new BadRequestException('Request date must be in the future');
       }
 
-      // Create reservation
+      // Validate 14-day maximum duration
+      const daysDiff = Math.ceil((returnDate.getTime() - requestDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysDiff > 14) {
+        throw new BadRequestException('Return date must be within 14 days of requested date');
+      }
+
+      // Check equipment availability
+      const available = await this.reservationService.checkAvailability(
+        dto.equipmentType,
+        requestDate,
+        returnDate
+      );
+
+      if (available < dto.quantity) {
+        throw new BadRequestException('Insufficient equipment available for requested dates');
+      }
+
+      // Generate reservation number
+      const reservationNumber = await this.reservationNumberService.next(tx);
+
+      // Create reservation (simplified - no items array)
       const reservation = await tx.reservation.create({
         data: {
+          reservationNumber,
           requesterId: user?.sub || 'anonymous',
-          requesterEmail: dto.requesterEmail,
-          requesterName: dto.requesterName,
+          requesterEmail: dto.requesterEmail || user?.email || null,
+          requesterName: dto.requesterName || user?.name || null,
+          equipmentType: dto.equipmentType,
+          quantity: dto.quantity,
+          purpose: dto.purpose,
           requestDate,
           returnDate,
           notes: dto.notes,
@@ -55,34 +84,7 @@ export class ReservationController {
         },
       });
 
-      // Create reservation items
-      const items = await Promise.all(
-        dto.items.map((item) =>
-          tx.reservationItem.create({
-            data: {
-              reservationId: reservation.id,
-              assetTypeId: item.assetTypeId,
-              assetTypeName: item.assetTypeName,
-              quantity: item.quantity || 1,
-              notes: item.notes,
-              status: 'pending',
-            },
-          })
-        )
-      );
-
-      // Ensure availability records exist
-      for (const item of dto.items) {
-        await this.reservationService.updateAvailability(
-          item.assetTypeId,
-          item.assetTypeName
-        );
-      }
-
-      return {
-        ...reservation,
-        items,
-      };
+      return reservation;
     });
   }
 
@@ -118,9 +120,7 @@ export class ReservationController {
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take,
         ...(cursorObj ? { skip: 1, cursor: { id: cursorObj.id } } : {}),
-        include: {
-          items: true,
-        },
+        // No items include - simplified schema
       });
 
       const nextCursor =
@@ -145,9 +145,7 @@ export class ReservationController {
     return withTx(async (tx) => {
       const reservation = await tx.reservation.findUnique({
         where: { id },
-        include: {
-          items: true,
-        },
+        // No items include - simplified schema
       });
 
       if (!reservation) {
@@ -180,7 +178,6 @@ export class ReservationController {
     return withTx(async (tx) => {
       const reservation = await tx.reservation.findUnique({
         where: { id },
-        include: { items: true },
       });
 
       if (!reservation) {
@@ -191,40 +188,29 @@ export class ReservationController {
         throw new BadRequestException('Reservation is not pending');
       }
 
-      if (dto.assetIds.length !== reservation.items.length) {
+      if (dto.assetIds.length !== reservation.quantity) {
         throw new BadRequestException(
-          `Must provide ${reservation.items.length} asset IDs`
+          `Must provide ${reservation.quantity} asset IDs`
         );
       }
 
-      // Update reservation status
+      // Update reservation status with assigned assets
       const updated = await tx.reservation.update({
         where: { id },
         data: {
           status: 'approved',
           approvedBy: req.user.sub,
           approvedDate: new Date(),
+          assignedAssetIds: dto.assetIds.join(','), // Store as comma-separated
           notes: dto.notes || reservation.notes,
         },
       });
 
-      // Assign assets to items
-      await Promise.all(
-        reservation.items.map((item, index) =>
-          tx.reservationItem.update({
-            where: { id: item.id },
-            data: {
-              assetId: dto.assetIds[index],
-              status: 'approved',
-            },
-          })
-        )
-      );
-
-      return tx.reservation.findUnique({
-        where: { id },
-        include: { items: true },
-      });
+      return {
+        success: true,
+        message: 'Reservation approved successfully',
+        reservation: updated,
+      };
     });
   }
 
@@ -252,24 +238,13 @@ export class ReservationController {
       }
 
       // Update reservation
-      const updated = await tx.reservation.update({
+      return tx.reservation.update({
         where: { id },
         data: {
           status: 'denied',
           deniedBy: req.user.sub,
           denialReason: dto.reason,
         },
-      });
-
-      // Update all items
-      await tx.reservationItem.updateMany({
-        where: { reservationId: id },
-        data: { status: 'denied' },
-      });
-
-      return tx.reservation.findUnique({
-        where: { id },
-        include: { items: true },
       });
     });
   }
@@ -293,19 +268,9 @@ export class ReservationController {
         throw new BadRequestException('Reservation must be approved first');
       }
 
-      const updated = await tx.reservation.update({
+      return tx.reservation.update({
         where: { id },
         data: { status: 'active' },
-      });
-
-      await tx.reservationItem.updateMany({
-        where: { reservationId: id },
-        data: { status: 'active' },
-      });
-
-      return tx.reservation.findUnique({
-        where: { id },
-        include: { items: true },
       });
     });
   }
@@ -341,24 +306,18 @@ export class ReservationController {
           notes: dto.notes || reservation.notes,
         },
       });
-
-      await tx.reservationItem.updateMany({
-        where: { reservationId: id },
-        data: { status: 'returned' },
-      });
-
-      return tx.reservation.findUnique({
-        where: { id },
-        include: { items: true },
-      });
     });
   }
 
   /**
-   * Cancel reservation (user can cancel their own pending reservations)
+   * Cancel reservation (user can cancel their own pending/approved reservations)
    */
   @Post('/reservations/:id/cancel')
-  async cancelReservation(@Req() req: any, @Param('id', ParseUUIDPipe) id: string) {
+  async cancelReservation(
+    @Req() req: any,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CancelReservationDto,
+  ) {
     return withTx(async (tx) => {
       const reservation = await tx.reservation.findUnique({
         where: { id },
@@ -377,24 +336,24 @@ export class ReservationController {
         }
       }
 
-      if (reservation.status !== 'pending') {
-        throw new BadRequestException('Can only cancel pending reservations');
+      if (reservation.status !== 'pending' && reservation.status !== 'approved') {
+        throw new BadRequestException('Can only cancel pending or approved reservations');
       }
 
       const updated = await tx.reservation.update({
         where: { id },
-        data: { status: 'cancelled' },
+        data: {
+          status: 'cancelled',
+          cancelledAt: new Date(),
+          cancellationReason: dto.reason,
+        },
       });
 
-      await tx.reservationItem.updateMany({
-        where: { reservationId: id },
-        data: { status: 'cancelled' },
-      });
-
-      return tx.reservation.findUnique({
-        where: { id },
-        include: { items: true },
-      });
+      return {
+        success: true,
+        message: 'Reservation cancelled',
+        reservation: updated,
+      };
     });
   }
 

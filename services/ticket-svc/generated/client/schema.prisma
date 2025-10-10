@@ -32,7 +32,7 @@ enum TicketPriority {
 
 model Ticket {
   id              String         @id @default(uuid())
-  number          String         @unique // YYMMDD-#### globally unique
+  number          String         @unique // TKT-YYYY-NNNNNN globally unique
   title           String
   description     String?
   type            TicketType     @default(incident)
@@ -40,10 +40,15 @@ model Ticket {
   priority        TicketPriority @default(medium)
   requestedBy     String? // email or name for general users (no login)
   requestedByUser String? // user ID if authenticated
+  requesterName   String? // Separate field for requester name
+  requesterEmail  String? // Separate field for requester email
   assignedTo      String? // operator/admin user ID
   categoryId      String?
   subcategoryId   String?
   targetDate      DateTime? // SLA target
+  resolvedAt      DateTime? // When ticket was resolved
+  closedAt        DateTime? // When ticket was closed
+  attachments     Json?          @default("[]") // Array of {id, key, filename, size, contentType, uploadedAt, uploadedBy}
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
@@ -62,6 +67,7 @@ model TicketComment {
   ticketId   String
   authorId   String? // user ID if authenticated
   authorName String? // name for unauthenticated comments
+  authorRole String? // Role of the author (general, operator, admin)
   body       String
   createdAt  DateTime @default(now())
 

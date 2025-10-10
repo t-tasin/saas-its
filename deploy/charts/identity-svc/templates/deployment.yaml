@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.port }}
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: {{ .Values.env.NODE_ENV | quote }}
+        - name: PORT
+          value: {{ .Values.env.PORT | quote }}
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: identity-svc-secrets
+              key: databaseUrl
+        - name: SHADOW_DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: identity-svc-secrets
+              key: databaseUrl
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: identity-svc-secrets
+              key: jwtSecret
+        - name: JWT_REFRESH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: identity-svc-secrets
+              key: jwtRefreshSecret
+        - name: SMTP_HOST
+          valueFrom:
+            secretKeyRef:
+              name: identity-svc-secrets
+              key: smtpHost
+        - name: SMTP_PORT
+          valueFrom:
+            secretKeyRef:
+              name: identity-svc-secrets
+              key: smtpPort
+        - name: SMTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: identity-svc-secrets
+              key: smtpUser
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: identity-svc-secrets
+              key: smtpPassword
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        livenessProbe:
+          httpGet:
+            path: /v1/health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /v1/health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+

@@ -28,15 +28,15 @@ async function main() {
 
     // Create assets
     const assets = [
-      { assetTag: 'MBP-001', assetTypeId: laptop.id, summary: 'MacBook Pro 14', status: 'available' as const },
-      { assetTag: 'MBP-002', assetTypeId: laptop.id, summary: 'MacBook Pro 16', status: 'available' as const },
-      { assetTag: 'IP-011', assetTypeId: phone.id, summary: 'iPhone 15', status: 'available' as const },
-      { assetTag: 'MN-005', assetTypeId: monitor.id, summary: 'Dell 27"', status: 'available' as const },
+      { assetId: 'MBP-001', assetTypeId: laptop.id, type: 'Laptop', description: 'MacBook Pro 14', fundingDepartment: 'IT', status: 'available' as const },
+      { assetId: 'MBP-002', assetTypeId: laptop.id, type: 'Laptop', description: 'MacBook Pro 16', fundingDepartment: 'IT', status: 'available' as const },
+      { assetId: 'IP-011', assetTypeId: phone.id, type: 'Phone', description: 'iPhone 15', fundingDepartment: 'IT', status: 'available' as const },
+      { assetId: 'MN-005', assetTypeId: monitor.id, type: 'Monitor', description: 'Dell 27"', fundingDepartment: 'IT', status: 'available' as const },
     ];
 
     for (const assetData of assets) {
       await tx.asset.upsert({
-        where: { assetTag: assetData.assetTag },
+        where: { assetId: assetData.assetId },
         update: {},
         create: assetData,
       });

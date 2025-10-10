@@ -26,6 +26,11 @@ export class RegisterDto {
   @IsString()
   @MaxLength(200)
   name?: string;
+
+  @ApiPropertyOptional({ example: 'general', enum: UserRole })
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole;
 }
 
 export class LoginDto {
@@ -106,6 +111,43 @@ export class VerifyOTPDto {
   @IsString()
   @MinLength(6)
   @MaxLength(6)
-  code!: string;
+  otp!: string;
+
+  @ApiPropertyOptional({ description: 'Temporary token for operator/admin two-factor auth' })
+  @IsOptional()
+  @IsString()
+  tempToken?: string;
+}
+
+// Response DTOs
+export class OTPResponseDto {
+  success!: boolean;
+  message!: string;
+  expiresIn!: number;
+}
+
+export class LoginResponseDto {
+  success!: boolean;
+  message!: string;
+  tempToken!: string;
+  expiresIn!: number;
+}
+
+export class VerifyOTPResponseDto {
+  success!: boolean;
+  token!: string;
+  user!: {
+    id: string;
+    email: string;
+    name: string | null;
+    role: string;
+    createdAt: Date;
+  };
+}
+
+export class RegisterResponseDto {
+  success!: boolean;
+  message!: string;
+  userId!: string;
 }
 

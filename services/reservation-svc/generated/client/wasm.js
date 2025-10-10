@@ -124,31 +124,27 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.ReservationScalarFieldEnum = {
   id: 'id',
+  reservationNumber: 'reservationNumber',
   requesterId: 'requesterId',
   requesterEmail: 'requesterEmail',
   requesterName: 'requesterName',
+  equipmentType: 'equipmentType',
+  quantity: 'quantity',
+  purpose: 'purpose',
   status: 'status',
   requestDate: 'requestDate',
-  approvedDate: 'approvedDate',
   returnDate: 'returnDate',
   actualReturnDate: 'actualReturnDate',
+  approvedDate: 'approvedDate',
   approvedBy: 'approvedBy',
   deniedBy: 'deniedBy',
   denialReason: 'denialReason',
+  cancelledAt: 'cancelledAt',
+  cancellationReason: 'cancellationReason',
+  assignedAssetIds: 'assignedAssetIds',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ReservationItemScalarFieldEnum = {
-  id: 'id',
-  reservationId: 'reservationId',
-  assetTypeId: 'assetTypeId',
-  assetTypeName: 'assetTypeName',
-  assetId: 'assetId',
-  quantity: 'quantity',
-  status: 'status',
-  notes: 'notes'
 };
 
 exports.Prisma.EquipmentAvailabilityScalarFieldEnum = {
@@ -208,7 +204,6 @@ exports.ReservationStatus = exports.$Enums.ReservationStatus = {
 
 exports.Prisma.ModelName = {
   Reservation: 'Reservation',
-  ReservationItem: 'ReservationItem',
   EquipmentAvailability: 'EquipmentAvailability',
   AuditLog: 'AuditLog'
 };

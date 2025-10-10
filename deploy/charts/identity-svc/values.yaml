@@ -1,0 +1,42 @@
+replicaCount: 2
+
+image:
+  repository: identity-svc
+  pullPolicy: Never  # Use Never for local Minikube images
+  tag: "v1"
+
+service:
+  type: ClusterIP
+  port: 3000
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+env:
+  NODE_ENV: production
+  PORT: "3000"
+  # Database URL will be injected from secret
+  # JWT_SECRET will be injected from secret
+  # SMTP settings will be injected from secret
+
+secrets:
+  # These will be created separately in Kubernetes
+  databaseUrl: ""  # From Neon PostgreSQL
+  jwtSecret: ""
+  jwtRefreshSecret: ""
+  smtpHost: ""
+  smtpPort: ""
+  smtpUser: ""
+  smtpPassword: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+

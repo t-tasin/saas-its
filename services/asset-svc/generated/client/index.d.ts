@@ -2206,76 +2206,244 @@ export namespace Prisma {
 
   export type AggregateAsset = {
     _count: AssetCountAggregateOutputType | null
+    _avg: AssetAvgAggregateOutputType | null
+    _sum: AssetSumAggregateOutputType | null
     _min: AssetMinAggregateOutputType | null
     _max: AssetMaxAggregateOutputType | null
   }
 
+  export type AssetAvgAggregateOutputType = {
+    cost: number | null
+  }
+
+  export type AssetSumAggregateOutputType = {
+    cost: number | null
+  }
+
   export type AssetMinAggregateOutputType = {
     id: string | null
-    assetTag: string | null
-    assetTypeId: string | null
-    summary: string | null
+    assetId: string | null
+    type: string | null
+    description: string | null
+    fundingDepartment: string | null
+    manufacturer: string | null
+    model: string | null
+    modelGeneration: string | null
+    serialNumber: string | null
+    vendor: string | null
+    memory: string | null
+    hddSize: string | null
+    hddType: string | null
+    cpuGeneration: string | null
+    cpuSpeed: string | null
+    gpuModel: string | null
+    videoCard: string | null
+    wiredMac: string | null
+    wirelessMac: string | null
+    output1: string | null
+    output2: string | null
+    receivedDate: Date | null
+    cost: number | null
+    po: string | null
+    disposalDate: Date | null
+    disposalType: string | null
     location: string | null
     status: $Enums.AssetStatus | null
+    assignedToId: string | null
+    assignedDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    assetTypeId: string | null
   }
 
   export type AssetMaxAggregateOutputType = {
     id: string | null
-    assetTag: string | null
-    assetTypeId: string | null
-    summary: string | null
+    assetId: string | null
+    type: string | null
+    description: string | null
+    fundingDepartment: string | null
+    manufacturer: string | null
+    model: string | null
+    modelGeneration: string | null
+    serialNumber: string | null
+    vendor: string | null
+    memory: string | null
+    hddSize: string | null
+    hddType: string | null
+    cpuGeneration: string | null
+    cpuSpeed: string | null
+    gpuModel: string | null
+    videoCard: string | null
+    wiredMac: string | null
+    wirelessMac: string | null
+    output1: string | null
+    output2: string | null
+    receivedDate: Date | null
+    cost: number | null
+    po: string | null
+    disposalDate: Date | null
+    disposalType: string | null
     location: string | null
     status: $Enums.AssetStatus | null
+    assignedToId: string | null
+    assignedDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
+    assetTypeId: string | null
   }
 
   export type AssetCountAggregateOutputType = {
     id: number
-    assetTag: number
-    assetTypeId: number
-    summary: number
+    assetId: number
+    type: number
+    description: number
+    fundingDepartment: number
+    manufacturer: number
+    model: number
+    modelGeneration: number
+    serialNumber: number
+    vendor: number
+    memory: number
+    hddSize: number
+    hddType: number
+    cpuGeneration: number
+    cpuSpeed: number
+    gpuModel: number
+    videoCard: number
+    wiredMac: number
+    wirelessMac: number
+    output1: number
+    output2: number
+    receivedDate: number
+    cost: number
+    po: number
+    disposalDate: number
+    disposalType: number
     location: number
     status: number
+    assignedToId: number
+    assignedDate: number
     createdAt: number
     updatedAt: number
+    assetTypeId: number
     _all: number
   }
 
 
+  export type AssetAvgAggregateInputType = {
+    cost?: true
+  }
+
+  export type AssetSumAggregateInputType = {
+    cost?: true
+  }
+
   export type AssetMinAggregateInputType = {
     id?: true
-    assetTag?: true
-    assetTypeId?: true
-    summary?: true
+    assetId?: true
+    type?: true
+    description?: true
+    fundingDepartment?: true
+    manufacturer?: true
+    model?: true
+    modelGeneration?: true
+    serialNumber?: true
+    vendor?: true
+    memory?: true
+    hddSize?: true
+    hddType?: true
+    cpuGeneration?: true
+    cpuSpeed?: true
+    gpuModel?: true
+    videoCard?: true
+    wiredMac?: true
+    wirelessMac?: true
+    output1?: true
+    output2?: true
+    receivedDate?: true
+    cost?: true
+    po?: true
+    disposalDate?: true
+    disposalType?: true
     location?: true
     status?: true
+    assignedToId?: true
+    assignedDate?: true
     createdAt?: true
     updatedAt?: true
+    assetTypeId?: true
   }
 
   export type AssetMaxAggregateInputType = {
     id?: true
-    assetTag?: true
-    assetTypeId?: true
-    summary?: true
+    assetId?: true
+    type?: true
+    description?: true
+    fundingDepartment?: true
+    manufacturer?: true
+    model?: true
+    modelGeneration?: true
+    serialNumber?: true
+    vendor?: true
+    memory?: true
+    hddSize?: true
+    hddType?: true
+    cpuGeneration?: true
+    cpuSpeed?: true
+    gpuModel?: true
+    videoCard?: true
+    wiredMac?: true
+    wirelessMac?: true
+    output1?: true
+    output2?: true
+    receivedDate?: true
+    cost?: true
+    po?: true
+    disposalDate?: true
+    disposalType?: true
     location?: true
     status?: true
+    assignedToId?: true
+    assignedDate?: true
     createdAt?: true
     updatedAt?: true
+    assetTypeId?: true
   }
 
   export type AssetCountAggregateInputType = {
     id?: true
-    assetTag?: true
-    assetTypeId?: true
-    summary?: true
+    assetId?: true
+    type?: true
+    description?: true
+    fundingDepartment?: true
+    manufacturer?: true
+    model?: true
+    modelGeneration?: true
+    serialNumber?: true
+    vendor?: true
+    memory?: true
+    hddSize?: true
+    hddType?: true
+    cpuGeneration?: true
+    cpuSpeed?: true
+    gpuModel?: true
+    videoCard?: true
+    wiredMac?: true
+    wirelessMac?: true
+    output1?: true
+    output2?: true
+    receivedDate?: true
+    cost?: true
+    po?: true
+    disposalDate?: true
+    disposalType?: true
     location?: true
     status?: true
+    assignedToId?: true
+    assignedDate?: true
     createdAt?: true
     updatedAt?: true
+    assetTypeId?: true
     _all?: true
   }
 
@@ -2317,6 +2485,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: AssetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AssetSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AssetMinAggregateInputType
@@ -2347,20 +2527,49 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: AssetCountAggregateInputType | true
+    _avg?: AssetAvgAggregateInputType
+    _sum?: AssetSumAggregateInputType
     _min?: AssetMinAggregateInputType
     _max?: AssetMaxAggregateInputType
   }
 
   export type AssetGroupByOutputType = {
     id: string
-    assetTag: string
-    assetTypeId: string
-    summary: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer: string | null
+    model: string | null
+    modelGeneration: string | null
+    serialNumber: string | null
+    vendor: string | null
+    memory: string | null
+    hddSize: string | null
+    hddType: string | null
+    cpuGeneration: string | null
+    cpuSpeed: string | null
+    gpuModel: string | null
+    videoCard: string | null
+    wiredMac: string | null
+    wirelessMac: string | null
+    output1: string | null
+    output2: string | null
+    receivedDate: Date | null
+    cost: number | null
+    po: string | null
+    disposalDate: Date | null
+    disposalType: string | null
     location: string | null
     status: $Enums.AssetStatus
+    assignedToId: string | null
+    assignedDate: Date | null
     createdAt: Date
     updatedAt: Date
+    assetTypeId: string | null
     _count: AssetCountAggregateOutputType | null
+    _avg: AssetAvgAggregateOutputType | null
+    _sum: AssetSumAggregateOutputType | null
     _min: AssetMinAggregateOutputType | null
     _max: AssetMaxAggregateOutputType | null
   }
@@ -2381,14 +2590,39 @@ export namespace Prisma {
 
   export type AssetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    assetTag?: boolean
-    assetTypeId?: boolean
-    summary?: boolean
+    assetId?: boolean
+    type?: boolean
+    description?: boolean
+    fundingDepartment?: boolean
+    manufacturer?: boolean
+    model?: boolean
+    modelGeneration?: boolean
+    serialNumber?: boolean
+    vendor?: boolean
+    memory?: boolean
+    hddSize?: boolean
+    hddType?: boolean
+    cpuGeneration?: boolean
+    cpuSpeed?: boolean
+    gpuModel?: boolean
+    videoCard?: boolean
+    wiredMac?: boolean
+    wirelessMac?: boolean
+    output1?: boolean
+    output2?: boolean
+    receivedDate?: boolean
+    cost?: boolean
+    po?: boolean
+    disposalDate?: boolean
+    disposalType?: boolean
     location?: boolean
     status?: boolean
+    assignedToId?: boolean
+    assignedDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    assetType?: boolean | AssetTypeDefaultArgs<ExtArgs>
+    assetTypeId?: boolean
+    assetType?: boolean | Asset$assetTypeArgs<ExtArgs>
     assignments?: boolean | Asset$assignmentsArgs<ExtArgs>
     lifecycle?: boolean | Asset$lifecycleArgs<ExtArgs>
     _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
@@ -2396,53 +2630,128 @@ export namespace Prisma {
 
   export type AssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    assetTag?: boolean
-    assetTypeId?: boolean
-    summary?: boolean
+    assetId?: boolean
+    type?: boolean
+    description?: boolean
+    fundingDepartment?: boolean
+    manufacturer?: boolean
+    model?: boolean
+    modelGeneration?: boolean
+    serialNumber?: boolean
+    vendor?: boolean
+    memory?: boolean
+    hddSize?: boolean
+    hddType?: boolean
+    cpuGeneration?: boolean
+    cpuSpeed?: boolean
+    gpuModel?: boolean
+    videoCard?: boolean
+    wiredMac?: boolean
+    wirelessMac?: boolean
+    output1?: boolean
+    output2?: boolean
+    receivedDate?: boolean
+    cost?: boolean
+    po?: boolean
+    disposalDate?: boolean
+    disposalType?: boolean
     location?: boolean
     status?: boolean
+    assignedToId?: boolean
+    assignedDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    assetType?: boolean | AssetTypeDefaultArgs<ExtArgs>
+    assetTypeId?: boolean
+    assetType?: boolean | Asset$assetTypeArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
 
   export type AssetSelectScalar = {
     id?: boolean
-    assetTag?: boolean
-    assetTypeId?: boolean
-    summary?: boolean
+    assetId?: boolean
+    type?: boolean
+    description?: boolean
+    fundingDepartment?: boolean
+    manufacturer?: boolean
+    model?: boolean
+    modelGeneration?: boolean
+    serialNumber?: boolean
+    vendor?: boolean
+    memory?: boolean
+    hddSize?: boolean
+    hddType?: boolean
+    cpuGeneration?: boolean
+    cpuSpeed?: boolean
+    gpuModel?: boolean
+    videoCard?: boolean
+    wiredMac?: boolean
+    wirelessMac?: boolean
+    output1?: boolean
+    output2?: boolean
+    receivedDate?: boolean
+    cost?: boolean
+    po?: boolean
+    disposalDate?: boolean
+    disposalType?: boolean
     location?: boolean
     status?: boolean
+    assignedToId?: boolean
+    assignedDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    assetTypeId?: boolean
   }
 
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    assetType?: boolean | AssetTypeDefaultArgs<ExtArgs>
+    assetType?: boolean | Asset$assetTypeArgs<ExtArgs>
     assignments?: boolean | Asset$assignmentsArgs<ExtArgs>
     lifecycle?: boolean | Asset$lifecycleArgs<ExtArgs>
     _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    assetType?: boolean | AssetTypeDefaultArgs<ExtArgs>
+    assetType?: boolean | Asset$assetTypeArgs<ExtArgs>
   }
 
   export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Asset"
     objects: {
-      assetType: Prisma.$AssetTypePayload<ExtArgs>
+      assetType: Prisma.$AssetTypePayload<ExtArgs> | null
       assignments: Prisma.$AssetAssignmentPayload<ExtArgs>[]
       lifecycle: Prisma.$LifecycleEventPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      assetTag: string
-      assetTypeId: string
-      summary: string | null
+      assetId: string
+      type: string
+      description: string
+      fundingDepartment: string
+      manufacturer: string | null
+      model: string | null
+      modelGeneration: string | null
+      serialNumber: string | null
+      vendor: string | null
+      memory: string | null
+      hddSize: string | null
+      hddType: string | null
+      cpuGeneration: string | null
+      cpuSpeed: string | null
+      gpuModel: string | null
+      videoCard: string | null
+      wiredMac: string | null
+      wirelessMac: string | null
+      output1: string | null
+      output2: string | null
+      receivedDate: Date | null
+      cost: number | null
+      po: string | null
+      disposalDate: Date | null
+      disposalType: string | null
       location: string | null
       status: $Enums.AssetStatus
+      assignedToId: string | null
+      assignedDate: Date | null
       createdAt: Date
       updatedAt: Date
+      assetTypeId: string | null
     }, ExtArgs["result"]["asset"]>
     composites: {}
   }
@@ -2807,7 +3116,7 @@ export namespace Prisma {
    */
   export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    assetType<T extends AssetTypeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetTypeDefaultArgs<ExtArgs>>): Prisma__AssetTypeClient<$Result.GetResult<Prisma.$AssetTypePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    assetType<T extends Asset$assetTypeArgs<ExtArgs> = {}>(args?: Subset<T, Asset$assetTypeArgs<ExtArgs>>): Prisma__AssetTypeClient<$Result.GetResult<Prisma.$AssetTypePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     assignments<T extends Asset$assignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetAssignmentPayload<ExtArgs>, T, "findMany"> | Null>
     lifecycle<T extends Asset$lifecycleArgs<ExtArgs> = {}>(args?: Subset<T, Asset$lifecycleArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LifecycleEventPayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -2840,13 +3149,38 @@ export namespace Prisma {
    */ 
   interface AssetFieldRefs {
     readonly id: FieldRef<"Asset", 'String'>
-    readonly assetTag: FieldRef<"Asset", 'String'>
-    readonly assetTypeId: FieldRef<"Asset", 'String'>
-    readonly summary: FieldRef<"Asset", 'String'>
+    readonly assetId: FieldRef<"Asset", 'String'>
+    readonly type: FieldRef<"Asset", 'String'>
+    readonly description: FieldRef<"Asset", 'String'>
+    readonly fundingDepartment: FieldRef<"Asset", 'String'>
+    readonly manufacturer: FieldRef<"Asset", 'String'>
+    readonly model: FieldRef<"Asset", 'String'>
+    readonly modelGeneration: FieldRef<"Asset", 'String'>
+    readonly serialNumber: FieldRef<"Asset", 'String'>
+    readonly vendor: FieldRef<"Asset", 'String'>
+    readonly memory: FieldRef<"Asset", 'String'>
+    readonly hddSize: FieldRef<"Asset", 'String'>
+    readonly hddType: FieldRef<"Asset", 'String'>
+    readonly cpuGeneration: FieldRef<"Asset", 'String'>
+    readonly cpuSpeed: FieldRef<"Asset", 'String'>
+    readonly gpuModel: FieldRef<"Asset", 'String'>
+    readonly videoCard: FieldRef<"Asset", 'String'>
+    readonly wiredMac: FieldRef<"Asset", 'String'>
+    readonly wirelessMac: FieldRef<"Asset", 'String'>
+    readonly output1: FieldRef<"Asset", 'String'>
+    readonly output2: FieldRef<"Asset", 'String'>
+    readonly receivedDate: FieldRef<"Asset", 'DateTime'>
+    readonly cost: FieldRef<"Asset", 'Float'>
+    readonly po: FieldRef<"Asset", 'String'>
+    readonly disposalDate: FieldRef<"Asset", 'DateTime'>
+    readonly disposalType: FieldRef<"Asset", 'String'>
     readonly location: FieldRef<"Asset", 'String'>
     readonly status: FieldRef<"Asset", 'AssetStatus'>
+    readonly assignedToId: FieldRef<"Asset", 'String'>
+    readonly assignedDate: FieldRef<"Asset", 'DateTime'>
     readonly createdAt: FieldRef<"Asset", 'DateTime'>
     readonly updatedAt: FieldRef<"Asset", 'DateTime'>
+    readonly assetTypeId: FieldRef<"Asset", 'String'>
   }
     
 
@@ -3162,6 +3496,21 @@ export namespace Prisma {
      * Filter which Assets to delete
      */
     where?: AssetWhereInput
+  }
+
+  /**
+   * Asset.assetType
+   */
+  export type Asset$assetTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssetType
+     */
+    select?: AssetTypeSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetTypeInclude<ExtArgs> | null
+    where?: AssetTypeWhereInput
   }
 
   /**
@@ -6016,13 +6365,38 @@ export namespace Prisma {
 
   export const AssetScalarFieldEnum: {
     id: 'id',
-    assetTag: 'assetTag',
-    assetTypeId: 'assetTypeId',
-    summary: 'summary',
+    assetId: 'assetId',
+    type: 'type',
+    description: 'description',
+    fundingDepartment: 'fundingDepartment',
+    manufacturer: 'manufacturer',
+    model: 'model',
+    modelGeneration: 'modelGeneration',
+    serialNumber: 'serialNumber',
+    vendor: 'vendor',
+    memory: 'memory',
+    hddSize: 'hddSize',
+    hddType: 'hddType',
+    cpuGeneration: 'cpuGeneration',
+    cpuSpeed: 'cpuSpeed',
+    gpuModel: 'gpuModel',
+    videoCard: 'videoCard',
+    wiredMac: 'wiredMac',
+    wirelessMac: 'wirelessMac',
+    output1: 'output1',
+    output2: 'output2',
+    receivedDate: 'receivedDate',
+    cost: 'cost',
+    po: 'po',
+    disposalDate: 'disposalDate',
+    disposalType: 'disposalType',
     location: 'location',
     status: 'status',
+    assignedToId: 'assignedToId',
+    assignedDate: 'assignedDate',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    assetTypeId: 'assetTypeId'
   };
 
   export type AssetScalarFieldEnum = (typeof AssetScalarFieldEnum)[keyof typeof AssetScalarFieldEnum]
@@ -6139,6 +6513,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'AssetStatus'
    */
   export type EnumAssetStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssetStatus'>
@@ -6226,27 +6614,77 @@ export namespace Prisma {
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
     id?: StringFilter<"Asset"> | string
-    assetTag?: StringFilter<"Asset"> | string
-    assetTypeId?: StringFilter<"Asset"> | string
-    summary?: StringNullableFilter<"Asset"> | string | null
+    assetId?: StringFilter<"Asset"> | string
+    type?: StringFilter<"Asset"> | string
+    description?: StringFilter<"Asset"> | string
+    fundingDepartment?: StringFilter<"Asset"> | string
+    manufacturer?: StringNullableFilter<"Asset"> | string | null
+    model?: StringNullableFilter<"Asset"> | string | null
+    modelGeneration?: StringNullableFilter<"Asset"> | string | null
+    serialNumber?: StringNullableFilter<"Asset"> | string | null
+    vendor?: StringNullableFilter<"Asset"> | string | null
+    memory?: StringNullableFilter<"Asset"> | string | null
+    hddSize?: StringNullableFilter<"Asset"> | string | null
+    hddType?: StringNullableFilter<"Asset"> | string | null
+    cpuGeneration?: StringNullableFilter<"Asset"> | string | null
+    cpuSpeed?: StringNullableFilter<"Asset"> | string | null
+    gpuModel?: StringNullableFilter<"Asset"> | string | null
+    videoCard?: StringNullableFilter<"Asset"> | string | null
+    wiredMac?: StringNullableFilter<"Asset"> | string | null
+    wirelessMac?: StringNullableFilter<"Asset"> | string | null
+    output1?: StringNullableFilter<"Asset"> | string | null
+    output2?: StringNullableFilter<"Asset"> | string | null
+    receivedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    cost?: FloatNullableFilter<"Asset"> | number | null
+    po?: StringNullableFilter<"Asset"> | string | null
+    disposalDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    disposalType?: StringNullableFilter<"Asset"> | string | null
     location?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetStatusFilter<"Asset"> | $Enums.AssetStatus
+    assignedToId?: StringNullableFilter<"Asset"> | string | null
+    assignedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     updatedAt?: DateTimeFilter<"Asset"> | Date | string
-    assetType?: XOR<AssetTypeRelationFilter, AssetTypeWhereInput>
+    assetTypeId?: StringNullableFilter<"Asset"> | string | null
+    assetType?: XOR<AssetTypeNullableRelationFilter, AssetTypeWhereInput> | null
     assignments?: AssetAssignmentListRelationFilter
     lifecycle?: LifecycleEventListRelationFilter
   }
 
   export type AssetOrderByWithRelationInput = {
     id?: SortOrder
-    assetTag?: SortOrder
-    assetTypeId?: SortOrder
-    summary?: SortOrderInput | SortOrder
+    assetId?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    fundingDepartment?: SortOrder
+    manufacturer?: SortOrderInput | SortOrder
+    model?: SortOrderInput | SortOrder
+    modelGeneration?: SortOrderInput | SortOrder
+    serialNumber?: SortOrderInput | SortOrder
+    vendor?: SortOrderInput | SortOrder
+    memory?: SortOrderInput | SortOrder
+    hddSize?: SortOrderInput | SortOrder
+    hddType?: SortOrderInput | SortOrder
+    cpuGeneration?: SortOrderInput | SortOrder
+    cpuSpeed?: SortOrderInput | SortOrder
+    gpuModel?: SortOrderInput | SortOrder
+    videoCard?: SortOrderInput | SortOrder
+    wiredMac?: SortOrderInput | SortOrder
+    wirelessMac?: SortOrderInput | SortOrder
+    output1?: SortOrderInput | SortOrder
+    output2?: SortOrderInput | SortOrder
+    receivedDate?: SortOrderInput | SortOrder
+    cost?: SortOrderInput | SortOrder
+    po?: SortOrderInput | SortOrder
+    disposalDate?: SortOrderInput | SortOrder
+    disposalType?: SortOrderInput | SortOrder
     location?: SortOrderInput | SortOrder
     status?: SortOrder
+    assignedToId?: SortOrderInput | SortOrder
+    assignedDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    assetTypeId?: SortOrderInput | SortOrder
     assetType?: AssetTypeOrderByWithRelationInput
     assignments?: AssetAssignmentOrderByRelationAggregateInput
     lifecycle?: LifecycleEventOrderByRelationAggregateInput
@@ -6254,33 +6692,85 @@ export namespace Prisma {
 
   export type AssetWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    assetTag?: string
+    assetId?: string
+    serialNumber?: string
     AND?: AssetWhereInput | AssetWhereInput[]
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
-    assetTypeId?: StringFilter<"Asset"> | string
-    summary?: StringNullableFilter<"Asset"> | string | null
+    type?: StringFilter<"Asset"> | string
+    description?: StringFilter<"Asset"> | string
+    fundingDepartment?: StringFilter<"Asset"> | string
+    manufacturer?: StringNullableFilter<"Asset"> | string | null
+    model?: StringNullableFilter<"Asset"> | string | null
+    modelGeneration?: StringNullableFilter<"Asset"> | string | null
+    vendor?: StringNullableFilter<"Asset"> | string | null
+    memory?: StringNullableFilter<"Asset"> | string | null
+    hddSize?: StringNullableFilter<"Asset"> | string | null
+    hddType?: StringNullableFilter<"Asset"> | string | null
+    cpuGeneration?: StringNullableFilter<"Asset"> | string | null
+    cpuSpeed?: StringNullableFilter<"Asset"> | string | null
+    gpuModel?: StringNullableFilter<"Asset"> | string | null
+    videoCard?: StringNullableFilter<"Asset"> | string | null
+    wiredMac?: StringNullableFilter<"Asset"> | string | null
+    wirelessMac?: StringNullableFilter<"Asset"> | string | null
+    output1?: StringNullableFilter<"Asset"> | string | null
+    output2?: StringNullableFilter<"Asset"> | string | null
+    receivedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    cost?: FloatNullableFilter<"Asset"> | number | null
+    po?: StringNullableFilter<"Asset"> | string | null
+    disposalDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    disposalType?: StringNullableFilter<"Asset"> | string | null
     location?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetStatusFilter<"Asset"> | $Enums.AssetStatus
+    assignedToId?: StringNullableFilter<"Asset"> | string | null
+    assignedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     updatedAt?: DateTimeFilter<"Asset"> | Date | string
-    assetType?: XOR<AssetTypeRelationFilter, AssetTypeWhereInput>
+    assetTypeId?: StringNullableFilter<"Asset"> | string | null
+    assetType?: XOR<AssetTypeNullableRelationFilter, AssetTypeWhereInput> | null
     assignments?: AssetAssignmentListRelationFilter
     lifecycle?: LifecycleEventListRelationFilter
-  }, "id" | "assetTag">
+  }, "id" | "assetId" | "serialNumber">
 
   export type AssetOrderByWithAggregationInput = {
     id?: SortOrder
-    assetTag?: SortOrder
-    assetTypeId?: SortOrder
-    summary?: SortOrderInput | SortOrder
+    assetId?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    fundingDepartment?: SortOrder
+    manufacturer?: SortOrderInput | SortOrder
+    model?: SortOrderInput | SortOrder
+    modelGeneration?: SortOrderInput | SortOrder
+    serialNumber?: SortOrderInput | SortOrder
+    vendor?: SortOrderInput | SortOrder
+    memory?: SortOrderInput | SortOrder
+    hddSize?: SortOrderInput | SortOrder
+    hddType?: SortOrderInput | SortOrder
+    cpuGeneration?: SortOrderInput | SortOrder
+    cpuSpeed?: SortOrderInput | SortOrder
+    gpuModel?: SortOrderInput | SortOrder
+    videoCard?: SortOrderInput | SortOrder
+    wiredMac?: SortOrderInput | SortOrder
+    wirelessMac?: SortOrderInput | SortOrder
+    output1?: SortOrderInput | SortOrder
+    output2?: SortOrderInput | SortOrder
+    receivedDate?: SortOrderInput | SortOrder
+    cost?: SortOrderInput | SortOrder
+    po?: SortOrderInput | SortOrder
+    disposalDate?: SortOrderInput | SortOrder
+    disposalType?: SortOrderInput | SortOrder
     location?: SortOrderInput | SortOrder
     status?: SortOrder
+    assignedToId?: SortOrderInput | SortOrder
+    assignedDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    assetTypeId?: SortOrderInput | SortOrder
     _count?: AssetCountOrderByAggregateInput
+    _avg?: AssetAvgOrderByAggregateInput
     _max?: AssetMaxOrderByAggregateInput
     _min?: AssetMinOrderByAggregateInput
+    _sum?: AssetSumOrderByAggregateInput
   }
 
   export type AssetScalarWhereWithAggregatesInput = {
@@ -6288,13 +6778,38 @@ export namespace Prisma {
     OR?: AssetScalarWhereWithAggregatesInput[]
     NOT?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Asset"> | string
-    assetTag?: StringWithAggregatesFilter<"Asset"> | string
-    assetTypeId?: StringWithAggregatesFilter<"Asset"> | string
-    summary?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    assetId?: StringWithAggregatesFilter<"Asset"> | string
+    type?: StringWithAggregatesFilter<"Asset"> | string
+    description?: StringWithAggregatesFilter<"Asset"> | string
+    fundingDepartment?: StringWithAggregatesFilter<"Asset"> | string
+    manufacturer?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    model?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    modelGeneration?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    serialNumber?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    vendor?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    memory?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    hddSize?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    hddType?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    cpuGeneration?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    cpuSpeed?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    gpuModel?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    videoCard?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    wiredMac?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    wirelessMac?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    output1?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    output2?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    receivedDate?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
+    cost?: FloatNullableWithAggregatesFilter<"Asset"> | number | null
+    po?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    disposalDate?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
+    disposalType?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     location?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     status?: EnumAssetStatusWithAggregatesFilter<"Asset"> | $Enums.AssetStatus
+    assignedToId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    assignedDate?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
+    assetTypeId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
   }
 
   export type AssetAssignmentWhereInput = {
@@ -6522,86 +7037,261 @@ export namespace Prisma {
 
   export type AssetCreateInput = {
     id?: string
-    assetTag: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    assetType: AssetTypeCreateNestedOneWithoutAssetsInput
+    assetType?: AssetTypeCreateNestedOneWithoutAssetsInput
     assignments?: AssetAssignmentCreateNestedManyWithoutAssetInput
     lifecycle?: LifecycleEventCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateInput = {
     id?: string
-    assetTag: string
-    assetTypeId: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    assetTypeId?: string | null
     assignments?: AssetAssignmentUncheckedCreateNestedManyWithoutAssetInput
     lifecycle?: LifecycleEventUncheckedCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    assetType?: AssetTypeUpdateOneRequiredWithoutAssetsNestedInput
+    assetType?: AssetTypeUpdateOneWithoutAssetsNestedInput
     assignments?: AssetAssignmentUpdateManyWithoutAssetNestedInput
     lifecycle?: LifecycleEventUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assetTypeId?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: AssetAssignmentUncheckedUpdateManyWithoutAssetNestedInput
     lifecycle?: LifecycleEventUncheckedUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetCreateManyInput = {
     id?: string
-    assetTag: string
-    assetTypeId: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    assetTypeId?: string | null
   }
 
   export type AssetUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AssetUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assetTypeId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AssetAssignmentCreateInput = {
@@ -6892,6 +7582,28 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type EnumAssetStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.AssetStatus | EnumAssetStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AssetStatus[] | ListEnumAssetStatusFieldRefInput<$PrismaModel>
@@ -6899,9 +7611,9 @@ export namespace Prisma {
     not?: NestedEnumAssetStatusFilter<$PrismaModel> | $Enums.AssetStatus
   }
 
-  export type AssetTypeRelationFilter = {
-    is?: AssetTypeWhereInput
-    isNot?: AssetTypeWhereInput
+  export type AssetTypeNullableRelationFilter = {
+    is?: AssetTypeWhereInput | null
+    isNot?: AssetTypeWhereInput | null
   }
 
   export type AssetAssignmentListRelationFilter = {
@@ -6931,35 +7643,118 @@ export namespace Prisma {
 
   export type AssetCountOrderByAggregateInput = {
     id?: SortOrder
-    assetTag?: SortOrder
-    assetTypeId?: SortOrder
-    summary?: SortOrder
+    assetId?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    fundingDepartment?: SortOrder
+    manufacturer?: SortOrder
+    model?: SortOrder
+    modelGeneration?: SortOrder
+    serialNumber?: SortOrder
+    vendor?: SortOrder
+    memory?: SortOrder
+    hddSize?: SortOrder
+    hddType?: SortOrder
+    cpuGeneration?: SortOrder
+    cpuSpeed?: SortOrder
+    gpuModel?: SortOrder
+    videoCard?: SortOrder
+    wiredMac?: SortOrder
+    wirelessMac?: SortOrder
+    output1?: SortOrder
+    output2?: SortOrder
+    receivedDate?: SortOrder
+    cost?: SortOrder
+    po?: SortOrder
+    disposalDate?: SortOrder
+    disposalType?: SortOrder
     location?: SortOrder
     status?: SortOrder
+    assignedToId?: SortOrder
+    assignedDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    assetTypeId?: SortOrder
+  }
+
+  export type AssetAvgOrderByAggregateInput = {
+    cost?: SortOrder
   }
 
   export type AssetMaxOrderByAggregateInput = {
     id?: SortOrder
-    assetTag?: SortOrder
-    assetTypeId?: SortOrder
-    summary?: SortOrder
+    assetId?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    fundingDepartment?: SortOrder
+    manufacturer?: SortOrder
+    model?: SortOrder
+    modelGeneration?: SortOrder
+    serialNumber?: SortOrder
+    vendor?: SortOrder
+    memory?: SortOrder
+    hddSize?: SortOrder
+    hddType?: SortOrder
+    cpuGeneration?: SortOrder
+    cpuSpeed?: SortOrder
+    gpuModel?: SortOrder
+    videoCard?: SortOrder
+    wiredMac?: SortOrder
+    wirelessMac?: SortOrder
+    output1?: SortOrder
+    output2?: SortOrder
+    receivedDate?: SortOrder
+    cost?: SortOrder
+    po?: SortOrder
+    disposalDate?: SortOrder
+    disposalType?: SortOrder
     location?: SortOrder
     status?: SortOrder
+    assignedToId?: SortOrder
+    assignedDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    assetTypeId?: SortOrder
   }
 
   export type AssetMinOrderByAggregateInput = {
     id?: SortOrder
-    assetTag?: SortOrder
-    assetTypeId?: SortOrder
-    summary?: SortOrder
+    assetId?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    fundingDepartment?: SortOrder
+    manufacturer?: SortOrder
+    model?: SortOrder
+    modelGeneration?: SortOrder
+    serialNumber?: SortOrder
+    vendor?: SortOrder
+    memory?: SortOrder
+    hddSize?: SortOrder
+    hddType?: SortOrder
+    cpuGeneration?: SortOrder
+    cpuSpeed?: SortOrder
+    gpuModel?: SortOrder
+    videoCard?: SortOrder
+    wiredMac?: SortOrder
+    wirelessMac?: SortOrder
+    output1?: SortOrder
+    output2?: SortOrder
+    receivedDate?: SortOrder
+    cost?: SortOrder
+    po?: SortOrder
+    disposalDate?: SortOrder
+    disposalType?: SortOrder
     location?: SortOrder
     status?: SortOrder
+    assignedToId?: SortOrder
+    assignedDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    assetTypeId?: SortOrder
+  }
+
+  export type AssetSumOrderByAggregateInput = {
+    cost?: SortOrder
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -6980,6 +7775,36 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
   export type EnumAssetStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.AssetStatus | EnumAssetStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AssetStatus[] | ListEnumAssetStatusFieldRefInput<$PrismaModel>
@@ -6988,17 +7813,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAssetStatusFilter<$PrismaModel>
     _max?: NestedEnumAssetStatusFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type AssetRelationFilter = {
@@ -7028,20 +7842,6 @@ export namespace Prisma {
     personId?: SortOrder
     assignedAt?: SortOrder
     unassignedAt?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
   export type JsonNullableFilter<$PrismaModel = never> = 
     | PatchUndefined<
@@ -7232,14 +8032,28 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type EnumAssetStatusFieldUpdateOperationsInput = {
     set?: $Enums.AssetStatus
   }
 
-  export type AssetTypeUpdateOneRequiredWithoutAssetsNestedInput = {
+  export type AssetTypeUpdateOneWithoutAssetsNestedInput = {
     create?: XOR<AssetTypeCreateWithoutAssetsInput, AssetTypeUncheckedCreateWithoutAssetsInput>
     connectOrCreate?: AssetTypeCreateOrConnectWithoutAssetsInput
     upsert?: AssetTypeUpsertWithoutAssetsInput
+    disconnect?: AssetTypeWhereInput | boolean
+    delete?: AssetTypeWhereInput | boolean
     connect?: AssetTypeWhereUniqueInput
     update?: XOR<XOR<AssetTypeUpdateToOneWithWhereWithoutAssetsInput, AssetTypeUpdateWithoutAssetsInput>, AssetTypeUncheckedUpdateWithoutAssetsInput>
   }
@@ -7304,10 +8118,6 @@ export namespace Prisma {
     create?: XOR<AssetCreateWithoutAssignmentsInput, AssetUncheckedCreateWithoutAssignmentsInput>
     connectOrCreate?: AssetCreateOrConnectWithoutAssignmentsInput
     connect?: AssetWhereUniqueInput
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type AssetUpdateOneRequiredWithoutAssignmentsNestedInput = {
@@ -7413,6 +8223,28 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumAssetStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.AssetStatus | EnumAssetStatusFieldRefInput<$PrismaModel>
     in?: $Enums.AssetStatus[] | ListEnumAssetStatusFieldRefInput<$PrismaModel>
@@ -7448,27 +8280,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedEnumAssetStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.AssetStatus | EnumAssetStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.AssetStatus[] | ListEnumAssetStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AssetStatus[] | ListEnumAssetStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumAssetStatusWithAggregatesFilter<$PrismaModel> | $Enums.AssetStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumAssetStatusFilter<$PrismaModel>
-    _max?: NestedEnumAssetStatusFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -7481,6 +8292,32 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAssetStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssetStatus | EnumAssetStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.AssetStatus[] | ListEnumAssetStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssetStatus[] | ListEnumAssetStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssetStatusWithAggregatesFilter<$PrismaModel> | $Enums.AssetStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssetStatusFilter<$PrismaModel>
+    _max?: NestedEnumAssetStatusFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> = 
     | PatchUndefined<
@@ -7507,10 +8344,35 @@ export namespace Prisma {
 
   export type AssetCreateWithoutAssetTypeInput = {
     id?: string
-    assetTag: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignments?: AssetAssignmentCreateNestedManyWithoutAssetInput
@@ -7519,10 +8381,35 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutAssetTypeInput = {
     id?: string
-    assetTag: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignments?: AssetAssignmentUncheckedCreateNestedManyWithoutAssetInput
@@ -7560,13 +8447,38 @@ export namespace Prisma {
     OR?: AssetScalarWhereInput[]
     NOT?: AssetScalarWhereInput | AssetScalarWhereInput[]
     id?: StringFilter<"Asset"> | string
-    assetTag?: StringFilter<"Asset"> | string
-    assetTypeId?: StringFilter<"Asset"> | string
-    summary?: StringNullableFilter<"Asset"> | string | null
+    assetId?: StringFilter<"Asset"> | string
+    type?: StringFilter<"Asset"> | string
+    description?: StringFilter<"Asset"> | string
+    fundingDepartment?: StringFilter<"Asset"> | string
+    manufacturer?: StringNullableFilter<"Asset"> | string | null
+    model?: StringNullableFilter<"Asset"> | string | null
+    modelGeneration?: StringNullableFilter<"Asset"> | string | null
+    serialNumber?: StringNullableFilter<"Asset"> | string | null
+    vendor?: StringNullableFilter<"Asset"> | string | null
+    memory?: StringNullableFilter<"Asset"> | string | null
+    hddSize?: StringNullableFilter<"Asset"> | string | null
+    hddType?: StringNullableFilter<"Asset"> | string | null
+    cpuGeneration?: StringNullableFilter<"Asset"> | string | null
+    cpuSpeed?: StringNullableFilter<"Asset"> | string | null
+    gpuModel?: StringNullableFilter<"Asset"> | string | null
+    videoCard?: StringNullableFilter<"Asset"> | string | null
+    wiredMac?: StringNullableFilter<"Asset"> | string | null
+    wirelessMac?: StringNullableFilter<"Asset"> | string | null
+    output1?: StringNullableFilter<"Asset"> | string | null
+    output2?: StringNullableFilter<"Asset"> | string | null
+    receivedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    cost?: FloatNullableFilter<"Asset"> | number | null
+    po?: StringNullableFilter<"Asset"> | string | null
+    disposalDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
+    disposalType?: StringNullableFilter<"Asset"> | string | null
     location?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetStatusFilter<"Asset"> | $Enums.AssetStatus
+    assignedToId?: StringNullableFilter<"Asset"> | string | null
+    assignedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     updatedAt?: DateTimeFilter<"Asset"> | Date | string
+    assetTypeId?: StringNullableFilter<"Asset"> | string | null
   }
 
   export type AssetTypeCreateWithoutAssetsInput = {
@@ -7716,25 +8628,75 @@ export namespace Prisma {
 
   export type AssetCreateWithoutAssignmentsInput = {
     id?: string
-    assetTag: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    assetType: AssetTypeCreateNestedOneWithoutAssetsInput
+    assetType?: AssetTypeCreateNestedOneWithoutAssetsInput
     lifecycle?: LifecycleEventCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateWithoutAssignmentsInput = {
     id?: string
-    assetTag: string
-    assetTypeId: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    assetTypeId?: string | null
     lifecycle?: LifecycleEventUncheckedCreateNestedManyWithoutAssetInput
   }
 
@@ -7756,49 +8718,149 @@ export namespace Prisma {
 
   export type AssetUpdateWithoutAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    assetType?: AssetTypeUpdateOneRequiredWithoutAssetsNestedInput
+    assetType?: AssetTypeUpdateOneWithoutAssetsNestedInput
     lifecycle?: LifecycleEventUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateWithoutAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assetTypeId?: NullableStringFieldUpdateOperationsInput | string | null
     lifecycle?: LifecycleEventUncheckedUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetCreateWithoutLifecycleInput = {
     id?: string
-    assetTag: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    assetType: AssetTypeCreateNestedOneWithoutAssetsInput
+    assetType?: AssetTypeCreateNestedOneWithoutAssetsInput
     assignments?: AssetAssignmentCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateWithoutLifecycleInput = {
     id?: string
-    assetTag: string
-    assetTypeId: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    assetTypeId?: string | null
     assignments?: AssetAssignmentUncheckedCreateNestedManyWithoutAssetInput
   }
 
@@ -7820,44 +8882,144 @@ export namespace Prisma {
 
   export type AssetUpdateWithoutLifecycleInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    assetType?: AssetTypeUpdateOneRequiredWithoutAssetsNestedInput
+    assetType?: AssetTypeUpdateOneWithoutAssetsNestedInput
     assignments?: AssetAssignmentUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateWithoutLifecycleInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assetTypeId?: NullableStringFieldUpdateOperationsInput | string | null
     assignments?: AssetAssignmentUncheckedUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetCreateManyAssetTypeInput = {
     id?: string
-    assetTag: string
-    summary?: string | null
+    assetId: string
+    type: string
+    description: string
+    fundingDepartment: string
+    manufacturer?: string | null
+    model?: string | null
+    modelGeneration?: string | null
+    serialNumber?: string | null
+    vendor?: string | null
+    memory?: string | null
+    hddSize?: string | null
+    hddType?: string | null
+    cpuGeneration?: string | null
+    cpuSpeed?: string | null
+    gpuModel?: string | null
+    videoCard?: string | null
+    wiredMac?: string | null
+    wirelessMac?: string | null
+    output1?: string | null
+    output2?: string | null
+    receivedDate?: Date | string | null
+    cost?: number | null
+    po?: string | null
+    disposalDate?: Date | string | null
+    disposalType?: string | null
     location?: string | null
     status?: $Enums.AssetStatus
+    assignedToId?: string | null
+    assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
 
   export type AssetUpdateWithoutAssetTypeInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignments?: AssetAssignmentUpdateManyWithoutAssetNestedInput
@@ -7866,10 +9028,35 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutAssetTypeInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignments?: AssetAssignmentUncheckedUpdateManyWithoutAssetNestedInput
@@ -7878,10 +9065,35 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateManyWithoutAssetTypeInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetTag?: StringFieldUpdateOperationsInput | string
-    summary?: NullableStringFieldUpdateOperationsInput | string | null
+    assetId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    fundingDepartment?: StringFieldUpdateOperationsInput | string
+    manufacturer?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    modelGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    serialNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    vendor?: NullableStringFieldUpdateOperationsInput | string | null
+    memory?: NullableStringFieldUpdateOperationsInput | string | null
+    hddSize?: NullableStringFieldUpdateOperationsInput | string | null
+    hddType?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuGeneration?: NullableStringFieldUpdateOperationsInput | string | null
+    cpuSpeed?: NullableStringFieldUpdateOperationsInput | string | null
+    gpuModel?: NullableStringFieldUpdateOperationsInput | string | null
+    videoCard?: NullableStringFieldUpdateOperationsInput | string | null
+    wiredMac?: NullableStringFieldUpdateOperationsInput | string | null
+    wirelessMac?: NullableStringFieldUpdateOperationsInput | string | null
+    output1?: NullableStringFieldUpdateOperationsInput | string | null
+    output2?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    po?: NullableStringFieldUpdateOperationsInput | string | null
+    disposalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disposalType?: NullableStringFieldUpdateOperationsInput | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
+    assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

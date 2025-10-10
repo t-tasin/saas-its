@@ -19,11 +19,6 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Reservation = $Result.DefaultSelection<Prisma.$ReservationPayload>
 /**
- * Model ReservationItem
- * 
- */
-export type ReservationItem = $Result.DefaultSelection<Prisma.$ReservationItemPayload>
-/**
  * Model EquipmentAvailability
  * 
  */
@@ -187,16 +182,6 @@ export class PrismaClient<
     * ```
     */
   get reservation(): Prisma.ReservationDelegate<ExtArgs>;
-
-  /**
-   * `prisma.reservationItem`: Exposes CRUD operations for the **ReservationItem** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more ReservationItems
-    * const reservationItems = await prisma.reservationItem.findMany()
-    * ```
-    */
-  get reservationItem(): Prisma.ReservationItemDelegate<ExtArgs>;
 
   /**
    * `prisma.equipmentAvailability`: Exposes CRUD operations for the **EquipmentAvailability** model.
@@ -659,7 +644,6 @@ export namespace Prisma {
 
   export const ModelName: {
     Reservation: 'Reservation',
-    ReservationItem: 'ReservationItem',
     EquipmentAvailability: 'EquipmentAvailability',
     AuditLog: 'AuditLog'
   };
@@ -677,7 +661,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "reservation" | "reservationItem" | "equipmentAvailability" | "auditLog"
+      modelProps: "reservation" | "equipmentAvailability" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -748,76 +732,6 @@ export namespace Prisma {
           count: {
             args: Prisma.ReservationCountArgs<ExtArgs>
             result: $Utils.Optional<ReservationCountAggregateOutputType> | number
-          }
-        }
-      }
-      ReservationItem: {
-        payload: Prisma.$ReservationItemPayload<ExtArgs>
-        fields: Prisma.ReservationItemFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.ReservationItemFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.ReservationItemFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload>
-          }
-          findFirst: {
-            args: Prisma.ReservationItemFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.ReservationItemFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload>
-          }
-          findMany: {
-            args: Prisma.ReservationItemFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload>[]
-          }
-          create: {
-            args: Prisma.ReservationItemCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload>
-          }
-          createMany: {
-            args: Prisma.ReservationItemCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.ReservationItemCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload>[]
-          }
-          delete: {
-            args: Prisma.ReservationItemDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload>
-          }
-          update: {
-            args: Prisma.ReservationItemUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload>
-          }
-          deleteMany: {
-            args: Prisma.ReservationItemDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.ReservationItemUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.ReservationItemUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ReservationItemPayload>
-          }
-          aggregate: {
-            args: Prisma.ReservationItemAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateReservationItem>
-          }
-          groupBy: {
-            args: Prisma.ReservationItemGroupByArgs<ExtArgs>
-            result: $Utils.Optional<ReservationItemGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.ReservationItemCountArgs<ExtArgs>
-            result: $Utils.Optional<ReservationItemCountAggregateOutputType> | number
           }
         }
       }
@@ -1117,36 +1031,6 @@ export namespace Prisma {
    */
 
 
-  /**
-   * Count Type ReservationCountOutputType
-   */
-
-  export type ReservationCountOutputType = {
-    items: number
-  }
-
-  export type ReservationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    items?: boolean | ReservationCountOutputTypeCountItemsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * ReservationCountOutputType without action
-   */
-  export type ReservationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationCountOutputType
-     */
-    select?: ReservationCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * ReservationCountOutputType without action
-   */
-  export type ReservationCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ReservationItemWhereInput
-  }
-
 
   /**
    * Models
@@ -1158,23 +1042,40 @@ export namespace Prisma {
 
   export type AggregateReservation = {
     _count: ReservationCountAggregateOutputType | null
+    _avg: ReservationAvgAggregateOutputType | null
+    _sum: ReservationSumAggregateOutputType | null
     _min: ReservationMinAggregateOutputType | null
     _max: ReservationMaxAggregateOutputType | null
   }
 
+  export type ReservationAvgAggregateOutputType = {
+    quantity: number | null
+  }
+
+  export type ReservationSumAggregateOutputType = {
+    quantity: number | null
+  }
+
   export type ReservationMinAggregateOutputType = {
     id: string | null
+    reservationNumber: string | null
     requesterId: string | null
     requesterEmail: string | null
     requesterName: string | null
+    equipmentType: string | null
+    quantity: number | null
+    purpose: string | null
     status: $Enums.ReservationStatus | null
     requestDate: Date | null
-    approvedDate: Date | null
     returnDate: Date | null
     actualReturnDate: Date | null
+    approvedDate: Date | null
     approvedBy: string | null
     deniedBy: string | null
     denialReason: string | null
+    cancelledAt: Date | null
+    cancellationReason: string | null
+    assignedAssetIds: string | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1182,17 +1083,24 @@ export namespace Prisma {
 
   export type ReservationMaxAggregateOutputType = {
     id: string | null
+    reservationNumber: string | null
     requesterId: string | null
     requesterEmail: string | null
     requesterName: string | null
+    equipmentType: string | null
+    quantity: number | null
+    purpose: string | null
     status: $Enums.ReservationStatus | null
     requestDate: Date | null
-    approvedDate: Date | null
     returnDate: Date | null
     actualReturnDate: Date | null
+    approvedDate: Date | null
     approvedBy: string | null
     deniedBy: string | null
     denialReason: string | null
+    cancelledAt: Date | null
+    cancellationReason: string | null
+    assignedAssetIds: string | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1200,17 +1108,24 @@ export namespace Prisma {
 
   export type ReservationCountAggregateOutputType = {
     id: number
+    reservationNumber: number
     requesterId: number
     requesterEmail: number
     requesterName: number
+    equipmentType: number
+    quantity: number
+    purpose: number
     status: number
     requestDate: number
-    approvedDate: number
     returnDate: number
     actualReturnDate: number
+    approvedDate: number
     approvedBy: number
     deniedBy: number
     denialReason: number
+    cancelledAt: number
+    cancellationReason: number
+    assignedAssetIds: number
     notes: number
     createdAt: number
     updatedAt: number
@@ -1218,19 +1133,34 @@ export namespace Prisma {
   }
 
 
+  export type ReservationAvgAggregateInputType = {
+    quantity?: true
+  }
+
+  export type ReservationSumAggregateInputType = {
+    quantity?: true
+  }
+
   export type ReservationMinAggregateInputType = {
     id?: true
+    reservationNumber?: true
     requesterId?: true
     requesterEmail?: true
     requesterName?: true
+    equipmentType?: true
+    quantity?: true
+    purpose?: true
     status?: true
     requestDate?: true
-    approvedDate?: true
     returnDate?: true
     actualReturnDate?: true
+    approvedDate?: true
     approvedBy?: true
     deniedBy?: true
     denialReason?: true
+    cancelledAt?: true
+    cancellationReason?: true
+    assignedAssetIds?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -1238,17 +1168,24 @@ export namespace Prisma {
 
   export type ReservationMaxAggregateInputType = {
     id?: true
+    reservationNumber?: true
     requesterId?: true
     requesterEmail?: true
     requesterName?: true
+    equipmentType?: true
+    quantity?: true
+    purpose?: true
     status?: true
     requestDate?: true
-    approvedDate?: true
     returnDate?: true
     actualReturnDate?: true
+    approvedDate?: true
     approvedBy?: true
     deniedBy?: true
     denialReason?: true
+    cancelledAt?: true
+    cancellationReason?: true
+    assignedAssetIds?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -1256,17 +1193,24 @@ export namespace Prisma {
 
   export type ReservationCountAggregateInputType = {
     id?: true
+    reservationNumber?: true
     requesterId?: true
     requesterEmail?: true
     requesterName?: true
+    equipmentType?: true
+    quantity?: true
+    purpose?: true
     status?: true
     requestDate?: true
-    approvedDate?: true
     returnDate?: true
     actualReturnDate?: true
+    approvedDate?: true
     approvedBy?: true
     deniedBy?: true
     denialReason?: true
+    cancelledAt?: true
+    cancellationReason?: true
+    assignedAssetIds?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -1311,6 +1255,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: ReservationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ReservationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: ReservationMinAggregateInputType
@@ -1341,27 +1297,38 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: ReservationCountAggregateInputType | true
+    _avg?: ReservationAvgAggregateInputType
+    _sum?: ReservationSumAggregateInputType
     _min?: ReservationMinAggregateInputType
     _max?: ReservationMaxAggregateInputType
   }
 
   export type ReservationGroupByOutputType = {
     id: string
+    reservationNumber: string
     requesterId: string
     requesterEmail: string | null
     requesterName: string | null
+    equipmentType: string
+    quantity: number
+    purpose: string | null
     status: $Enums.ReservationStatus
     requestDate: Date
-    approvedDate: Date | null
-    returnDate: Date | null
+    returnDate: Date
     actualReturnDate: Date | null
+    approvedDate: Date | null
     approvedBy: string | null
     deniedBy: string | null
     denialReason: string | null
+    cancelledAt: Date | null
+    cancellationReason: string | null
+    assignedAssetIds: string | null
     notes: string | null
     createdAt: Date
     updatedAt: Date
     _count: ReservationCountAggregateOutputType | null
+    _avg: ReservationAvgAggregateOutputType | null
+    _sum: ReservationSumAggregateOutputType | null
     _min: ReservationMinAggregateOutputType | null
     _max: ReservationMaxAggregateOutputType | null
   }
@@ -1382,37 +1349,49 @@ export namespace Prisma {
 
   export type ReservationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    reservationNumber?: boolean
     requesterId?: boolean
     requesterEmail?: boolean
     requesterName?: boolean
+    equipmentType?: boolean
+    quantity?: boolean
+    purpose?: boolean
     status?: boolean
     requestDate?: boolean
-    approvedDate?: boolean
     returnDate?: boolean
     actualReturnDate?: boolean
+    approvedDate?: boolean
     approvedBy?: boolean
     deniedBy?: boolean
     denialReason?: boolean
+    cancelledAt?: boolean
+    cancellationReason?: boolean
+    assignedAssetIds?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    items?: boolean | Reservation$itemsArgs<ExtArgs>
-    _count?: boolean | ReservationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["reservation"]>
 
   export type ReservationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    reservationNumber?: boolean
     requesterId?: boolean
     requesterEmail?: boolean
     requesterName?: boolean
+    equipmentType?: boolean
+    quantity?: boolean
+    purpose?: boolean
     status?: boolean
     requestDate?: boolean
-    approvedDate?: boolean
     returnDate?: boolean
     actualReturnDate?: boolean
+    approvedDate?: boolean
     approvedBy?: boolean
     deniedBy?: boolean
     denialReason?: boolean
+    cancelledAt?: boolean
+    cancellationReason?: boolean
+    assignedAssetIds?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -1420,46 +1399,53 @@ export namespace Prisma {
 
   export type ReservationSelectScalar = {
     id?: boolean
+    reservationNumber?: boolean
     requesterId?: boolean
     requesterEmail?: boolean
     requesterName?: boolean
+    equipmentType?: boolean
+    quantity?: boolean
+    purpose?: boolean
     status?: boolean
     requestDate?: boolean
-    approvedDate?: boolean
     returnDate?: boolean
     actualReturnDate?: boolean
+    approvedDate?: boolean
     approvedBy?: boolean
     deniedBy?: boolean
     denialReason?: boolean
+    cancelledAt?: boolean
+    cancellationReason?: boolean
+    assignedAssetIds?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ReservationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    items?: boolean | Reservation$itemsArgs<ExtArgs>
-    _count?: boolean | ReservationCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type ReservationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $ReservationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Reservation"
-    objects: {
-      items: Prisma.$ReservationItemPayload<ExtArgs>[]
-    }
+    objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      reservationNumber: string
       requesterId: string
       requesterEmail: string | null
       requesterName: string | null
+      equipmentType: string
+      quantity: number
+      purpose: string | null
       status: $Enums.ReservationStatus
       requestDate: Date
-      approvedDate: Date | null
-      returnDate: Date | null
+      returnDate: Date
       actualReturnDate: Date | null
+      approvedDate: Date | null
       approvedBy: string | null
       deniedBy: string | null
       denialReason: string | null
+      cancelledAt: Date | null
+      cancellationReason: string | null
+      assignedAssetIds: string | null
       notes: string | null
       createdAt: Date
       updatedAt: Date
@@ -1827,7 +1813,6 @@ export namespace Prisma {
    */
   export interface Prisma__ReservationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    items<T extends Reservation$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Reservation$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1858,17 +1843,24 @@ export namespace Prisma {
    */ 
   interface ReservationFieldRefs {
     readonly id: FieldRef<"Reservation", 'String'>
+    readonly reservationNumber: FieldRef<"Reservation", 'String'>
     readonly requesterId: FieldRef<"Reservation", 'String'>
     readonly requesterEmail: FieldRef<"Reservation", 'String'>
     readonly requesterName: FieldRef<"Reservation", 'String'>
+    readonly equipmentType: FieldRef<"Reservation", 'String'>
+    readonly quantity: FieldRef<"Reservation", 'Int'>
+    readonly purpose: FieldRef<"Reservation", 'String'>
     readonly status: FieldRef<"Reservation", 'ReservationStatus'>
     readonly requestDate: FieldRef<"Reservation", 'DateTime'>
-    readonly approvedDate: FieldRef<"Reservation", 'DateTime'>
     readonly returnDate: FieldRef<"Reservation", 'DateTime'>
     readonly actualReturnDate: FieldRef<"Reservation", 'DateTime'>
+    readonly approvedDate: FieldRef<"Reservation", 'DateTime'>
     readonly approvedBy: FieldRef<"Reservation", 'String'>
     readonly deniedBy: FieldRef<"Reservation", 'String'>
     readonly denialReason: FieldRef<"Reservation", 'String'>
+    readonly cancelledAt: FieldRef<"Reservation", 'DateTime'>
+    readonly cancellationReason: FieldRef<"Reservation", 'String'>
+    readonly assignedAssetIds: FieldRef<"Reservation", 'String'>
     readonly notes: FieldRef<"Reservation", 'String'>
     readonly createdAt: FieldRef<"Reservation", 'DateTime'>
     readonly updatedAt: FieldRef<"Reservation", 'DateTime'>
@@ -1885,10 +1877,6 @@ export namespace Prisma {
      */
     select?: ReservationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
-    /**
      * Filter, which Reservation to fetch.
      */
     where: ReservationWhereUniqueInput
@@ -1903,10 +1891,6 @@ export namespace Prisma {
      */
     select?: ReservationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
-    /**
      * Filter, which Reservation to fetch.
      */
     where: ReservationWhereUniqueInput
@@ -1920,10 +1904,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the Reservation
      */
     select?: ReservationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
     /**
      * Filter, which Reservation to fetch.
      */
@@ -1969,10 +1949,6 @@ export namespace Prisma {
      */
     select?: ReservationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
-    /**
      * Filter, which Reservation to fetch.
      */
     where?: ReservationWhereInput
@@ -2017,10 +1993,6 @@ export namespace Prisma {
      */
     select?: ReservationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
-    /**
      * Filter, which Reservations to fetch.
      */
     where?: ReservationWhereInput
@@ -2059,10 +2031,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the Reservation
      */
     select?: ReservationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
     /**
      * The data needed to create a Reservation.
      */
@@ -2104,10 +2072,6 @@ export namespace Prisma {
      */
     select?: ReservationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
-    /**
      * The data needed to update a Reservation.
      */
     data: XOR<ReservationUpdateInput, ReservationUncheckedUpdateInput>
@@ -2140,10 +2104,6 @@ export namespace Prisma {
      */
     select?: ReservationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
-    /**
      * The filter to search for the Reservation to update in case it exists.
      */
     where: ReservationWhereUniqueInput
@@ -2166,10 +2126,6 @@ export namespace Prisma {
      */
     select?: ReservationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
-    /**
      * Filter which Reservation to delete.
      */
     where: ReservationWhereUniqueInput
@@ -2186,26 +2142,6 @@ export namespace Prisma {
   }
 
   /**
-   * Reservation.items
-   */
-  export type Reservation$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    where?: ReservationItemWhereInput
-    orderBy?: ReservationItemOrderByWithRelationInput | ReservationItemOrderByWithRelationInput[]
-    cursor?: ReservationItemWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ReservationItemScalarFieldEnum | ReservationItemScalarFieldEnum[]
-  }
-
-  /**
    * Reservation without action
    */
   export type ReservationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2213,1013 +2149,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the Reservation
      */
     select?: ReservationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model ReservationItem
-   */
-
-  export type AggregateReservationItem = {
-    _count: ReservationItemCountAggregateOutputType | null
-    _avg: ReservationItemAvgAggregateOutputType | null
-    _sum: ReservationItemSumAggregateOutputType | null
-    _min: ReservationItemMinAggregateOutputType | null
-    _max: ReservationItemMaxAggregateOutputType | null
-  }
-
-  export type ReservationItemAvgAggregateOutputType = {
-    quantity: number | null
-  }
-
-  export type ReservationItemSumAggregateOutputType = {
-    quantity: number | null
-  }
-
-  export type ReservationItemMinAggregateOutputType = {
-    id: string | null
-    reservationId: string | null
-    assetTypeId: string | null
-    assetTypeName: string | null
-    assetId: string | null
-    quantity: number | null
-    status: $Enums.ReservationStatus | null
-    notes: string | null
-  }
-
-  export type ReservationItemMaxAggregateOutputType = {
-    id: string | null
-    reservationId: string | null
-    assetTypeId: string | null
-    assetTypeName: string | null
-    assetId: string | null
-    quantity: number | null
-    status: $Enums.ReservationStatus | null
-    notes: string | null
-  }
-
-  export type ReservationItemCountAggregateOutputType = {
-    id: number
-    reservationId: number
-    assetTypeId: number
-    assetTypeName: number
-    assetId: number
-    quantity: number
-    status: number
-    notes: number
-    _all: number
-  }
-
-
-  export type ReservationItemAvgAggregateInputType = {
-    quantity?: true
-  }
-
-  export type ReservationItemSumAggregateInputType = {
-    quantity?: true
-  }
-
-  export type ReservationItemMinAggregateInputType = {
-    id?: true
-    reservationId?: true
-    assetTypeId?: true
-    assetTypeName?: true
-    assetId?: true
-    quantity?: true
-    status?: true
-    notes?: true
-  }
-
-  export type ReservationItemMaxAggregateInputType = {
-    id?: true
-    reservationId?: true
-    assetTypeId?: true
-    assetTypeName?: true
-    assetId?: true
-    quantity?: true
-    status?: true
-    notes?: true
-  }
-
-  export type ReservationItemCountAggregateInputType = {
-    id?: true
-    reservationId?: true
-    assetTypeId?: true
-    assetTypeName?: true
-    assetId?: true
-    quantity?: true
-    status?: true
-    notes?: true
-    _all?: true
-  }
-
-  export type ReservationItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which ReservationItem to aggregate.
-     */
-    where?: ReservationItemWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ReservationItems to fetch.
-     */
-    orderBy?: ReservationItemOrderByWithRelationInput | ReservationItemOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: ReservationItemWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ReservationItems from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ReservationItems.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned ReservationItems
-    **/
-    _count?: true | ReservationItemCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: ReservationItemAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: ReservationItemSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: ReservationItemMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: ReservationItemMaxAggregateInputType
-  }
-
-  export type GetReservationItemAggregateType<T extends ReservationItemAggregateArgs> = {
-        [P in keyof T & keyof AggregateReservationItem]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateReservationItem[P]>
-      : GetScalarType<T[P], AggregateReservationItem[P]>
-  }
-
-
-
-
-  export type ReservationItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ReservationItemWhereInput
-    orderBy?: ReservationItemOrderByWithAggregationInput | ReservationItemOrderByWithAggregationInput[]
-    by: ReservationItemScalarFieldEnum[] | ReservationItemScalarFieldEnum
-    having?: ReservationItemScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: ReservationItemCountAggregateInputType | true
-    _avg?: ReservationItemAvgAggregateInputType
-    _sum?: ReservationItemSumAggregateInputType
-    _min?: ReservationItemMinAggregateInputType
-    _max?: ReservationItemMaxAggregateInputType
-  }
-
-  export type ReservationItemGroupByOutputType = {
-    id: string
-    reservationId: string
-    assetTypeId: string
-    assetTypeName: string
-    assetId: string | null
-    quantity: number
-    status: $Enums.ReservationStatus
-    notes: string | null
-    _count: ReservationItemCountAggregateOutputType | null
-    _avg: ReservationItemAvgAggregateOutputType | null
-    _sum: ReservationItemSumAggregateOutputType | null
-    _min: ReservationItemMinAggregateOutputType | null
-    _max: ReservationItemMaxAggregateOutputType | null
-  }
-
-  type GetReservationItemGroupByPayload<T extends ReservationItemGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<ReservationItemGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof ReservationItemGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], ReservationItemGroupByOutputType[P]>
-            : GetScalarType<T[P], ReservationItemGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type ReservationItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    reservationId?: boolean
-    assetTypeId?: boolean
-    assetTypeName?: boolean
-    assetId?: boolean
-    quantity?: boolean
-    status?: boolean
-    notes?: boolean
-    reservation?: boolean | ReservationDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["reservationItem"]>
-
-  export type ReservationItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    reservationId?: boolean
-    assetTypeId?: boolean
-    assetTypeName?: boolean
-    assetId?: boolean
-    quantity?: boolean
-    status?: boolean
-    notes?: boolean
-    reservation?: boolean | ReservationDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["reservationItem"]>
-
-  export type ReservationItemSelectScalar = {
-    id?: boolean
-    reservationId?: boolean
-    assetTypeId?: boolean
-    assetTypeName?: boolean
-    assetId?: boolean
-    quantity?: boolean
-    status?: boolean
-    notes?: boolean
-  }
-
-  export type ReservationItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    reservation?: boolean | ReservationDefaultArgs<ExtArgs>
-  }
-  export type ReservationItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    reservation?: boolean | ReservationDefaultArgs<ExtArgs>
-  }
-
-  export type $ReservationItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "ReservationItem"
-    objects: {
-      reservation: Prisma.$ReservationPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      reservationId: string
-      assetTypeId: string
-      assetTypeName: string
-      assetId: string | null
-      quantity: number
-      status: $Enums.ReservationStatus
-      notes: string | null
-    }, ExtArgs["result"]["reservationItem"]>
-    composites: {}
-  }
-
-  type ReservationItemGetPayload<S extends boolean | null | undefined | ReservationItemDefaultArgs> = $Result.GetResult<Prisma.$ReservationItemPayload, S>
-
-  type ReservationItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<ReservationItemFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: ReservationItemCountAggregateInputType | true
-    }
-
-  export interface ReservationItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ReservationItem'], meta: { name: 'ReservationItem' } }
-    /**
-     * Find zero or one ReservationItem that matches the filter.
-     * @param {ReservationItemFindUniqueArgs} args - Arguments to find a ReservationItem
-     * @example
-     * // Get one ReservationItem
-     * const reservationItem = await prisma.reservationItem.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends ReservationItemFindUniqueArgs>(args: SelectSubset<T, ReservationItemFindUniqueArgs<ExtArgs>>): Prisma__ReservationItemClient<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one ReservationItem that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {ReservationItemFindUniqueOrThrowArgs} args - Arguments to find a ReservationItem
-     * @example
-     * // Get one ReservationItem
-     * const reservationItem = await prisma.reservationItem.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends ReservationItemFindUniqueOrThrowArgs>(args: SelectSubset<T, ReservationItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ReservationItemClient<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first ReservationItem that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ReservationItemFindFirstArgs} args - Arguments to find a ReservationItem
-     * @example
-     * // Get one ReservationItem
-     * const reservationItem = await prisma.reservationItem.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends ReservationItemFindFirstArgs>(args?: SelectSubset<T, ReservationItemFindFirstArgs<ExtArgs>>): Prisma__ReservationItemClient<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first ReservationItem that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ReservationItemFindFirstOrThrowArgs} args - Arguments to find a ReservationItem
-     * @example
-     * // Get one ReservationItem
-     * const reservationItem = await prisma.reservationItem.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends ReservationItemFindFirstOrThrowArgs>(args?: SelectSubset<T, ReservationItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__ReservationItemClient<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more ReservationItems that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ReservationItemFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all ReservationItems
-     * const reservationItems = await prisma.reservationItem.findMany()
-     * 
-     * // Get first 10 ReservationItems
-     * const reservationItems = await prisma.reservationItem.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const reservationItemWithIdOnly = await prisma.reservationItem.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends ReservationItemFindManyArgs>(args?: SelectSubset<T, ReservationItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a ReservationItem.
-     * @param {ReservationItemCreateArgs} args - Arguments to create a ReservationItem.
-     * @example
-     * // Create one ReservationItem
-     * const ReservationItem = await prisma.reservationItem.create({
-     *   data: {
-     *     // ... data to create a ReservationItem
-     *   }
-     * })
-     * 
-     */
-    create<T extends ReservationItemCreateArgs>(args: SelectSubset<T, ReservationItemCreateArgs<ExtArgs>>): Prisma__ReservationItemClient<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many ReservationItems.
-     * @param {ReservationItemCreateManyArgs} args - Arguments to create many ReservationItems.
-     * @example
-     * // Create many ReservationItems
-     * const reservationItem = await prisma.reservationItem.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends ReservationItemCreateManyArgs>(args?: SelectSubset<T, ReservationItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many ReservationItems and returns the data saved in the database.
-     * @param {ReservationItemCreateManyAndReturnArgs} args - Arguments to create many ReservationItems.
-     * @example
-     * // Create many ReservationItems
-     * const reservationItem = await prisma.reservationItem.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many ReservationItems and only return the `id`
-     * const reservationItemWithIdOnly = await prisma.reservationItem.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends ReservationItemCreateManyAndReturnArgs>(args?: SelectSubset<T, ReservationItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a ReservationItem.
-     * @param {ReservationItemDeleteArgs} args - Arguments to delete one ReservationItem.
-     * @example
-     * // Delete one ReservationItem
-     * const ReservationItem = await prisma.reservationItem.delete({
-     *   where: {
-     *     // ... filter to delete one ReservationItem
-     *   }
-     * })
-     * 
-     */
-    delete<T extends ReservationItemDeleteArgs>(args: SelectSubset<T, ReservationItemDeleteArgs<ExtArgs>>): Prisma__ReservationItemClient<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one ReservationItem.
-     * @param {ReservationItemUpdateArgs} args - Arguments to update one ReservationItem.
-     * @example
-     * // Update one ReservationItem
-     * const reservationItem = await prisma.reservationItem.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends ReservationItemUpdateArgs>(args: SelectSubset<T, ReservationItemUpdateArgs<ExtArgs>>): Prisma__ReservationItemClient<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more ReservationItems.
-     * @param {ReservationItemDeleteManyArgs} args - Arguments to filter ReservationItems to delete.
-     * @example
-     * // Delete a few ReservationItems
-     * const { count } = await prisma.reservationItem.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends ReservationItemDeleteManyArgs>(args?: SelectSubset<T, ReservationItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more ReservationItems.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ReservationItemUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many ReservationItems
-     * const reservationItem = await prisma.reservationItem.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends ReservationItemUpdateManyArgs>(args: SelectSubset<T, ReservationItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one ReservationItem.
-     * @param {ReservationItemUpsertArgs} args - Arguments to update or create a ReservationItem.
-     * @example
-     * // Update or create a ReservationItem
-     * const reservationItem = await prisma.reservationItem.upsert({
-     *   create: {
-     *     // ... data to create a ReservationItem
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the ReservationItem we want to update
-     *   }
-     * })
-     */
-    upsert<T extends ReservationItemUpsertArgs>(args: SelectSubset<T, ReservationItemUpsertArgs<ExtArgs>>): Prisma__ReservationItemClient<$Result.GetResult<Prisma.$ReservationItemPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of ReservationItems.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ReservationItemCountArgs} args - Arguments to filter ReservationItems to count.
-     * @example
-     * // Count the number of ReservationItems
-     * const count = await prisma.reservationItem.count({
-     *   where: {
-     *     // ... the filter for the ReservationItems we want to count
-     *   }
-     * })
-    **/
-    count<T extends ReservationItemCountArgs>(
-      args?: Subset<T, ReservationItemCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ReservationItemCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a ReservationItem.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ReservationItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends ReservationItemAggregateArgs>(args: Subset<T, ReservationItemAggregateArgs>): Prisma.PrismaPromise<GetReservationItemAggregateType<T>>
-
-    /**
-     * Group by ReservationItem.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ReservationItemGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends ReservationItemGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ReservationItemGroupByArgs['orderBy'] }
-        : { orderBy?: ReservationItemGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, ReservationItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReservationItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the ReservationItem model
-   */
-  readonly fields: ReservationItemFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for ReservationItem.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__ReservationItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    reservation<T extends ReservationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ReservationDefaultArgs<ExtArgs>>): Prisma__ReservationClient<$Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the ReservationItem model
-   */ 
-  interface ReservationItemFieldRefs {
-    readonly id: FieldRef<"ReservationItem", 'String'>
-    readonly reservationId: FieldRef<"ReservationItem", 'String'>
-    readonly assetTypeId: FieldRef<"ReservationItem", 'String'>
-    readonly assetTypeName: FieldRef<"ReservationItem", 'String'>
-    readonly assetId: FieldRef<"ReservationItem", 'String'>
-    readonly quantity: FieldRef<"ReservationItem", 'Int'>
-    readonly status: FieldRef<"ReservationItem", 'ReservationStatus'>
-    readonly notes: FieldRef<"ReservationItem", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * ReservationItem findUnique
-   */
-  export type ReservationItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * Filter, which ReservationItem to fetch.
-     */
-    where: ReservationItemWhereUniqueInput
-  }
-
-  /**
-   * ReservationItem findUniqueOrThrow
-   */
-  export type ReservationItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * Filter, which ReservationItem to fetch.
-     */
-    where: ReservationItemWhereUniqueInput
-  }
-
-  /**
-   * ReservationItem findFirst
-   */
-  export type ReservationItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * Filter, which ReservationItem to fetch.
-     */
-    where?: ReservationItemWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ReservationItems to fetch.
-     */
-    orderBy?: ReservationItemOrderByWithRelationInput | ReservationItemOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for ReservationItems.
-     */
-    cursor?: ReservationItemWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ReservationItems from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ReservationItems.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of ReservationItems.
-     */
-    distinct?: ReservationItemScalarFieldEnum | ReservationItemScalarFieldEnum[]
-  }
-
-  /**
-   * ReservationItem findFirstOrThrow
-   */
-  export type ReservationItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * Filter, which ReservationItem to fetch.
-     */
-    where?: ReservationItemWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ReservationItems to fetch.
-     */
-    orderBy?: ReservationItemOrderByWithRelationInput | ReservationItemOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for ReservationItems.
-     */
-    cursor?: ReservationItemWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ReservationItems from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ReservationItems.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of ReservationItems.
-     */
-    distinct?: ReservationItemScalarFieldEnum | ReservationItemScalarFieldEnum[]
-  }
-
-  /**
-   * ReservationItem findMany
-   */
-  export type ReservationItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * Filter, which ReservationItems to fetch.
-     */
-    where?: ReservationItemWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ReservationItems to fetch.
-     */
-    orderBy?: ReservationItemOrderByWithRelationInput | ReservationItemOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing ReservationItems.
-     */
-    cursor?: ReservationItemWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ReservationItems from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ReservationItems.
-     */
-    skip?: number
-    distinct?: ReservationItemScalarFieldEnum | ReservationItemScalarFieldEnum[]
-  }
-
-  /**
-   * ReservationItem create
-   */
-  export type ReservationItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * The data needed to create a ReservationItem.
-     */
-    data: XOR<ReservationItemCreateInput, ReservationItemUncheckedCreateInput>
-  }
-
-  /**
-   * ReservationItem createMany
-   */
-  export type ReservationItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many ReservationItems.
-     */
-    data: ReservationItemCreateManyInput | ReservationItemCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * ReservationItem createManyAndReturn
-   */
-  export type ReservationItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many ReservationItems.
-     */
-    data: ReservationItemCreateManyInput | ReservationItemCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * ReservationItem update
-   */
-  export type ReservationItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * The data needed to update a ReservationItem.
-     */
-    data: XOR<ReservationItemUpdateInput, ReservationItemUncheckedUpdateInput>
-    /**
-     * Choose, which ReservationItem to update.
-     */
-    where: ReservationItemWhereUniqueInput
-  }
-
-  /**
-   * ReservationItem updateMany
-   */
-  export type ReservationItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update ReservationItems.
-     */
-    data: XOR<ReservationItemUpdateManyMutationInput, ReservationItemUncheckedUpdateManyInput>
-    /**
-     * Filter which ReservationItems to update
-     */
-    where?: ReservationItemWhereInput
-  }
-
-  /**
-   * ReservationItem upsert
-   */
-  export type ReservationItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * The filter to search for the ReservationItem to update in case it exists.
-     */
-    where: ReservationItemWhereUniqueInput
-    /**
-     * In case the ReservationItem found by the `where` argument doesn't exist, create a new ReservationItem with this data.
-     */
-    create: XOR<ReservationItemCreateInput, ReservationItemUncheckedCreateInput>
-    /**
-     * In case the ReservationItem was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<ReservationItemUpdateInput, ReservationItemUncheckedUpdateInput>
-  }
-
-  /**
-   * ReservationItem delete
-   */
-  export type ReservationItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
-    /**
-     * Filter which ReservationItem to delete.
-     */
-    where: ReservationItemWhereUniqueInput
-  }
-
-  /**
-   * ReservationItem deleteMany
-   */
-  export type ReservationItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which ReservationItems to delete
-     */
-    where?: ReservationItemWhereInput
-  }
-
-  /**
-   * ReservationItem without action
-   */
-  export type ReservationItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ReservationItem
-     */
-    select?: ReservationItemSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ReservationItemInclude<ExtArgs> | null
   }
 
 
@@ -5097,37 +4026,30 @@ export namespace Prisma {
 
   export const ReservationScalarFieldEnum: {
     id: 'id',
+    reservationNumber: 'reservationNumber',
     requesterId: 'requesterId',
     requesterEmail: 'requesterEmail',
     requesterName: 'requesterName',
+    equipmentType: 'equipmentType',
+    quantity: 'quantity',
+    purpose: 'purpose',
     status: 'status',
     requestDate: 'requestDate',
-    approvedDate: 'approvedDate',
     returnDate: 'returnDate',
     actualReturnDate: 'actualReturnDate',
+    approvedDate: 'approvedDate',
     approvedBy: 'approvedBy',
     deniedBy: 'deniedBy',
     denialReason: 'denialReason',
+    cancelledAt: 'cancelledAt',
+    cancellationReason: 'cancellationReason',
+    assignedAssetIds: 'assignedAssetIds',
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type ReservationScalarFieldEnum = (typeof ReservationScalarFieldEnum)[keyof typeof ReservationScalarFieldEnum]
-
-
-  export const ReservationItemScalarFieldEnum: {
-    id: 'id',
-    reservationId: 'reservationId',
-    assetTypeId: 'assetTypeId',
-    assetTypeName: 'assetTypeName',
-    assetId: 'assetId',
-    quantity: 'quantity',
-    status: 'status',
-    notes: 'notes'
-  };
-
-  export type ReservationItemScalarFieldEnum = (typeof ReservationItemScalarFieldEnum)[keyof typeof ReservationItemScalarFieldEnum]
 
 
   export const EquipmentAvailabilityScalarFieldEnum: {
@@ -5218,6 +4140,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'ReservationStatus'
    */
   export type EnumReservationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReservationStatus'>
@@ -5242,20 +4178,6 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -5288,83 +4210,110 @@ export namespace Prisma {
     OR?: ReservationWhereInput[]
     NOT?: ReservationWhereInput | ReservationWhereInput[]
     id?: StringFilter<"Reservation"> | string
+    reservationNumber?: StringFilter<"Reservation"> | string
     requesterId?: StringFilter<"Reservation"> | string
     requesterEmail?: StringNullableFilter<"Reservation"> | string | null
     requesterName?: StringNullableFilter<"Reservation"> | string | null
+    equipmentType?: StringFilter<"Reservation"> | string
+    quantity?: IntFilter<"Reservation"> | number
+    purpose?: StringNullableFilter<"Reservation"> | string | null
     status?: EnumReservationStatusFilter<"Reservation"> | $Enums.ReservationStatus
     requestDate?: DateTimeFilter<"Reservation"> | Date | string
-    approvedDate?: DateTimeNullableFilter<"Reservation"> | Date | string | null
-    returnDate?: DateTimeNullableFilter<"Reservation"> | Date | string | null
+    returnDate?: DateTimeFilter<"Reservation"> | Date | string
     actualReturnDate?: DateTimeNullableFilter<"Reservation"> | Date | string | null
+    approvedDate?: DateTimeNullableFilter<"Reservation"> | Date | string | null
     approvedBy?: StringNullableFilter<"Reservation"> | string | null
     deniedBy?: StringNullableFilter<"Reservation"> | string | null
     denialReason?: StringNullableFilter<"Reservation"> | string | null
+    cancelledAt?: DateTimeNullableFilter<"Reservation"> | Date | string | null
+    cancellationReason?: StringNullableFilter<"Reservation"> | string | null
+    assignedAssetIds?: StringNullableFilter<"Reservation"> | string | null
     notes?: StringNullableFilter<"Reservation"> | string | null
     createdAt?: DateTimeFilter<"Reservation"> | Date | string
     updatedAt?: DateTimeFilter<"Reservation"> | Date | string
-    items?: ReservationItemListRelationFilter
   }
 
   export type ReservationOrderByWithRelationInput = {
     id?: SortOrder
+    reservationNumber?: SortOrder
     requesterId?: SortOrder
     requesterEmail?: SortOrderInput | SortOrder
     requesterName?: SortOrderInput | SortOrder
+    equipmentType?: SortOrder
+    quantity?: SortOrder
+    purpose?: SortOrderInput | SortOrder
     status?: SortOrder
     requestDate?: SortOrder
-    approvedDate?: SortOrderInput | SortOrder
-    returnDate?: SortOrderInput | SortOrder
+    returnDate?: SortOrder
     actualReturnDate?: SortOrderInput | SortOrder
+    approvedDate?: SortOrderInput | SortOrder
     approvedBy?: SortOrderInput | SortOrder
     deniedBy?: SortOrderInput | SortOrder
     denialReason?: SortOrderInput | SortOrder
+    cancelledAt?: SortOrderInput | SortOrder
+    cancellationReason?: SortOrderInput | SortOrder
+    assignedAssetIds?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    items?: ReservationItemOrderByRelationAggregateInput
   }
 
   export type ReservationWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    reservationNumber?: string
     AND?: ReservationWhereInput | ReservationWhereInput[]
     OR?: ReservationWhereInput[]
     NOT?: ReservationWhereInput | ReservationWhereInput[]
     requesterId?: StringFilter<"Reservation"> | string
     requesterEmail?: StringNullableFilter<"Reservation"> | string | null
     requesterName?: StringNullableFilter<"Reservation"> | string | null
+    equipmentType?: StringFilter<"Reservation"> | string
+    quantity?: IntFilter<"Reservation"> | number
+    purpose?: StringNullableFilter<"Reservation"> | string | null
     status?: EnumReservationStatusFilter<"Reservation"> | $Enums.ReservationStatus
     requestDate?: DateTimeFilter<"Reservation"> | Date | string
-    approvedDate?: DateTimeNullableFilter<"Reservation"> | Date | string | null
-    returnDate?: DateTimeNullableFilter<"Reservation"> | Date | string | null
+    returnDate?: DateTimeFilter<"Reservation"> | Date | string
     actualReturnDate?: DateTimeNullableFilter<"Reservation"> | Date | string | null
+    approvedDate?: DateTimeNullableFilter<"Reservation"> | Date | string | null
     approvedBy?: StringNullableFilter<"Reservation"> | string | null
     deniedBy?: StringNullableFilter<"Reservation"> | string | null
     denialReason?: StringNullableFilter<"Reservation"> | string | null
+    cancelledAt?: DateTimeNullableFilter<"Reservation"> | Date | string | null
+    cancellationReason?: StringNullableFilter<"Reservation"> | string | null
+    assignedAssetIds?: StringNullableFilter<"Reservation"> | string | null
     notes?: StringNullableFilter<"Reservation"> | string | null
     createdAt?: DateTimeFilter<"Reservation"> | Date | string
     updatedAt?: DateTimeFilter<"Reservation"> | Date | string
-    items?: ReservationItemListRelationFilter
-  }, "id">
+  }, "id" | "reservationNumber">
 
   export type ReservationOrderByWithAggregationInput = {
     id?: SortOrder
+    reservationNumber?: SortOrder
     requesterId?: SortOrder
     requesterEmail?: SortOrderInput | SortOrder
     requesterName?: SortOrderInput | SortOrder
+    equipmentType?: SortOrder
+    quantity?: SortOrder
+    purpose?: SortOrderInput | SortOrder
     status?: SortOrder
     requestDate?: SortOrder
-    approvedDate?: SortOrderInput | SortOrder
-    returnDate?: SortOrderInput | SortOrder
+    returnDate?: SortOrder
     actualReturnDate?: SortOrderInput | SortOrder
+    approvedDate?: SortOrderInput | SortOrder
     approvedBy?: SortOrderInput | SortOrder
     deniedBy?: SortOrderInput | SortOrder
     denialReason?: SortOrderInput | SortOrder
+    cancelledAt?: SortOrderInput | SortOrder
+    cancellationReason?: SortOrderInput | SortOrder
+    assignedAssetIds?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ReservationCountOrderByAggregateInput
+    _avg?: ReservationAvgOrderByAggregateInput
     _max?: ReservationMaxOrderByAggregateInput
     _min?: ReservationMinOrderByAggregateInput
+    _sum?: ReservationSumOrderByAggregateInput
   }
 
   export type ReservationScalarWhereWithAggregatesInput = {
@@ -5372,92 +4321,27 @@ export namespace Prisma {
     OR?: ReservationScalarWhereWithAggregatesInput[]
     NOT?: ReservationScalarWhereWithAggregatesInput | ReservationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Reservation"> | string
+    reservationNumber?: StringWithAggregatesFilter<"Reservation"> | string
     requesterId?: StringWithAggregatesFilter<"Reservation"> | string
     requesterEmail?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     requesterName?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
+    equipmentType?: StringWithAggregatesFilter<"Reservation"> | string
+    quantity?: IntWithAggregatesFilter<"Reservation"> | number
+    purpose?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     status?: EnumReservationStatusWithAggregatesFilter<"Reservation"> | $Enums.ReservationStatus
     requestDate?: DateTimeWithAggregatesFilter<"Reservation"> | Date | string
-    approvedDate?: DateTimeNullableWithAggregatesFilter<"Reservation"> | Date | string | null
-    returnDate?: DateTimeNullableWithAggregatesFilter<"Reservation"> | Date | string | null
+    returnDate?: DateTimeWithAggregatesFilter<"Reservation"> | Date | string
     actualReturnDate?: DateTimeNullableWithAggregatesFilter<"Reservation"> | Date | string | null
+    approvedDate?: DateTimeNullableWithAggregatesFilter<"Reservation"> | Date | string | null
     approvedBy?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     deniedBy?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     denialReason?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
+    cancelledAt?: DateTimeNullableWithAggregatesFilter<"Reservation"> | Date | string | null
+    cancellationReason?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
+    assignedAssetIds?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     notes?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Reservation"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Reservation"> | Date | string
-  }
-
-  export type ReservationItemWhereInput = {
-    AND?: ReservationItemWhereInput | ReservationItemWhereInput[]
-    OR?: ReservationItemWhereInput[]
-    NOT?: ReservationItemWhereInput | ReservationItemWhereInput[]
-    id?: StringFilter<"ReservationItem"> | string
-    reservationId?: StringFilter<"ReservationItem"> | string
-    assetTypeId?: StringFilter<"ReservationItem"> | string
-    assetTypeName?: StringFilter<"ReservationItem"> | string
-    assetId?: StringNullableFilter<"ReservationItem"> | string | null
-    quantity?: IntFilter<"ReservationItem"> | number
-    status?: EnumReservationStatusFilter<"ReservationItem"> | $Enums.ReservationStatus
-    notes?: StringNullableFilter<"ReservationItem"> | string | null
-    reservation?: XOR<ReservationRelationFilter, ReservationWhereInput>
-  }
-
-  export type ReservationItemOrderByWithRelationInput = {
-    id?: SortOrder
-    reservationId?: SortOrder
-    assetTypeId?: SortOrder
-    assetTypeName?: SortOrder
-    assetId?: SortOrderInput | SortOrder
-    quantity?: SortOrder
-    status?: SortOrder
-    notes?: SortOrderInput | SortOrder
-    reservation?: ReservationOrderByWithRelationInput
-  }
-
-  export type ReservationItemWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: ReservationItemWhereInput | ReservationItemWhereInput[]
-    OR?: ReservationItemWhereInput[]
-    NOT?: ReservationItemWhereInput | ReservationItemWhereInput[]
-    reservationId?: StringFilter<"ReservationItem"> | string
-    assetTypeId?: StringFilter<"ReservationItem"> | string
-    assetTypeName?: StringFilter<"ReservationItem"> | string
-    assetId?: StringNullableFilter<"ReservationItem"> | string | null
-    quantity?: IntFilter<"ReservationItem"> | number
-    status?: EnumReservationStatusFilter<"ReservationItem"> | $Enums.ReservationStatus
-    notes?: StringNullableFilter<"ReservationItem"> | string | null
-    reservation?: XOR<ReservationRelationFilter, ReservationWhereInput>
-  }, "id">
-
-  export type ReservationItemOrderByWithAggregationInput = {
-    id?: SortOrder
-    reservationId?: SortOrder
-    assetTypeId?: SortOrder
-    assetTypeName?: SortOrder
-    assetId?: SortOrderInput | SortOrder
-    quantity?: SortOrder
-    status?: SortOrder
-    notes?: SortOrderInput | SortOrder
-    _count?: ReservationItemCountOrderByAggregateInput
-    _avg?: ReservationItemAvgOrderByAggregateInput
-    _max?: ReservationItemMaxOrderByAggregateInput
-    _min?: ReservationItemMinOrderByAggregateInput
-    _sum?: ReservationItemSumOrderByAggregateInput
-  }
-
-  export type ReservationItemScalarWhereWithAggregatesInput = {
-    AND?: ReservationItemScalarWhereWithAggregatesInput | ReservationItemScalarWhereWithAggregatesInput[]
-    OR?: ReservationItemScalarWhereWithAggregatesInput[]
-    NOT?: ReservationItemScalarWhereWithAggregatesInput | ReservationItemScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"ReservationItem"> | string
-    reservationId?: StringWithAggregatesFilter<"ReservationItem"> | string
-    assetTypeId?: StringWithAggregatesFilter<"ReservationItem"> | string
-    assetTypeName?: StringWithAggregatesFilter<"ReservationItem"> | string
-    assetId?: StringNullableWithAggregatesFilter<"ReservationItem"> | string | null
-    quantity?: IntWithAggregatesFilter<"ReservationItem"> | number
-    status?: EnumReservationStatusWithAggregatesFilter<"ReservationItem"> | $Enums.ReservationStatus
-    notes?: StringNullableWithAggregatesFilter<"ReservationItem"> | string | null
   }
 
   export type EquipmentAvailabilityWhereInput = {
@@ -5488,16 +4372,16 @@ export namespace Prisma {
   export type EquipmentAvailabilityWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     assetTypeId?: string
+    assetTypeName?: string
     AND?: EquipmentAvailabilityWhereInput | EquipmentAvailabilityWhereInput[]
     OR?: EquipmentAvailabilityWhereInput[]
     NOT?: EquipmentAvailabilityWhereInput | EquipmentAvailabilityWhereInput[]
-    assetTypeName?: StringFilter<"EquipmentAvailability"> | string
     totalCount?: IntFilter<"EquipmentAvailability"> | number
     assignedCount?: IntFilter<"EquipmentAvailability"> | number
     reservedCount?: IntFilter<"EquipmentAvailability"> | number
     availableCount?: IntFilter<"EquipmentAvailability"> | number
     updatedAt?: DateTimeFilter<"EquipmentAvailability"> | Date | string
-  }, "id" | "assetTypeId">
+  }, "id" | "assetTypeId" | "assetTypeName">
 
   export type EquipmentAvailabilityOrderByWithAggregationInput = {
     id?: SortOrder
@@ -5593,93 +4477,124 @@ export namespace Prisma {
 
   export type ReservationCreateInput = {
     id?: string
+    reservationNumber: string
     requesterId: string
     requesterEmail?: string | null
     requesterName?: string | null
+    equipmentType: string
+    quantity?: number
+    purpose?: string | null
     status?: $Enums.ReservationStatus
     requestDate: Date | string
-    approvedDate?: Date | string | null
-    returnDate?: Date | string | null
+    returnDate: Date | string
     actualReturnDate?: Date | string | null
+    approvedDate?: Date | string | null
     approvedBy?: string | null
     deniedBy?: string | null
     denialReason?: string | null
+    cancelledAt?: Date | string | null
+    cancellationReason?: string | null
+    assignedAssetIds?: string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    items?: ReservationItemCreateNestedManyWithoutReservationInput
   }
 
   export type ReservationUncheckedCreateInput = {
     id?: string
+    reservationNumber: string
     requesterId: string
     requesterEmail?: string | null
     requesterName?: string | null
+    equipmentType: string
+    quantity?: number
+    purpose?: string | null
     status?: $Enums.ReservationStatus
     requestDate: Date | string
-    approvedDate?: Date | string | null
-    returnDate?: Date | string | null
+    returnDate: Date | string
     actualReturnDate?: Date | string | null
+    approvedDate?: Date | string | null
     approvedBy?: string | null
     deniedBy?: string | null
     denialReason?: string | null
+    cancelledAt?: Date | string | null
+    cancellationReason?: string | null
+    assignedAssetIds?: string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    items?: ReservationItemUncheckedCreateNestedManyWithoutReservationInput
   }
 
   export type ReservationUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    reservationNumber?: StringFieldUpdateOperationsInput | string
     requesterId?: StringFieldUpdateOperationsInput | string
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    equipmentType?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    purpose?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
     requestDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    returnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    returnDate?: DateTimeFieldUpdateOperationsInput | Date | string
     actualReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
     denialReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancellationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAssetIds?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    items?: ReservationItemUpdateManyWithoutReservationNestedInput
   }
 
   export type ReservationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    reservationNumber?: StringFieldUpdateOperationsInput | string
     requesterId?: StringFieldUpdateOperationsInput | string
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    equipmentType?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    purpose?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
     requestDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    returnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    returnDate?: DateTimeFieldUpdateOperationsInput | Date | string
     actualReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
     denialReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancellationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAssetIds?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    items?: ReservationItemUncheckedUpdateManyWithoutReservationNestedInput
   }
 
   export type ReservationCreateManyInput = {
     id?: string
+    reservationNumber: string
     requesterId: string
     requesterEmail?: string | null
     requesterName?: string | null
+    equipmentType: string
+    quantity?: number
+    purpose?: string | null
     status?: $Enums.ReservationStatus
     requestDate: Date | string
-    approvedDate?: Date | string | null
-    returnDate?: Date | string | null
+    returnDate: Date | string
     actualReturnDate?: Date | string | null
+    approvedDate?: Date | string | null
     approvedBy?: string | null
     deniedBy?: string | null
     denialReason?: string | null
+    cancelledAt?: Date | string | null
+    cancellationReason?: string | null
+    assignedAssetIds?: string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -5687,17 +4602,24 @@ export namespace Prisma {
 
   export type ReservationUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    reservationNumber?: StringFieldUpdateOperationsInput | string
     requesterId?: StringFieldUpdateOperationsInput | string
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    equipmentType?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    purpose?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
     requestDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    returnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    returnDate?: DateTimeFieldUpdateOperationsInput | Date | string
     actualReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
     denialReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancellationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAssetIds?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5705,96 +4627,27 @@ export namespace Prisma {
 
   export type ReservationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    reservationNumber?: StringFieldUpdateOperationsInput | string
     requesterId?: StringFieldUpdateOperationsInput | string
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
+    equipmentType?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    purpose?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
     requestDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    returnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    returnDate?: DateTimeFieldUpdateOperationsInput | Date | string
     actualReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
     denialReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancellationReason?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAssetIds?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ReservationItemCreateInput = {
-    id?: string
-    assetTypeId: string
-    assetTypeName: string
-    assetId?: string | null
-    quantity?: number
-    status?: $Enums.ReservationStatus
-    notes?: string | null
-    reservation: ReservationCreateNestedOneWithoutItemsInput
-  }
-
-  export type ReservationItemUncheckedCreateInput = {
-    id?: string
-    reservationId: string
-    assetTypeId: string
-    assetTypeName: string
-    assetId?: string | null
-    quantity?: number
-    status?: $Enums.ReservationStatus
-    notes?: string | null
-  }
-
-  export type ReservationItemUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    assetTypeName?: StringFieldUpdateOperationsInput | string
-    assetId?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: IntFieldUpdateOperationsInput | number
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    reservation?: ReservationUpdateOneRequiredWithoutItemsNestedInput
-  }
-
-  export type ReservationItemUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    reservationId?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    assetTypeName?: StringFieldUpdateOperationsInput | string
-    assetId?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: IntFieldUpdateOperationsInput | number
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ReservationItemCreateManyInput = {
-    id?: string
-    reservationId: string
-    assetTypeId: string
-    assetTypeName: string
-    assetId?: string | null
-    quantity?: number
-    status?: $Enums.ReservationStatus
-    notes?: string | null
-  }
-
-  export type ReservationItemUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    assetTypeName?: StringFieldUpdateOperationsInput | string
-    assetId?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: IntFieldUpdateOperationsInput | number
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ReservationItemUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    reservationId?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    assetTypeName?: StringFieldUpdateOperationsInput | string
-    assetId?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: IntFieldUpdateOperationsInput | number
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type EquipmentAvailabilityCreateInput = {
@@ -5974,6 +4827,17 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type EnumReservationStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ReservationStatus | EnumReservationStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ReservationStatus[] | ListEnumReservationStatusFieldRefInput<$PrismaModel>
@@ -6003,52 +4867,60 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type ReservationItemListRelationFilter = {
-    every?: ReservationItemWhereInput
-    some?: ReservationItemWhereInput
-    none?: ReservationItemWhereInput
-  }
-
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
   }
 
-  export type ReservationItemOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type ReservationCountOrderByAggregateInput = {
     id?: SortOrder
+    reservationNumber?: SortOrder
     requesterId?: SortOrder
     requesterEmail?: SortOrder
     requesterName?: SortOrder
+    equipmentType?: SortOrder
+    quantity?: SortOrder
+    purpose?: SortOrder
     status?: SortOrder
     requestDate?: SortOrder
-    approvedDate?: SortOrder
     returnDate?: SortOrder
     actualReturnDate?: SortOrder
+    approvedDate?: SortOrder
     approvedBy?: SortOrder
     deniedBy?: SortOrder
     denialReason?: SortOrder
+    cancelledAt?: SortOrder
+    cancellationReason?: SortOrder
+    assignedAssetIds?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
+  export type ReservationAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+  }
+
   export type ReservationMaxOrderByAggregateInput = {
     id?: SortOrder
+    reservationNumber?: SortOrder
     requesterId?: SortOrder
     requesterEmail?: SortOrder
     requesterName?: SortOrder
+    equipmentType?: SortOrder
+    quantity?: SortOrder
+    purpose?: SortOrder
     status?: SortOrder
     requestDate?: SortOrder
-    approvedDate?: SortOrder
     returnDate?: SortOrder
     actualReturnDate?: SortOrder
+    approvedDate?: SortOrder
     approvedBy?: SortOrder
     deniedBy?: SortOrder
     denialReason?: SortOrder
+    cancelledAt?: SortOrder
+    cancellationReason?: SortOrder
+    assignedAssetIds?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -6056,20 +4928,31 @@ export namespace Prisma {
 
   export type ReservationMinOrderByAggregateInput = {
     id?: SortOrder
+    reservationNumber?: SortOrder
     requesterId?: SortOrder
     requesterEmail?: SortOrder
     requesterName?: SortOrder
+    equipmentType?: SortOrder
+    quantity?: SortOrder
+    purpose?: SortOrder
     status?: SortOrder
     requestDate?: SortOrder
-    approvedDate?: SortOrder
     returnDate?: SortOrder
     actualReturnDate?: SortOrder
+    approvedDate?: SortOrder
     approvedBy?: SortOrder
     deniedBy?: SortOrder
     denialReason?: SortOrder
+    cancelledAt?: SortOrder
+    cancellationReason?: SortOrder
+    assignedAssetIds?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type ReservationSumOrderByAggregateInput = {
+    quantity?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -6108,6 +4991,22 @@ export namespace Prisma {
     _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
   export type EnumReservationStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ReservationStatus | EnumReservationStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ReservationStatus[] | ListEnumReservationStatusFieldRefInput<$PrismaModel>
@@ -6144,79 +5043,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type ReservationRelationFilter = {
-    is?: ReservationWhereInput
-    isNot?: ReservationWhereInput
-  }
-
-  export type ReservationItemCountOrderByAggregateInput = {
-    id?: SortOrder
-    reservationId?: SortOrder
-    assetTypeId?: SortOrder
-    assetTypeName?: SortOrder
-    assetId?: SortOrder
-    quantity?: SortOrder
-    status?: SortOrder
-    notes?: SortOrder
-  }
-
-  export type ReservationItemAvgOrderByAggregateInput = {
-    quantity?: SortOrder
-  }
-
-  export type ReservationItemMaxOrderByAggregateInput = {
-    id?: SortOrder
-    reservationId?: SortOrder
-    assetTypeId?: SortOrder
-    assetTypeName?: SortOrder
-    assetId?: SortOrder
-    quantity?: SortOrder
-    status?: SortOrder
-    notes?: SortOrder
-  }
-
-  export type ReservationItemMinOrderByAggregateInput = {
-    id?: SortOrder
-    reservationId?: SortOrder
-    assetTypeId?: SortOrder
-    assetTypeName?: SortOrder
-    assetId?: SortOrder
-    quantity?: SortOrder
-    status?: SortOrder
-    notes?: SortOrder
-  }
-
-  export type ReservationItemSumOrderByAggregateInput = {
-    quantity?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EquipmentAvailabilityCountOrderByAggregateInput = {
@@ -6341,26 +5167,20 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
-  export type ReservationItemCreateNestedManyWithoutReservationInput = {
-    create?: XOR<ReservationItemCreateWithoutReservationInput, ReservationItemUncheckedCreateWithoutReservationInput> | ReservationItemCreateWithoutReservationInput[] | ReservationItemUncheckedCreateWithoutReservationInput[]
-    connectOrCreate?: ReservationItemCreateOrConnectWithoutReservationInput | ReservationItemCreateOrConnectWithoutReservationInput[]
-    createMany?: ReservationItemCreateManyReservationInputEnvelope
-    connect?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-  }
-
-  export type ReservationItemUncheckedCreateNestedManyWithoutReservationInput = {
-    create?: XOR<ReservationItemCreateWithoutReservationInput, ReservationItemUncheckedCreateWithoutReservationInput> | ReservationItemCreateWithoutReservationInput[] | ReservationItemUncheckedCreateWithoutReservationInput[]
-    connectOrCreate?: ReservationItemCreateOrConnectWithoutReservationInput | ReservationItemCreateOrConnectWithoutReservationInput[]
-    createMany?: ReservationItemCreateManyReservationInputEnvelope
-    connect?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-  }
-
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type EnumReservationStatusFieldUpdateOperationsInput = {
@@ -6373,56 +5193,6 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
-  }
-
-  export type ReservationItemUpdateManyWithoutReservationNestedInput = {
-    create?: XOR<ReservationItemCreateWithoutReservationInput, ReservationItemUncheckedCreateWithoutReservationInput> | ReservationItemCreateWithoutReservationInput[] | ReservationItemUncheckedCreateWithoutReservationInput[]
-    connectOrCreate?: ReservationItemCreateOrConnectWithoutReservationInput | ReservationItemCreateOrConnectWithoutReservationInput[]
-    upsert?: ReservationItemUpsertWithWhereUniqueWithoutReservationInput | ReservationItemUpsertWithWhereUniqueWithoutReservationInput[]
-    createMany?: ReservationItemCreateManyReservationInputEnvelope
-    set?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-    disconnect?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-    delete?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-    connect?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-    update?: ReservationItemUpdateWithWhereUniqueWithoutReservationInput | ReservationItemUpdateWithWhereUniqueWithoutReservationInput[]
-    updateMany?: ReservationItemUpdateManyWithWhereWithoutReservationInput | ReservationItemUpdateManyWithWhereWithoutReservationInput[]
-    deleteMany?: ReservationItemScalarWhereInput | ReservationItemScalarWhereInput[]
-  }
-
-  export type ReservationItemUncheckedUpdateManyWithoutReservationNestedInput = {
-    create?: XOR<ReservationItemCreateWithoutReservationInput, ReservationItemUncheckedCreateWithoutReservationInput> | ReservationItemCreateWithoutReservationInput[] | ReservationItemUncheckedCreateWithoutReservationInput[]
-    connectOrCreate?: ReservationItemCreateOrConnectWithoutReservationInput | ReservationItemCreateOrConnectWithoutReservationInput[]
-    upsert?: ReservationItemUpsertWithWhereUniqueWithoutReservationInput | ReservationItemUpsertWithWhereUniqueWithoutReservationInput[]
-    createMany?: ReservationItemCreateManyReservationInputEnvelope
-    set?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-    disconnect?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-    delete?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-    connect?: ReservationItemWhereUniqueInput | ReservationItemWhereUniqueInput[]
-    update?: ReservationItemUpdateWithWhereUniqueWithoutReservationInput | ReservationItemUpdateWithWhereUniqueWithoutReservationInput[]
-    updateMany?: ReservationItemUpdateManyWithWhereWithoutReservationInput | ReservationItemUpdateManyWithWhereWithoutReservationInput[]
-    deleteMany?: ReservationItemScalarWhereInput | ReservationItemScalarWhereInput[]
-  }
-
-  export type ReservationCreateNestedOneWithoutItemsInput = {
-    create?: XOR<ReservationCreateWithoutItemsInput, ReservationUncheckedCreateWithoutItemsInput>
-    connectOrCreate?: ReservationCreateOrConnectWithoutItemsInput
-    connect?: ReservationWhereUniqueInput
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type ReservationUpdateOneRequiredWithoutItemsNestedInput = {
-    create?: XOR<ReservationCreateWithoutItemsInput, ReservationUncheckedCreateWithoutItemsInput>
-    connectOrCreate?: ReservationCreateOrConnectWithoutItemsInput
-    upsert?: ReservationUpsertWithoutItemsInput
-    connect?: ReservationWhereUniqueInput
-    update?: XOR<XOR<ReservationUpdateToOneWithWhereWithoutItemsInput, ReservationUpdateWithoutItemsInput>, ReservationUncheckedUpdateWithoutItemsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -6451,6 +5221,17 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedEnumReservationStatusFilter<$PrismaModel = never> = {
@@ -6499,17 +5280,6 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -6536,6 +5306,33 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedEnumReservationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -6575,33 +5372,6 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
-
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
   export type NestedJsonNullableFilter<$PrismaModel = never> = 
     | PatchUndefined<
         Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -6625,211 +5395,15 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type ReservationItemCreateWithoutReservationInput = {
-    id?: string
-    assetTypeId: string
-    assetTypeName: string
-    assetId?: string | null
-    quantity?: number
-    status?: $Enums.ReservationStatus
-    notes?: string | null
-  }
-
-  export type ReservationItemUncheckedCreateWithoutReservationInput = {
-    id?: string
-    assetTypeId: string
-    assetTypeName: string
-    assetId?: string | null
-    quantity?: number
-    status?: $Enums.ReservationStatus
-    notes?: string | null
-  }
-
-  export type ReservationItemCreateOrConnectWithoutReservationInput = {
-    where: ReservationItemWhereUniqueInput
-    create: XOR<ReservationItemCreateWithoutReservationInput, ReservationItemUncheckedCreateWithoutReservationInput>
-  }
-
-  export type ReservationItemCreateManyReservationInputEnvelope = {
-    data: ReservationItemCreateManyReservationInput | ReservationItemCreateManyReservationInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type ReservationItemUpsertWithWhereUniqueWithoutReservationInput = {
-    where: ReservationItemWhereUniqueInput
-    update: XOR<ReservationItemUpdateWithoutReservationInput, ReservationItemUncheckedUpdateWithoutReservationInput>
-    create: XOR<ReservationItemCreateWithoutReservationInput, ReservationItemUncheckedCreateWithoutReservationInput>
-  }
-
-  export type ReservationItemUpdateWithWhereUniqueWithoutReservationInput = {
-    where: ReservationItemWhereUniqueInput
-    data: XOR<ReservationItemUpdateWithoutReservationInput, ReservationItemUncheckedUpdateWithoutReservationInput>
-  }
-
-  export type ReservationItemUpdateManyWithWhereWithoutReservationInput = {
-    where: ReservationItemScalarWhereInput
-    data: XOR<ReservationItemUpdateManyMutationInput, ReservationItemUncheckedUpdateManyWithoutReservationInput>
-  }
-
-  export type ReservationItemScalarWhereInput = {
-    AND?: ReservationItemScalarWhereInput | ReservationItemScalarWhereInput[]
-    OR?: ReservationItemScalarWhereInput[]
-    NOT?: ReservationItemScalarWhereInput | ReservationItemScalarWhereInput[]
-    id?: StringFilter<"ReservationItem"> | string
-    reservationId?: StringFilter<"ReservationItem"> | string
-    assetTypeId?: StringFilter<"ReservationItem"> | string
-    assetTypeName?: StringFilter<"ReservationItem"> | string
-    assetId?: StringNullableFilter<"ReservationItem"> | string | null
-    quantity?: IntFilter<"ReservationItem"> | number
-    status?: EnumReservationStatusFilter<"ReservationItem"> | $Enums.ReservationStatus
-    notes?: StringNullableFilter<"ReservationItem"> | string | null
-  }
-
-  export type ReservationCreateWithoutItemsInput = {
-    id?: string
-    requesterId: string
-    requesterEmail?: string | null
-    requesterName?: string | null
-    status?: $Enums.ReservationStatus
-    requestDate: Date | string
-    approvedDate?: Date | string | null
-    returnDate?: Date | string | null
-    actualReturnDate?: Date | string | null
-    approvedBy?: string | null
-    deniedBy?: string | null
-    denialReason?: string | null
-    notes?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type ReservationUncheckedCreateWithoutItemsInput = {
-    id?: string
-    requesterId: string
-    requesterEmail?: string | null
-    requesterName?: string | null
-    status?: $Enums.ReservationStatus
-    requestDate: Date | string
-    approvedDate?: Date | string | null
-    returnDate?: Date | string | null
-    actualReturnDate?: Date | string | null
-    approvedBy?: string | null
-    deniedBy?: string | null
-    denialReason?: string | null
-    notes?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type ReservationCreateOrConnectWithoutItemsInput = {
-    where: ReservationWhereUniqueInput
-    create: XOR<ReservationCreateWithoutItemsInput, ReservationUncheckedCreateWithoutItemsInput>
-  }
-
-  export type ReservationUpsertWithoutItemsInput = {
-    update: XOR<ReservationUpdateWithoutItemsInput, ReservationUncheckedUpdateWithoutItemsInput>
-    create: XOR<ReservationCreateWithoutItemsInput, ReservationUncheckedCreateWithoutItemsInput>
-    where?: ReservationWhereInput
-  }
-
-  export type ReservationUpdateToOneWithWhereWithoutItemsInput = {
-    where?: ReservationWhereInput
-    data: XOR<ReservationUpdateWithoutItemsInput, ReservationUncheckedUpdateWithoutItemsInput>
-  }
-
-  export type ReservationUpdateWithoutItemsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    requesterId?: StringFieldUpdateOperationsInput | string
-    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
-    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    requestDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    returnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    actualReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    denialReason?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ReservationUncheckedUpdateWithoutItemsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    requesterId?: StringFieldUpdateOperationsInput | string
-    requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
-    requesterName?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    requestDate?: DateTimeFieldUpdateOperationsInput | Date | string
-    approvedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    returnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    actualReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    denialReason?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ReservationItemCreateManyReservationInput = {
-    id?: string
-    assetTypeId: string
-    assetTypeName: string
-    assetId?: string | null
-    quantity?: number
-    status?: $Enums.ReservationStatus
-    notes?: string | null
-  }
-
-  export type ReservationItemUpdateWithoutReservationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    assetTypeName?: StringFieldUpdateOperationsInput | string
-    assetId?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: IntFieldUpdateOperationsInput | number
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ReservationItemUncheckedUpdateWithoutReservationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    assetTypeName?: StringFieldUpdateOperationsInput | string
-    assetId?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: IntFieldUpdateOperationsInput | number
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ReservationItemUncheckedUpdateManyWithoutReservationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    assetTypeId?: StringFieldUpdateOperationsInput | string
-    assetTypeName?: StringFieldUpdateOperationsInput | string
-    assetId?: NullableStringFieldUpdateOperationsInput | string | null
-    quantity?: IntFieldUpdateOperationsInput | number
-    status?: EnumReservationStatusFieldUpdateOperationsInput | $Enums.ReservationStatus
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
 
 
   /**
    * Aliases for legacy arg types
    */
     /**
-     * @deprecated Use ReservationCountOutputTypeDefaultArgs instead
-     */
-    export type ReservationCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReservationCountOutputTypeDefaultArgs<ExtArgs>
-    /**
      * @deprecated Use ReservationDefaultArgs instead
      */
     export type ReservationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReservationDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use ReservationItemDefaultArgs instead
-     */
-    export type ReservationItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReservationItemDefaultArgs<ExtArgs>
     /**
      * @deprecated Use EquipmentAvailabilityDefaultArgs instead
      */

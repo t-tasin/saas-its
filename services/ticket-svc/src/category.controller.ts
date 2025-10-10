@@ -11,15 +11,15 @@ import { Public } from './auth/public.decorator';
 import { CreateCategoryDto, UpdateCategoryDto, CreateSubCategoryDto, UpdateSubCategoryDto } from './dto/category.dto';
 import { Prisma } from '../generated/client';
 
-@ApiTags('categories')
+@ApiTags('tickets')
 @ApiBearerAuth()
-@Controller()
+@Controller('tickets')
 export class CategoryController {
   /**
    * List all categories with their subcategories
    */
   @Public()
-  @Get('/categories')
+  @Get('categories')
   async listCategories() {
     return withTx(async (tx) => {
       return tx.category.findMany({
@@ -37,7 +37,7 @@ export class CategoryController {
    * Get single category with subcategories
    */
   @Public()
-  @Get('/categories/:id')
+  @Get('categories/:id')
   async getCategory(@Param('id', ParseUUIDPipe) id: string) {
     return withTx(async (tx) => {
       return tx.category.findUniqueOrThrow({
@@ -55,7 +55,7 @@ export class CategoryController {
    * Create category (operator/admin only)
    */
   @Roles('operator', 'admin')
-  @Post('/categories')
+  @Post('categories')
   async createCategory(@Body() dto: CreateCategoryDto) {
     return withTx(async (tx) => {
       try {
@@ -78,7 +78,7 @@ export class CategoryController {
    * Update category (operator/admin only)
    */
   @Roles('operator', 'admin')
-  @Patch('/categories/:id')
+  @Patch('categories/:id')
   async updateCategory(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateCategoryDto,
@@ -105,7 +105,7 @@ export class CategoryController {
    * Delete category (admin only)
    */
   @Roles('admin')
-  @Delete('/categories/:id')
+  @Delete('categories/:id')
   async deleteCategory(@Param('id', ParseUUIDPipe) id: string) {
     return withTx(async (tx) => {
       await tx.category.delete({ where: { id } });
@@ -117,7 +117,7 @@ export class CategoryController {
    * List subcategories for a category
    */
   @Public()
-  @Get('/categories/:id/subcategories')
+  @Get('categories/:id/subcategories')
   async listSubCategories(@Param('id', ParseUUIDPipe) categoryId: string) {
     return withTx(async (tx) => {
       return tx.subCategory.findMany({
@@ -131,7 +131,7 @@ export class CategoryController {
    * Create subcategory (operator/admin only)
    */
   @Roles('operator', 'admin')
-  @Post('/categories/:id/subcategories')
+  @Post('categories/:id/subcategories')
   async createSubCategory(
     @Param('id', ParseUUIDPipe) categoryId: string,
     @Body() dto: CreateSubCategoryDto,
@@ -157,7 +157,7 @@ export class CategoryController {
    * Update subcategory (operator/admin only)
    */
   @Roles('operator', 'admin')
-  @Patch('/subcategories/:id')
+  @Patch('subcategories/:id')
   async updateSubCategory(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateSubCategoryDto,
@@ -181,7 +181,7 @@ export class CategoryController {
    * Delete subcategory (admin only)
    */
   @Roles('admin')
-  @Delete('/subcategories/:id')
+  @Delete('subcategories/:id')
   async deleteSubCategory(@Param('id', ParseUUIDPipe) id: string) {
     return withTx(async (tx) => {
       await tx.subCategory.delete({ where: { id } });

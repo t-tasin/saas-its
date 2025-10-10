@@ -2,7 +2,8 @@
  * DTOs for Ticket endpoints with validation and OpenAPI tags.
  */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsUUID, Length, MaxLength } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID, Length, MaxLength, IsInt, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum TicketStatus { open='open', in_progress='in_progress', resolved='resolved', closed='closed' }
 export enum TicketType   { incident='incident', request='request' }
@@ -26,6 +27,14 @@ export class CreateTicketDto {
   @ApiPropertyOptional({ description: 'Email or name of requester (for unauthenticated users)' })
   @IsOptional() @IsString() @MaxLength(200)
   requestedBy?: string;
+
+  @ApiPropertyOptional({ description: 'Name of the requester' })
+  @IsOptional() @IsString() @MaxLength(200)
+  requesterName?: string;
+
+  @ApiPropertyOptional({ description: 'Email of the requester' })
+  @IsOptional() @IsString() @MaxLength(200)
+  requesterEmail?: string;
 
   @ApiPropertyOptional({ description: 'Category UUID' })
   @IsOptional() @IsUUID()
@@ -63,6 +72,9 @@ export class ListQueryDto {
   @ApiPropertyOptional() @IsOptional() @IsString()
   cursor?: string;
 
-  @ApiPropertyOptional() @IsOptional()
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsInt() @Min(1)
+  page?: number;
+
+  @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsInt() @Min(1)
   limit?: number;
 }

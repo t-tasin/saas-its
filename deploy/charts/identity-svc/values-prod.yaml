@@ -1,0 +1,44 @@
+# Production values for Identity Service
+
+image:
+  repository: gcr.io/YOUR_PROJECT_ID/identity-svc  # UPDATE THIS
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+replicaCount: 2  # High availability
+
+service:
+  type: ClusterIP
+  port: 3000
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+secrets:
+  # Use existing secret created in cluster
+  existingSecret: identity-svc-secrets
+  # Or specify values directly (not recommended for production)
+  # databaseUrl: "postgresql://..."
+  # jwtSecret: "..."
+  # jwtRefreshSecret: "..."
+  # smtpHost: "smtp.sendgrid.net"
+  # smtpPort: "587"
+  # smtpUser: "apikey"
+  # smtpPassword: "YOUR_SENDGRID_API_KEY"
+
+env:
+  NODE_ENV: "production"
+  PORT: "3000"
+  LOG_LEVEL: "info"
+

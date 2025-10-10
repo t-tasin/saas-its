@@ -165,19 +165,52 @@ export class UserService {
   }
 
   /**
-   * List all users (admin only)
+   * List all users (admin only) with pagination
    */
-  async listUsers(filters?: { role?: string; isActive?: boolean }) {
+  async listUsers(filters?: { 
+    role?: string; 
+    isActive?: boolean; 
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const page = filters?.page || 1;
+    const limit = Math.min(filters?.limit || 20, 100); // Max 100 per page
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      ...(filters?.role && { role: filters.role as any }),
+      ...(typeof filters?.isActive === 'boolean' && { isActive: filters.isActive }),
+    };
+
+    // Add search filter
+    if (filters?.search) {
+      where.OR = [
+        { email: { contains: filters.search, mode: 'insensitive' } },
+        { name: { contains: filters.search, mode: 'insensitive' } },
+      ];
+    }
+
+    // Get total count
+    const total = await prisma.user.count({ where });
+
+    // Get users
     const users = await prisma.user.findMany({
-      where: {
-        ...(filters?.role && { role: filters.role as any }),
-        ...(typeof filters?.isActive === 'boolean' && { isActive: filters.isActive }),
-      },
+      where,
       orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
     });
 
     // Remove passwords from response
-    return users.map(({ password, ...user }) => user);
+    const usersWithoutPassword = users.map(({ password, ...user }) => user);
+
+    return {
+      users: usersWithoutPassword,
+      total,
+      page,
+      limit,
+    };
   }
 
   /**

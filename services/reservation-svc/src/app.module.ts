@@ -14,6 +14,7 @@ import { RolesGuard } from './auth/roles.guard';
 import { ReservationController } from './reservation.controller';
 import { AnalyticsController } from './analytics.controller';
 import { ReservationService } from './reservation.service';
+import { ReservationNumberService } from './reservation-number.service';
 import { HealthController } from './health.controller';
 
 import { IdempotencyMiddleware } from './shared/idempotency.middleware';
@@ -24,6 +25,7 @@ import { MetricsMiddleware } from './shared/metrics.middleware';
   controllers: [ReservationController, AnalyticsController, HealthController],
   providers: [
     ReservationService,
+    ReservationNumberService,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],

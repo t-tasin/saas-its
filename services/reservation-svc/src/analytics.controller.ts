@@ -25,7 +25,6 @@ export class AnalyticsController {
       // All reservations
       const allReservations = await tx.reservation.findMany({
         where: { createdAt: { gte: startDate } },
-        include: { items: true },
       });
 
       const total = allReservations.length;
@@ -94,20 +93,15 @@ export class AnalyticsController {
           requesterEmail: true,
           returnDate: true,
           status: true,
-          items: {
-            select: {
-              assetTypeName: true,
-              quantity: true,
-            },
-          },
+          equipmentType: true,
+          quantity: true,
         },
       });
 
       // Most requested equipment types
-      const equipmentRequests = allReservations.flatMap((r) => r.items);
-      const equipmentCounts = equipmentRequests.reduce((acc, item) => {
-        const name = item.assetTypeName;
-        acc[name] = (acc[name] || 0) + item.quantity;
+      const equipmentCounts = allReservations.reduce((acc, r) => {
+        const name = r.equipmentType;
+        acc[name] = (acc[name] || 0) + r.quantity;
         return acc;
       }, {} as Record<string, number>);
 

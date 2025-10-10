@@ -18,6 +18,7 @@ import {
 } from './dto/ticket.dto';
 import { TicketNumberService } from './ticket-number.service';
 import { AuditService } from './shared/audit.service';
+import { StorageService } from './storage.service';
 
 
 @ApiTags('tickets')
@@ -27,11 +28,13 @@ export class TicketController {
   constructor(
     private readonly num: TicketNumberService,
     private readonly audit: AuditService,
+    private readonly storage: StorageService,
   ) {}
 
   @Get()
   async list(@Req() req: any, @Query() q: ListQueryDto) {
     return withTx(async (tx) => {
+      const user = req.user; // May be undefined for unauthenticated requests
       const take = Math.min(Math.max(Number(q.limit || 50), 1), 100);
 
       let cursorObj: { id: string; updatedAt: Date } | undefined;
@@ -43,6 +46,12 @@ export class TicketController {
       }
 
       const where: any = {};
+      
+      // Role-based filtering: general users only see their own tickets
+      if (user && user.role === 'general') {
+        where.requestedByUser = user.sub;
+      }
+      
       if (q.status) where.status = q.status;
       if (q.type) where.type = q.type;
       if (q.q) {
@@ -84,6 +93,10 @@ export class TicketController {
       const number = await this.num.next(tx);
       const user = req.user; // May be undefined for unauthenticated requests
 
+      // Determine requester info from user or dto
+      const requesterEmail = user?.email || (dto as any).email || null;
+      const requesterName = user?.name || (dto as any).name || null;
+
       const ticket = await tx.ticket.create({
         data: {
           number,
@@ -93,6 +106,8 @@ export class TicketController {
           priority: dto.priority,
           requestedBy: dto.requestedBy ?? null,
           requestedByUser: user?.sub ?? null,
+          requesterName,
+          requesterEmail,
           categoryId: dto.categoryId ?? null,
           subcategoryId: dto.subcategoryId ?? null,
         },
@@ -135,20 +150,75 @@ export class TicketController {
     @Body() dto: PatchStatusDto,
   ) {
     return withTx(async (tx) => {
+      const user = req.user;
+      const updateData: any = { status: dto.status };
+      
+      // Auto-set timestamps based on status
+      if (dto.status === 'resolved' && !dto.status.includes('resolved')) {
+        updateData.resolvedAt = new Date();
+      }
+      if (dto.status === 'closed') {
+        updateData.closedAt = new Date();
+      }
+
       const t = await tx.ticket.update({
         where: { id },
-        data: { status: dto.status },
+        data: updateData,
       });
+
+      // If comment provided, add it
+      if ((dto as any).comment) {
+        await tx.ticketComment.create({
+          data: {
+            ticketId: id,
+            authorId: user?.sub ?? null,
+            authorName: user?.name ?? null,
+            authorRole: user?.role ?? null,
+            body: (dto as any).comment,
+          },
+        });
+      }
 
       await this.audit.log(tx, {
         entity: 'ticket',
         entityId: id,
         action: 'status',
-        actorId: req.user?.sub,
+        actorId: user?.sub,
         metadata: { status: dto.status },
       });
 
       return t;
+    });
+  }
+
+  @Patch(':id/assign')
+  @Roles('operator', 'admin') // Only operators and admins can assign tickets
+  async assignTicket(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() body: { operatorId: string },
+  ) {
+    return withTx(async (tx) => {
+      const ticket = await tx.ticket.update({
+        where: { id },
+        data: {
+          assignedTo: body.operatorId,
+          status: 'in_progress', // Auto-update status when assigned
+        },
+      });
+
+      await this.audit.log(tx, {
+        entity: 'ticket',
+        entityId: id,
+        action: 'assign',
+        actorId: req.user?.sub,
+        metadata: { assignedTo: body.operatorId },
+      });
+
+      return {
+        success: true,
+        message: 'Ticket assigned successfully',
+      };
     });
   }
 
@@ -177,7 +247,8 @@ export class TicketController {
         data: {
           ticketId: id,
           authorId: user?.sub ?? null,
-          authorName: dto.authorName ?? null,
+          authorName: (user?.name || dto.authorName) ?? null,
+          authorRole: user?.role ?? null,
           body: dto.body,
         },
       });
@@ -190,6 +261,109 @@ export class TicketController {
       });
 
       return c;
+    });
+  }
+
+  @Post(':id/attachments/upload-url')
+  @Public() // Allow anyone to request upload URL for a ticket
+  async requestAttachmentUpload(
+    @Req() req: any,
+    @Param('id') ticketId: string,
+    @Body() body: { filename: string; contentType: string },
+  ) {
+    const { uploadUrl, key, attachmentId } = await this.storage.generateUploadUrl(
+      body.filename,
+      body.contentType,
+      ticketId,
+    );
+
+    // Store attachment metadata in ticket
+    await withTx(async (tx) => {
+      const ticket = await tx.ticket.findUniqueOrThrow({ where: { id: ticketId } });
+      const attachments = (ticket.attachments as any[]) || [];
+      
+      attachments.push({
+        id: attachmentId,
+        key,
+        filename: body.filename,
+        contentType: body.contentType,
+        size: 0, // Will be updated after upload if needed
+        uploadedAt: new Date().toISOString(),
+        uploadedBy: req.user?.sub || 'anonymous',
+      });
+
+      await tx.ticket.update({
+        where: { id: ticketId },
+        data: { attachments: attachments as any },
+      });
+
+      await this.audit.log(tx, {
+        entity: 'ticket',
+        entityId: ticketId,
+        action: 'attachment-upload',
+        actorId: req.user?.sub,
+        metadata: { filename: body.filename, attachmentId },
+      });
+    });
+
+    return { uploadUrl, attachmentId };
+  }
+
+  @Get(':id/attachments/:attachmentId/download-url')
+  @Public() // Allow anyone to get download URL
+  async getAttachmentDownloadUrl(
+    @Param('id') ticketId: string,
+    @Param('attachmentId') attachmentId: string,
+  ) {
+    return withTx(async (tx) => {
+      const ticket = await tx.ticket.findUniqueOrThrow({ where: { id: ticketId } });
+      const attachments = (ticket.attachments as any[]) || [];
+      
+      const attachment = attachments.find((a) => a.id === attachmentId);
+      if (!attachment) {
+        throw new Error('Attachment not found');
+      }
+
+      const downloadUrl = await this.storage.generateDownloadUrl(attachment.key);
+      return { downloadUrl, attachment };
+    });
+  }
+
+  @Post(':id/attachments/:attachmentId/delete')
+  @Roles('operator', 'admin') // Only operators and admins can delete attachments
+  async deleteAttachment(
+    @Req() req: any,
+    @Param('id') ticketId: string,
+    @Param('attachmentId') attachmentId: string,
+  ) {
+    return withTx(async (tx) => {
+      const ticket = await tx.ticket.findUniqueOrThrow({ where: { id: ticketId } });
+      const attachments = (ticket.attachments as any[]) || [];
+      
+      const attachment = attachments.find((a) => a.id === attachmentId);
+      if (!attachment) {
+        throw new Error('Attachment not found');
+      }
+
+      // Delete from S3
+      await this.storage.deleteFile(attachment.key);
+
+      // Remove from ticket metadata
+      const updatedAttachments = attachments.filter((a) => a.id !== attachmentId);
+      await tx.ticket.update({
+        where: { id: ticketId },
+        data: { attachments: updatedAttachments as any },
+      });
+
+      await this.audit.log(tx, {
+        entity: 'ticket',
+        entityId: ticketId,
+        action: 'attachment-delete',
+        actorId: req.user?.sub,
+        metadata: { filename: attachment.filename, attachmentId },
+      });
+
+      return { success: true, message: 'Attachment deleted successfully' };
     });
   }
 }
