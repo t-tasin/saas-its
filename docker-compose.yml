@@ -14,9 +14,9 @@ services:
       timeout: 2s
       retries: 20
 
-  redis:
-    image: redis:7-alpine
-    ports: ["6379:6379"]
+  # redis:
+  #   image: redis:7-alpine
+  #   ports: ["6379:6379"]
 
   localstack:
     image: localstack/localstack:3
