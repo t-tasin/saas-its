@@ -11,7 +11,7 @@ export class EmailService {
     this.initializeTransporter();
   }
 
-  private async initializeTransporter() {
+  private initializeTransporter() {
     if (process.env.SMTP_HOST && process.env.SMTP_USER) {
       // Production SMTP configuration
       this.transporter = nodemailer.createTransport({
@@ -23,70 +23,83 @@ export class EmailService {
           pass: process.env.SMTP_PASS,
         },
       });
+      console.log('✅ SMTP configured:', process.env.SMTP_HOST);
     } else {
       // Development: Use Ethereal (fake SMTP for testing)
-      const testAccount = await nodemailer.createTestAccount();
-      this.transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
-      });
-      console.log('📧 Using Ethereal email for testing');
-      console.log('   User:', testAccount.user);
+      // Note: Ethereal requires async, so we'll initialize on first send
+      console.log('⚠️  No SMTP credentials found, will use Ethereal on first send');
     }
   }
 
   async sendOTP(email: string, otp: string) {
-    const info = await this.transporter.sendMail({
-      from: process.env.SMTP_FROM || '"SaaS ITS" <noreply@saas-its.com>',
-      to: email,
-      subject: 'Your Login Code',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Your Login Code</h2>
-          <p>Use the following code to log in to your account:</p>
-          <div style="background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; margin: 20px 0;">
-            ${otp}
+    try {
+      if (!this.transporter) {
+        throw new Error('Email transporter not initialized. Check SMTP configuration.');
+      }
+
+      console.log('📧 Sending OTP to:', email);
+      console.log('   From:', process.env.SMTP_FROM);
+      console.log('   SMTP Host:', process.env.SMTP_HOST);
+
+      const info = await this.transporter.sendMail({
+        from: process.env.SMTP_FROM || '"SaaS ITS" <noreply@saas-its.com>',
+        to: email,
+        subject: 'Your Login Code',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Your Login Code</h2>
+            <p>Use the following code to log in to your account:</p>
+            <div style="background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; margin: 20px 0;">
+              ${otp}
+            </div>
+            <p>This code will expire in 10 minutes.</p>
+            <p>If you didn't request this code, please ignore this email.</p>
+            <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
+            <p style="color: #888; font-size: 12px;">SaaS ITS - IT Service Management</p>
           </div>
-          <p>This code will expire in 10 minutes.</p>
-          <p>If you didn't request this code, please ignore this email.</p>
-          <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
-          <p style="color: #888; font-size: 12px;">SaaS ITS - IT Service Management</p>
-        </div>
-      `,
-    });
+        `,
+      });
 
-    console.log('📧 OTP email sent:', info.messageId);
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('   Preview URL:', nodemailer.getTestMessageUrl(info));
+      console.log('✅ OTP email sent successfully:', info.messageId);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('   Preview URL:', nodemailer.getTestMessageUrl(info));
+      }
+
+      return info;
+    } catch (error) {
+      console.error('❌ Failed to send OTP email:', error);
+      throw error;
     }
-
-    return info;
   }
 
   async sendWelcomeEmail(email: string, name: string) {
-    const info = await this.transporter.sendMail({
-      from: process.env.SMTP_FROM || '"SaaS ITS" <noreply@saas-its.com>',
-      to: email,
-      subject: 'Welcome to SaaS ITS',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Welcome to SaaS ITS!</h2>
-          <p>Hi ${name || 'there'},</p>
-          <p>Your account has been created successfully. You can now log in using email OTP authentication.</p>
-          <p>Thank you for joining us!</p>
-          <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
-          <p style="color: #888; font-size: 12px;">SaaS ITS - IT Service Management</p>
-        </div>
-      `,
-    });
+    try {
+      if (!this.transporter) {
+        throw new Error('Email transporter not initialized. Check SMTP configuration.');
+      }
 
-    console.log('📧 Welcome email sent:', info.messageId);
-    return info;
+      const info = await this.transporter.sendMail({
+        from: process.env.SMTP_FROM || '"SaaS ITS" <noreply@saas-its.com>',
+        to: email,
+        subject: 'Welcome to SaaS ITS',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Welcome to SaaS ITS!</h2>
+            <p>Hi ${name || 'there'},</p>
+            <p>Your account has been created successfully. You can now log in using email OTP authentication.</p>
+            <p>Thank you for joining us!</p>
+            <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;">
+            <p style="color: #888; font-size: 12px;">SaaS ITS - IT Service Management</p>
+          </div>
+        `,
+      });
+
+      console.log('✅ Welcome email sent successfully:', info.messageId);
+      return info;
+    } catch (error) {
+      console.error('❌ Failed to send welcome email:', error);
+      throw error;
+    }
   }
 }
 
