@@ -50,6 +50,9 @@ coverage/
 tmp/
 temp/
 
+# GitHub Workflows (Railway auto-deploys, no workflows needed)
+.github/
+
 # Documentation (only README.md goes to GitHub)
 # Keep README.md, ignore all other documentation
 *-GUIDE.md
