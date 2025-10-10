@@ -1,0 +1,7 @@
+# Copy this content to web/.env.local
+
+# Backend API URLs - Railway Production
+NEXT_PUBLIC_IDENTITY_API=https://saas-itsidentity-svc-production.up.railway.app
+NEXT_PUBLIC_TICKET_API=https://saas-itsticket-svc-production.up.railway.app
+NEXT_PUBLIC_ASSET_API=https://asset-svc-production.up.railway.app
+NEXT_PUBLIC_RESERVATION_API=https://saas-itsreservation-svc-production.up.railway.app

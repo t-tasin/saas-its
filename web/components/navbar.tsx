@@ -1,0 +1,129 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { useAuth } from "@/contexts/auth-context"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Headset, User, LogOut, LayoutDashboard, Ticket, Calendar, Package } from "lucide-react"
+
+export function Navbar() {
+  const { user, isAuthenticated, logout } = useAuth()
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent hydration mismatch by only showing auth-dependent UI after mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  return (
+    <nav className="border-b bg-card sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+            <Headset className="h-6 w-6" />
+            <span>IT Helpdesk</span>
+          </Link>
+
+          <div className="flex items-center gap-4">
+            {!mounted ? (
+              // Show nothing during SSR to prevent hydration mismatch
+              <div className="h-9 w-32" />
+            ) : isAuthenticated ? (
+              <>
+                {/* Navigation Links for Operator/Admin */}
+                {(user?.role === "operator" || user?.role === "admin") && (
+                  <div className="hidden md:flex items-center gap-2">
+                    {user?.role === "admin" && (
+                      <Link href="/dashboard">
+                        <Button variant="ghost" size="sm">
+                          <LayoutDashboard className="h-4 w-4 mr-2" />
+                          Dashboard
+                        </Button>
+                      </Link>
+                    )}
+                    <Link href="/dashboard/tickets">
+                      <Button variant="ghost" size="sm">
+                        <Ticket className="h-4 w-4 mr-2" />
+                        Tickets
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard/reservations">
+                      <Button variant="ghost" size="sm">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Reservations
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard/assets">
+                      <Button variant="ghost" size="sm">
+                        <Package className="h-4 w-4 mr-2" />
+                        Assets
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+
+                {/* User Dashboard Link for general users */}
+                {user?.role === "general" && (
+                  <Link href="/dashboard">
+                    <Button variant="ghost" size="sm">
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      My Dashboard
+                    </Button>
+                  </Link>
+                )}
+
+                {/* Profile Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <User className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium">{user?.name}</p>
+                        <p className="text-xs text-muted-foreground">{user?.email}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/profile">
+                        <User className="h-4 w-4 mr-2" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="text-destructive">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm">Register</Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
+}

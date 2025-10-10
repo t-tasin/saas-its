@@ -1,0 +1,353 @@
+{
+  "users": [
+    {
+      "id": "user-1",
+      "email": "user@test.com",
+      "name": "John Doe",
+      "role": "general",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "operator-1",
+      "email": "operator@test.com",
+      "password": "operator123",
+      "name": "Jane Smith",
+      "role": "operator",
+      "createdAt": "2024-01-10T10:00:00Z",
+      "updatedAt": "2024-01-10T10:00:00Z"
+    },
+    {
+      "id": "admin-1",
+      "email": "admin@test.com",
+      "password": "admin123",
+      "name": "Admin User",
+      "role": "admin",
+      "createdAt": "2024-01-01T10:00:00Z",
+      "updatedAt": "2024-01-01T10:00:00Z"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "ticket-1",
+      "number": "TKT-1001",
+      "title": "Laptop not connecting to WiFi",
+      "description": "My laptop cannot connect to the office WiFi network. I've tried restarting but it still doesn't work.",
+      "status": "open",
+      "priority": "high",
+      "type": "incident",
+      "requestedBy": "user@test.com",
+      "assignedToId": "operator-1",
+      "assignedTo": {
+        "id": "operator-1",
+        "name": "Jane Smith",
+        "email": "operator@test.com"
+      },
+      "category": {
+        "id": "cat-1",
+        "name": "Network"
+      },
+      "subcategory": {
+        "id": "subcat-1",
+        "name": "WiFi Issues"
+      },
+      "createdAt": "2024-03-15T09:30:00Z",
+      "updatedAt": "2024-03-15T09:30:00Z"
+    },
+    {
+      "id": "ticket-2",
+      "number": "TKT-1002",
+      "title": "Request for software installation",
+      "description": "I need Adobe Photoshop installed on my workstation for design work.",
+      "status": "in_progress",
+      "priority": "medium",
+      "type": "request",
+      "requestedBy": "user@test.com",
+      "assignedToId": "operator-1",
+      "assignedTo": {
+        "id": "operator-1",
+        "name": "Jane Smith",
+        "email": "operator@test.com"
+      },
+      "category": {
+        "id": "cat-2",
+        "name": "Software"
+      },
+      "createdAt": "2024-03-14T14:20:00Z",
+      "updatedAt": "2024-03-15T10:15:00Z"
+    },
+    {
+      "id": "ticket-3",
+      "number": "TKT-1003",
+      "title": "Email not syncing",
+      "description": "My Outlook email hasn't synced since yesterday morning.",
+      "status": "resolved",
+      "priority": "low",
+      "type": "incident",
+      "requestedBy": "john.external@company.com",
+      "assignedToId": "operator-1",
+      "assignedTo": {
+        "id": "operator-1",
+        "name": "Jane Smith",
+        "email": "operator@test.com"
+      },
+      "category": {
+        "id": "cat-3",
+        "name": "Email"
+      },
+      "createdAt": "2024-03-13T11:00:00Z",
+      "updatedAt": "2024-03-14T16:30:00Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": "comment-1",
+      "ticketId": "ticket-1",
+      "authorId": "operator-1",
+      "author": {
+        "id": "operator-1",
+        "name": "Jane Smith"
+      },
+      "body": "I've checked the network settings. Can you try forgetting the network and reconnecting?",
+      "createdAt": "2024-03-15T10:00:00Z"
+    },
+    {
+      "id": "comment-2",
+      "ticketId": "ticket-2",
+      "authorId": "operator-1",
+      "author": {
+        "id": "operator-1",
+        "name": "Jane Smith"
+      },
+      "body": "Software request has been approved. Installation scheduled for tomorrow.",
+      "createdAt": "2024-03-15T10:15:00Z"
+    }
+  ],
+  "assetTypes": [
+    {
+      "id": "type-1",
+      "name": "Laptop",
+      "description": "Portable computers"
+    },
+    {
+      "id": "type-2",
+      "name": "Monitor",
+      "description": "Display screens"
+    },
+    {
+      "id": "type-3",
+      "name": "Projector",
+      "description": "Presentation projectors"
+    },
+    {
+      "id": "type-4",
+      "name": "Keyboard",
+      "description": "Input devices"
+    },
+    {
+      "id": "type-5",
+      "name": "Mouse",
+      "description": "Pointing devices"
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset-1",
+      "assetTag": "LAP-001",
+      "type": "Laptop",
+      "assetTypeId": "type-1",
+      "assetType": {
+        "id": "type-1",
+        "name": "Laptop"
+      },
+      "status": "available",
+      "location": "IT Storage Room",
+      "name": "Dell Latitude 5520",
+      "summary": "Dell Latitude 5520, 16GB RAM, 512GB SSD",
+      "manufacturer": "Dell",
+      "model": "Latitude 5520",
+      "serialNumber": "DL5520-001",
+      "purchaseDate": "2023-06-15",
+      "createdAt": "2023-06-15T10:00:00Z",
+      "updatedAt": "2023-06-15T10:00:00Z"
+    },
+    {
+      "id": "asset-2",
+      "assetTag": "LAP-002",
+      "type": "Laptop",
+      "assetTypeId": "type-1",
+      "assetType": {
+        "id": "type-1",
+        "name": "Laptop"
+      },
+      "status": "assigned",
+      "location": "Floor 3, Desk 15",
+      "name": "Dell Latitude 5520",
+      "summary": "Dell Latitude 5520, 16GB RAM, 512GB SSD",
+      "assignedToId": "user-1",
+      "assignedTo": "user-1",
+      "manufacturer": "Dell",
+      "model": "Latitude 5520",
+      "serialNumber": "DL5520-002",
+      "purchaseDate": "2023-06-15",
+      "createdAt": "2023-06-15T10:00:00Z",
+      "updatedAt": "2024-01-20T10:00:00Z"
+    },
+    {
+      "id": "asset-3",
+      "assetTag": "MON-001",
+      "type": "Monitor",
+      "assetTypeId": "type-2",
+      "assetType": {
+        "id": "type-2",
+        "name": "Monitor"
+      },
+      "status": "available",
+      "location": "IT Storage Room",
+      "name": "LG UltraWide 34 inch",
+      "summary": "LG UltraWide 34 inch",
+      "manufacturer": "LG",
+      "model": "34WN80C-B",
+      "serialNumber": "LG-UW-001",
+      "purchaseDate": "2023-08-20",
+      "createdAt": "2023-08-20T10:00:00Z",
+      "updatedAt": "2023-08-20T10:00:00Z"
+    },
+    {
+      "id": "asset-4",
+      "assetTag": "PRJ-001",
+      "type": "Projector",
+      "assetTypeId": "type-3",
+      "assetType": {
+        "id": "type-3",
+        "name": "Projector"
+      },
+      "status": "maintenance",
+      "location": "Repair Shop",
+      "name": "Epson PowerLite 1080p",
+      "summary": "Epson PowerLite 1080p",
+      "manufacturer": "Epson",
+      "model": "PowerLite 1080",
+      "serialNumber": "EP-PRJ-001",
+      "purchaseDate": "2022-03-10",
+      "createdAt": "2022-03-10T10:00:00Z",
+      "updatedAt": "2024-03-10T10:00:00Z"
+    }
+  ],
+  "reservations": [
+    {
+      "id": "reservation-1",
+      "reservationNumber": "RES-2001",
+      "userId": "user-1",
+      "requesterId": "user-1",
+      "purpose": "Need for client presentation",
+      "startDate": "2024-03-20T09:00:00Z",
+      "endDate": "2024-03-27T17:00:00Z",
+      "status": "pending",
+      "items": [
+        {
+          "assetType": "Laptop",
+          "quantity": 2
+        }
+      ],
+      "createdAt": "2024-03-15T08:00:00Z",
+      "updatedAt": "2024-03-15T10:00:00Z"
+    },
+    {
+      "id": "reservation-2",
+      "reservationNumber": "RES-2002",
+      "userId": "user-1",
+      "requesterId": "user-1",
+      "purpose": "Training session equipment",
+      "startDate": "2024-03-18T09:00:00Z",
+      "endDate": "2024-03-25T17:00:00Z",
+      "status": "approved",
+      "items": [
+        {
+          "assetType": "Monitor",
+          "quantity": 3
+        }
+      ],
+      "createdAt": "2024-03-14T11:00:00Z",
+      "updatedAt": "2024-03-15T09:00:00Z"
+    },
+    {
+      "id": "reservation-3",
+      "reservationNumber": "RES-2003",
+      "userId": "user-1",
+      "requesterId": "user-1",
+      "purpose": "Conference room setup",
+      "startDate": "2024-03-16T09:00:00Z",
+      "endDate": "2024-03-23T17:00:00Z",
+      "status": "active",
+      "items": [
+        {
+          "assetType": "Projector",
+          "quantity": 1
+        }
+      ],
+      "createdAt": "2024-03-13T10:00:00Z",
+      "updatedAt": "2024-03-16T09:00:00Z"
+    },
+    {
+      "id": "reservation-4",
+      "reservationNumber": "RES-2004",
+      "userId": "user-1",
+      "requesterId": "user-1",
+      "purpose": "Workshop equipment",
+      "startDate": "2024-03-10T09:00:00Z",
+      "endDate": "2024-03-17T17:00:00Z",
+      "status": "returned",
+      "items": [
+        {
+          "assetType": "Keyboard",
+          "quantity": 5
+        }
+      ],
+      "createdAt": "2024-03-08T11:00:00Z",
+      "updatedAt": "2024-03-12T17:30:00Z"
+    }
+  ],
+  "equipmentAvailability": [
+    {
+      "assetTypeId": "type-1",
+      "assetTypeName": "Laptop",
+      "totalCount": 20,
+      "availableCount": 15,
+      "assignedCount": 4,
+      "maintenanceCount": 1
+    },
+    {
+      "assetTypeId": "type-2",
+      "assetTypeName": "Monitor",
+      "totalCount": 12,
+      "availableCount": 8,
+      "assignedCount": 3,
+      "maintenanceCount": 1
+    },
+    {
+      "assetTypeId": "type-3",
+      "assetTypeName": "Projector",
+      "totalCount": 5,
+      "availableCount": 3,
+      "assignedCount": 1,
+      "maintenanceCount": 1
+    },
+    {
+      "assetTypeId": "type-4",
+      "assetTypeName": "Keyboard",
+      "totalCount": 30,
+      "availableCount": 25,
+      "assignedCount": 5,
+      "maintenanceCount": 0
+    },
+    {
+      "assetTypeId": "type-5",
+      "assetTypeName": "Mouse",
+      "totalCount": 30,
+      "availableCount": 28,
+      "assignedCount": 2,
+      "maintenanceCount": 0
+    }
+  ]
+}
