@@ -54,35 +54,16 @@ temp/
 .github/
 
 # Documentation (only README.md goes to GitHub)
-# Keep README.md, ignore all other documentation
-*-GUIDE.md
-*-DEPLOYMENT*.md
-*-REQUIREMENTS.md
-*-SPECIFICATION.md
-*-METRICS.md
-*-SUMMARY.md
-*-CHECKLIST.md
-*-COMPLETE.md
-*-READY.md
-*-FIXES.md
-*-FIX*.md
-*-API*.md
-DEPLOY*.md
-TESTING*.md
-IMPLEMENTATION*.md
-REGISTRATION*.md
-RAILWAY*.md
-KUBERNETES*.md
-PRODUCTION*.md
-FRONTEND*.md
-BACKEND*.md
-PROJECT*.md
-QUICK*.md
-FINAL*.md
-V0*.md
+# ALL .md files contain secrets and deployment configs - DO NOT COMMIT
+*.md
 
-# Keep README.md
+# EXCEPTION: Keep README.md only
 !README.md
+
+# Additional sensitive files
+env-template.txt
+COMMIT_MESSAGE.txt
+*-env-*.txt
 
 # Prisma
 *.db
