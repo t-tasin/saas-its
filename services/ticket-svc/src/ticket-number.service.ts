@@ -17,10 +17,16 @@ export class TicketNumberService {
     // Use a fixed key for the year to get sequential numbering
     const counterKey = `${year}`;
     
-    const row = await tx.ticketDayCounter.upsert({
+    // First, increment the counter
+    await tx.ticketDayCounter.upsert({
       where: { yymmdd: counterKey },
       create: { yymmdd: counterKey, seq: 1 },
       update: { seq: { increment: 1 } },
+    });
+    
+    // Then read the updated value
+    const row = await tx.ticketDayCounter.findUniqueOrThrow({
+      where: { yymmdd: counterKey },
     });
     
     // Format: TKT-YYYY-NNNNNN (6-digit sequential number)
