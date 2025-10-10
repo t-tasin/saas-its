@@ -1,2 +1,0 @@
-web: npm run prisma:gen && npm run build && npm run start
-

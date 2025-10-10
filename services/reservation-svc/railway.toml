@@ -1,4 +1,4 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "services/reservation-svc/Dockerfile"
-watchPaths = ["services/reservation-svc/**"]
+dockerfilePath = "Dockerfile"
+watchPaths = ["**"]

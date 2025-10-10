@@ -1,5 +1,5 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "services/identity-svc/Dockerfile"
-watchPaths = ["services/identity-svc/**"]
+dockerfilePath = "Dockerfile"
+watchPaths = ["**"]
 

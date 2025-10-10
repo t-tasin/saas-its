@@ -9,13 +9,13 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
-COPY services/asset-svc/package*.json ./
+COPY package*.json ./
 
 # Install all dependencies (including dev for build)
 RUN npm install --ignore-scripts
 
 # Copy source code
-COPY services/asset-svc .
+COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
