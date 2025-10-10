@@ -8,8 +8,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (skip postinstall scripts that need source code)
-RUN npm install --production --ignore-scripts
+# Install ALL dependencies (including dev dependencies needed for build)
+RUN npm install --ignore-scripts
 
 # Copy source code
 COPY . .
@@ -19,6 +19,9 @@ RUN npx prisma generate
 
 # Build the application
 RUN npm run build
+
+# Remove dev dependencies to reduce image size
+RUN npm prune --production
 
 # Production stage
 FROM gcr.io/distroless/nodejs22-debian12:nonroot
