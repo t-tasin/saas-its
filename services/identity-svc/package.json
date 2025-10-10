@@ -9,7 +9,11 @@
     "prisma:gen": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "start": "node dist/main.js",
-    "start:dev": "tsx watch src/main.ts"
+    "start:dev": "tsx watch src/main.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:e2e": "jest --config jest-e2e.config.js"
   },
   "description": "",
   "keywords": [],
@@ -38,12 +42,18 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
+    "@nestjs/testing": "^10.4.20",
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.19.19",
     "@types/passport-jwt": "^4.0.1",
+    "@types/supertest": "^6.0.2",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.10",
     "prisma": "^5.17",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

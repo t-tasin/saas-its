@@ -202,6 +202,10 @@ const config = {
       {
         "fromEnvVar": null,
         "value": "debian-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-arm64-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -219,6 +223,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -227,8 +232,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/client\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nenum ReservationStatus {\n  pending\n  approved\n  denied\n  active // Approved and currently in use\n  returned\n  cancelled\n}\n\nmodel Reservation {\n  id                String  @id @default(uuid())\n  reservationNumber String  @unique // NEW: RES-YYYY-NNN format\n  requesterId       String // User ID who requested\n  requesterEmail    String? // Email for tracking\n  requesterName     String?\n\n  // Simplified: Single equipment type and quantity (no items array)\n  equipmentType String // NEW: Direct field instead of items\n  quantity      Int     @default(1) // NEW: Direct field\n  purpose       String? // NEW: Purpose of reservation\n\n  status           ReservationStatus @default(pending)\n  requestDate      DateTime // Renamed from requestedDate\n  returnDate       DateTime // Expected return date\n  actualReturnDate DateTime? // Actual return date\n\n  // Approval/Denial\n  approvedDate DateTime? // When approved\n  approvedBy   String? // Operator/Admin user ID\n  deniedBy     String? // Operator/Admin user ID\n  denialReason String?\n\n  // Cancellation tracking\n  cancelledAt        DateTime? // NEW: When cancelled\n  cancellationReason String? // NEW: Why cancelled\n\n  // Assets assigned (comma-separated IDs for simplicity)\n  assignedAssetIds String? // NEW: Comma-separated asset IDs\n\n  notes     String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([requesterId])\n  @@index([status, createdAt])\n  @@index([reservationNumber])\n  @@map(\"Reservation\")\n}\n\n// Snapshot of equipment availability (for quick lookups)\nmodel EquipmentAvailability {\n  id             String   @id @default(uuid())\n  assetTypeId    String   @unique\n  assetTypeName  String   @unique\n  totalCount     Int      @default(0)\n  assignedCount  Int      @default(0)\n  reservedCount  Int      @default(0)\n  availableCount Int      @default(0)\n  updatedAt      DateTime @updatedAt\n\n  @@map(\"EquipmentAvailability\")\n}\n\n// Audit log for reservation service\nmodel AuditLog {\n  id       String   @id @default(uuid())\n  entity   String\n  entityId String\n  action   String\n  actorId  String?\n  at       DateTime @default(now())\n  metadata Json?\n\n  @@index([entity, entityId, at])\n  @@map(\"AuditLog\")\n}\n",
-  "inlineSchemaHash": "9be96d7fe818bda1a6fe2b5c376c1c48970813bfc256fe65eb62091d304f921f",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../generated/client\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\", \"linux-arm64-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider          = \"postgresql\"\n  url               = env(\"DATABASE_URL\")\n  shadowDatabaseUrl = env(\"SHADOW_DATABASE_URL\")\n}\n\nenum ReservationStatus {\n  pending\n  approved\n  denied\n  active // Approved and currently in use\n  returned\n  cancelled\n}\n\nmodel Reservation {\n  id                String  @id @default(uuid())\n  reservationNumber String  @unique // NEW: RES-YYYY-NNN format\n  requesterId       String // User ID who requested\n  requesterEmail    String? // Email for tracking\n  requesterName     String?\n\n  // Simplified: Single equipment type and quantity (no items array)\n  equipmentType String // NEW: Direct field instead of items\n  quantity      Int     @default(1) // NEW: Direct field\n  purpose       String? // NEW: Purpose of reservation\n\n  status           ReservationStatus @default(pending)\n  requestDate      DateTime // Renamed from requestedDate\n  returnDate       DateTime // Expected return date\n  actualReturnDate DateTime? // Actual return date\n\n  // Approval/Denial\n  approvedDate DateTime? // When approved\n  approvedBy   String? // Operator/Admin user ID\n  deniedBy     String? // Operator/Admin user ID\n  denialReason String?\n\n  // Cancellation tracking\n  cancelledAt        DateTime? // NEW: When cancelled\n  cancellationReason String? // NEW: Why cancelled\n\n  // Assets assigned (comma-separated IDs for simplicity)\n  assignedAssetIds String? // NEW: Comma-separated asset IDs\n\n  notes     String?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([requesterId])\n  @@index([status, createdAt])\n  @@index([reservationNumber])\n  @@map(\"Reservation\")\n}\n\n// Snapshot of equipment availability (for quick lookups)\nmodel EquipmentAvailability {\n  id             String   @id @default(uuid())\n  assetTypeId    String   @unique\n  assetTypeName  String   @unique\n  totalCount     Int      @default(0)\n  assignedCount  Int      @default(0)\n  reservedCount  Int      @default(0)\n  availableCount Int      @default(0)\n  updatedAt      DateTime @updatedAt\n\n  @@map(\"EquipmentAvailability\")\n}\n\n// Audit log for reservation service\nmodel AuditLog {\n  id       String   @id @default(uuid())\n  entity   String\n  entityId String\n  action   String\n  actorId  String?\n  at       DateTime @default(now())\n  metadata Json?\n\n  @@index([entity, entityId, at])\n  @@map(\"AuditLog\")\n}\n",
+  "inlineSchemaHash": "6728aed484c448c04d6869d7caf01e925ffe38d247f1711a4b64c42cdc796a60",
   "copyEngine": true
 }
 
@@ -272,6 +277,10 @@ path.join(process.cwd(), "generated/client/libquery_engine-darwin-arm64.dylib.no
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
 path.join(process.cwd(), "generated/client/libquery_engine-debian-openssl-3.0.x.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-linux-arm64-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/client/libquery_engine-linux-arm64-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "generated/client/schema.prisma")
