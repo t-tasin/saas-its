@@ -1,17 +1,26 @@
 /**
- * Idempotency middleware:
- * - Reads Idempotency-Key header on POST/PATCH
- * - If seen, returns cached response body/status
- * - Else, captures response and caches for 24h
- * - Gracefully disables if Redis is unavailable
+ * Idempotency middleware (No-Op version - Redis disabled)
+ * To enable idempotency with Redis:
+ * 1. Add REDIS_URL to environment variables
+ * 2. Uncomment Redis implementation below
+ * 3. npm install redis
  */
 import { Injectable, NestMiddleware } from '@nestjs/common';
+
+@Injectable()
+export class IdempotencyMiddleware implements NestMiddleware {
+  async use(req: any, res: any, next: () => void) {
+    // Redis disabled - pass through all requests
+    next();
+  }
+}
+
+/* REDIS IMPLEMENTATION (DISABLED)
 import { createClient } from 'redis';
 
 let redis: ReturnType<typeof createClient> | null = null;
 let redisAvailable = false;
 
-// Try to connect to Redis, but don't crash if it's not available
 (async () => {
   try {
     const client = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
@@ -27,7 +36,6 @@ let redisAvailable = false;
 @Injectable()
 export class IdempotencyMiddleware implements NestMiddleware {
   async use(req: any, res: any, next: () => void) {
-    // Skip if Redis is not available
     if (!redisAvailable || !redis) return next();
 
     const method = req.method.toUpperCase();
@@ -43,7 +51,6 @@ export class IdempotencyMiddleware implements NestMiddleware {
         return;
       }
 
-      // Capture response
       const origSend = res.send.bind(res);
       res.send = async (body: any) => {
         try {
@@ -57,10 +64,10 @@ export class IdempotencyMiddleware implements NestMiddleware {
         return origSend(body);
       };
     } catch (err) {
-      // If Redis fails, just continue without caching
       console.error('Redis error in idempotency middleware:', err);
     }
 
     next();
   }
 }
+*/

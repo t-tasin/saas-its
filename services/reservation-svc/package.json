@@ -29,8 +29,7 @@
     "jwks-rsa": "^3.1.0",
     "nodemailer": "^7.0.9",
     "passport-jwt": "^4.0.1",
-    "prisma": "^5.22.0",
-    "redis": "^4.7.1"
+    "prisma": "^5.22.0"
   },
   "devDependencies": {
     "@nestjs/testing": "^10.4.20",
