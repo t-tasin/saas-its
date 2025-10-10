@@ -1,34 +1,39 @@
-# services/ticket-svc/Dockerfile
-FROM node:22-alpine as build
+# Railway-specific Dockerfile for Ticket Service
+# This builds from within the service directory
+
+FROM node:22-alpine AS build
+
 WORKDIR /app
 
-# Copy root package files for workspace support
+# Copy package files
 COPY package*.json ./
-COPY services/ticket-svc/package*.json ./services/ticket-svc/
-COPY packages ./packages/
 
-# Install all dependencies (root + workspace)
-RUN npm install --ignore-scripts
+# Install dependencies
+RUN npm ci --only=production
 
-# Copy service source
-COPY services/ticket-svc ./services/ticket-svc/
+# Copy source code
+COPY . .
 
-# Build the service
-WORKDIR /app/services/ticket-svc
+# Generate Prisma client
 RUN npx prisma generate
+
+# Build the application
 RUN npm run build
 
-# Prune dev dependencies
-WORKDIR /app
-RUN npm prune --production
+# Production stage
+FROM gcr.io/distroless/nodejs22-debian12:nonroot
 
-FROM gcr.io/distroless/nodejs22-debian12
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=build /app/services/ticket-svc/dist ./dist
-COPY --from=build /app/services/ticket-svc/generated ./generated
-COPY --from=build /app/services/ticket-svc/node_modules ./node_modules
+
+# Copy built application
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/generated ./generated
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/services/ticket-svc/prisma ./prisma
-EXPOSE 3003
+COPY --from=build /app/prisma ./prisma
+
+# Expose port
+EXPOSE 3002
+
+# Start the application
 CMD ["dist/main.js"]
+

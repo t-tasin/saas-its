@@ -1,32 +1,39 @@
+# Railway-specific Dockerfile for Identity Service
+# This builds from within the service directory
+
 FROM node:22-alpine AS build
+
 WORKDIR /app
 
-# Copy root package files for workspace support
+# Copy package files
 COPY package*.json ./
-COPY services/identity-svc/package*.json ./services/identity-svc/
-COPY packages ./packages/
 
-# Install all dependencies (root + workspace)
-RUN npm install --ignore-scripts
+# Install dependencies
+RUN npm ci --only=production
 
-# Copy service source
-COPY services/identity-svc ./services/identity-svc/
+# Copy source code
+COPY . .
 
-# Build the service
-WORKDIR /app/services/identity-svc
+# Generate Prisma client
 RUN npx prisma generate
+
+# Build the application
 RUN npm run build
 
-# Prune dev dependencies
-WORKDIR /app
-RUN npm prune --production
-
+# Production stage
 FROM gcr.io/distroless/nodejs22-debian12:nonroot
+
 WORKDIR /app
-COPY --from=build /app/services/identity-svc/dist ./dist
-COPY --from=build /app/services/identity-svc/generated ./generated
-COPY --from=build /app/services/identity-svc/node_modules ./node_modules
+
+# Copy built application
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/generated ./generated
 COPY --from=build /app/node_modules ./node_modules
-EXPOSE 3001
-USER nonroot
+COPY --from=build /app/prisma ./prisma
+
+# Expose port
+EXPOSE 3000
+
+# Start the application
 CMD ["dist/main.js"]
+
