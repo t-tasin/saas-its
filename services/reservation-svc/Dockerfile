@@ -1,22 +1,18 @@
-# Dockerfile for Reservation Service (builds from repository root)
-# Railway Settings: Root Directory = "." (repository root)
-#                   Dockerfile Path = "services/reservation-svc/Dockerfile"
+# Dockerfile for Reservation Service
+# Railway: Set Root Directory to "services/reservation-svc"
 
 FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Copy package files for the service
-COPY services/reservation-svc/package*.json ./services/reservation-svc/
-# Copy shared tsconfig
-COPY packages/tsconfig ./packages/tsconfig/
+# Copy package files
+COPY package*.json ./
 
-# Install dependencies
-WORKDIR /app/services/reservation-svc
+# Install all dependencies (including dev for build)
 RUN npm install --ignore-scripts
 
-# Copy service source code
-COPY services/reservation-svc ./
+# Copy source code
+COPY . .
 
 # Generate Prisma client
 RUN npx prisma generate
@@ -33,10 +29,10 @@ FROM gcr.io/distroless/nodejs22-debian12:latest
 WORKDIR /app
 
 # Copy built application
-COPY --from=build /app/services/reservation-svc/dist ./dist
-COPY --from=build /app/services/reservation-svc/generated ./generated
-COPY --from=build /app/services/reservation-svc/node_modules ./node_modules
-COPY --from=build /app/services/reservation-svc/prisma ./prisma
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/generated ./generated
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/prisma ./prisma
 
 # Expose port
 EXPOSE 5003
