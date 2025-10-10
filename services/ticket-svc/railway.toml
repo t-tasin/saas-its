@@ -1,4 +1,4 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "services/ticket-svc/Dockerfile"
+dockerfilePath = "Dockerfile"
 
