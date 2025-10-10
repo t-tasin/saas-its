@@ -24,7 +24,7 @@ RUN npm run build
 RUN npm prune --production
 
 # Production stage
-FROM gcr.io/distroless/nodejs22-debian12:nonroot
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -38,4 +38,4 @@ COPY --from=build /app/prisma ./prisma
 EXPOSE 3000
 
 # Start the application
-CMD ["dist/main.js"]
+CMD ["node", "dist/main.js"]
