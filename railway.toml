@@ -1,6 +1,0 @@
-# Railway configuration for all services
-# Forces Railway to use Dockerfile instead of Nixpacks
-
-[build]
-builder = "DOCKERFILE"
-
