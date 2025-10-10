@@ -1,9 +1,21 @@
 /**
- * Very lightweight per-endpoint counter (in Redis) for quantifiable metrics.
- * Keys like: metrics:<service>:<method>:<route>
- * Export weekly via a tiny script to CSV for your resume/portfolio.
+ * Metrics middleware (No-Op version - Redis disabled)
+ * To enable metrics with Redis:
+ * 1. Add REDIS_URL to environment variables
+ * 2. Uncomment Redis implementation below
+ * 3. npm install redis
  */
 import { Injectable, NestMiddleware } from '@nestjs/common';
+
+@Injectable()
+export class MetricsMiddleware implements NestMiddleware {
+  async use(req: any, res: any, next: () => void) {
+    // Redis disabled - pass through all requests
+    next();
+  }
+}
+
+/* REDIS IMPLEMENTATION (DISABLED)
 import { createClient } from 'redis';
 
 const redis = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
@@ -18,3 +30,4 @@ export class MetricsMiddleware implements NestMiddleware {
     next();
   }
 }
+*/
