@@ -1,9 +1,12 @@
 # Dockerfile for Identity Service
 # Railway: Set Root Directory to "services/identity-svc"
 
-FROM node:22-alpine AS build
+FROM node:22-slim AS build
 
 WORKDIR /app
+
+# Install OpenSSL and other dependencies needed for Prisma
+RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY services/identity-svc/package*.json ./
@@ -24,12 +27,12 @@ RUN npm run build
 RUN npm prune --production
 
 # Production stage
-FROM node:22-alpine
+FROM node:22-slim
 
 WORKDIR /app
 
-# Install OpenSSL 1.1 compatibility for Prisma
-RUN apk add --no-cache openssl1.1-compat
+# Install OpenSSL for Prisma
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # Copy built application
 COPY --from=build /app/dist ./dist
