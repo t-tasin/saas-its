@@ -26,6 +26,7 @@
     "@nestjs/platform-express": "^10.4.20",
     "@nestjs/swagger": "^7.4.2",
     "@prisma/client": "^5.22.0",
+    "@sendgrid/mail": "^8.1.6",
     "@types/bcrypt": "^6.0.0",
     "@types/nodemailer": "^7.0.2",
     "bcrypt": "^6.0.0",
