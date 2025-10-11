@@ -14,7 +14,6 @@ import { CreateReservationModal } from "@/components/create-reservation-modal"
 import { useTickets } from "@/hooks/use-tickets"
 import { useReservations } from "@/hooks/use-reservations"
 import { useAssets } from "@/hooks/use-assets"
-import mockData from "@/data/mock-data.json"
 import { Package, Ticket, Calendar, Plus, CheckCircle2, Clock, XCircle, Filter } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { formatDate, formatRelativeTime } from "@/lib/utils"
@@ -433,42 +432,63 @@ function UserDashboard() {
 }
 
 function AdminDashboard() {
+  // Fetch real data from backend
+  const { data: ticketsResponse, isLoading: ticketsLoading } = useTickets()
+  const { data: reservationsResponse, isLoading: reservationsLoading } = useReservations()
+  const { data: assetsResponse, isLoading: assetsLoading } = useAssets()
+
+  const isLoading = ticketsLoading || reservationsLoading || assetsLoading
+
+  if (isLoading) {
+    return <LoadingSpinner fullScreen />
+  }
+
+  const tickets = ticketsResponse?.data || []
+  const reservations = reservationsResponse?.data || []
+  const assets = assetsResponse?.data || []
+
   const ticketAnalytics = {
     summary: {
-      total: mockData.tickets.length,
-      open: mockData.tickets.filter((t) => t.status === "open").length,
-      inProgress: mockData.tickets.filter((t) => t.status === "in_progress").length,
-      resolved: mockData.tickets.filter((t) => t.status === "resolved").length,
-      closed: mockData.tickets.filter((t) => t.status === "closed").length,
+      total: tickets.length,
+      open: tickets.filter((t) => t.status === "open").length,
+      inProgress: tickets.filter((t) => t.status === "in_progress").length,
+      resolved: tickets.filter((t) => t.status === "resolved").length,
+      closed: tickets.filter((t) => t.status === "closed").length,
       mttrDays: 2.5,
     },
   }
 
   const reservationAnalytics = {
     summary: {
-      total: mockData.reservations.length,
+      total: reservations.length,
       byStatus: {
-        pending: mockData.reservations.filter((r) => r.status === "pending").length,
-        approved: mockData.reservations.filter((r) => r.status === "approved").length,
-        active: mockData.reservations.filter((r) => r.status === "active").length,
-        returned: mockData.reservations.filter((r) => r.status === "returned").length,
+        pending: reservations.filter((r) => r.status === "pending").length,
+        approved: reservations.filter((r) => r.status === "approved").length,
+        active: reservations.filter((r) => r.status === "active").length,
+        returned: reservations.filter((r) => r.status === "returned").length,
       },
     },
     performance: {
-      approvalRate: 85,
-      onTimeReturnRate: 92,
+      approvalRate: reservations.length > 0 
+        ? Math.round((reservations.filter((r) => r.status === "approved" || r.status === "active" || r.status === "returned").length / reservations.length) * 100)
+        : 0,
+      onTimeReturnRate: reservations.filter((r) => r.status === "returned").length > 0
+        ? Math.round((reservations.filter((r) => r.status === "returned").length / reservations.filter((r) => r.status === "returned" || r.status === "active").length) * 100)
+        : 0,
     },
   }
 
   const assetAnalytics = {
     summary: {
-      total: mockData.assets.length,
+      total: assets.length,
       byStatus: {
-        available: mockData.assets.filter((a) => a.status === "available").length,
-        assigned: mockData.assets.filter((a) => a.status === "assigned").length,
-        maintenance: mockData.assets.filter((a) => a.status === "maintenance").length,
+        available: assets.filter((a) => a.status === "available").length,
+        assigned: assets.filter((a) => a.status === "assigned").length,
+        maintenance: assets.filter((a) => a.status === "maintenance").length,
       },
-      utilizationRate: 65,
+      utilizationRate: assets.length > 0 
+        ? Math.round((assets.filter((a) => a.status === "assigned").length / assets.length) * 100)
+        : 0,
     },
   }
 
