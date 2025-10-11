@@ -22,9 +22,53 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import { Plus, Search, Package, Loader2 } from "lucide-react"
 import { useAssets, useAssetTypes, useCreateAsset } from "@/hooks/use-assets"
+import { useUser } from "@/hooks/use-users"
 import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
+
+// Asset Row Component with Assigned User
+function AssetRow({ asset, onClick }: { asset: any; onClick: () => void }) {
+  const { data: assignedUser } = useUser(asset.assignedToId)
+
+  return (
+    <TableRow className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={onClick}>
+      <TableCell className="font-mono font-medium">{asset.assetId || asset.id.slice(0, 8)}</TableCell>
+      <TableCell>
+        <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
+          {asset.type}
+        </span>
+      </TableCell>
+      <TableCell className="max-w-[200px] truncate">{asset.description || "-"}</TableCell>
+      <TableCell className="font-mono text-sm">{asset.serialNumber || "-"}</TableCell>
+      <TableCell>
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            asset.status === "available"
+              ? "bg-green-100 text-green-800"
+              : asset.status === "assigned"
+                ? "bg-blue-100 text-blue-800"
+                : asset.status === "maintenance"
+                  ? "bg-amber-100 text-amber-800"
+                  : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          {asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
+        </span>
+      </TableCell>
+      <TableCell className="text-sm">
+        {asset.assignedToId ? (
+          assignedUser?.data?.name || assignedUser?.data?.email || "Loading..."
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        )}
+      </TableCell>
+      <TableCell className="text-sm text-muted-foreground">{asset.location || "-"}</TableCell>
+    </TableRow>
+  )
+}
 
 function DashboardAssetsContent() {
+  const router = useRouter()
   const [status, setStatus] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [showCreateDialog, setShowCreateDialog] = useState(false)
@@ -217,48 +261,22 @@ function DashboardAssetsContent() {
 
         {/* Assets Table */}
         {!isLoading && !error && filteredAssets.length > 0 && (
-          <div className="border rounded-lg bg-card">
+          <div className="border rounded-lg bg-card overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead className="font-semibold">Asset ID</TableHead>
-                  <TableHead className="font-semibold">Type</TableHead>
-                  <TableHead className="font-semibold">Description</TableHead>
-                  <TableHead className="font-semibold">Serial Number</TableHead>
-                  <TableHead className="font-semibold">Status</TableHead>
-                  <TableHead className="font-semibold">Location</TableHead>
-                  <TableHead className="font-semibold">Funding Dept</TableHead>
+                  <TableHead className="font-semibold w-[120px]">Asset ID</TableHead>
+                  <TableHead className="font-semibold w-[100px]">Type</TableHead>
+                  <TableHead className="font-semibold w-[200px]">Description</TableHead>
+                  <TableHead className="font-semibold w-[120px]">Serial #</TableHead>
+                  <TableHead className="font-semibold w-[100px]">Status</TableHead>
+                  <TableHead className="font-semibold w-[140px]">Assigned To</TableHead>
+                  <TableHead className="font-semibold w-[120px]">Location</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredAssets.map((asset) => (
-                  <TableRow key={asset.id} className="hover:bg-accent/50 transition-colors">
-                    <TableCell className="font-mono font-medium">{asset.assetId || asset.id.slice(0, 8)}</TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
-                        {asset.type}
-                      </span>
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate">{asset.description || "-"}</TableCell>
-                    <TableCell className="font-mono text-sm">{asset.serialNumber || "-"}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          asset.status === "available"
-                            ? "bg-green-100 text-green-800"
-                            : asset.status === "assigned"
-                              ? "bg-blue-100 text-blue-800"
-                              : asset.status === "maintenance"
-                                ? "bg-amber-100 text-amber-800"
-                                : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{asset.location || "-"}</TableCell>
-                    <TableCell className="text-sm">{asset.fundingDepartment || "-"}</TableCell>
-                  </TableRow>
+                  <AssetRow key={asset.id} asset={asset} onClick={() => router.push(`/dashboard/assets/${asset.id}`)} />
                 ))}
               </TableBody>
             </Table>

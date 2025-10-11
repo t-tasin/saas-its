@@ -1,38 +1,69 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import mockData from "@/data/mock-data.json"
-import { Plus, Search, Calendar, Package } from "lucide-react"
+import { Plus, Search, Calendar, Package, Loader2 } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import { PageHeader } from "@/components/page-header"
 import { StatusBadge } from "@/components/status-badge"
 import { EmptyState } from "@/components/empty-state"
 import { ProtectedRoute } from "@/components/protected-route"
 import { CreateReservationModal } from "@/components/create-reservation-modal"
+import { useReservations } from "@/hooks/use-reservations"
+import { useAssets } from "@/hooks/use-assets"
+import { useRouter } from "next/navigation"
 
 function DashboardReservationsContent() {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedAssetType, setSelectedAssetType] = useState<string | null>(null)
   const [showAssetModal, setShowAssetModal] = useState(false)
   const [showReservationModal, setShowReservationModal] = useState(false)
 
-  const filteredReservations = mockData.reservations.filter((reservation) => {
+  // Fetch real data from backend
+  const { data: reservationsResponse, isLoading: reservationsLoading } = useReservations()
+  const { data: assetsResponse, isLoading: assetsLoading } = useAssets()
+
+  const reservations = reservationsResponse?.data || []
+  const assets = assetsResponse?.data || []
+
+  // Calculate availability by category
+  const availabilityByType = useMemo(() => {
+    const typeMap = new Map<string, { total: number; available: number }>()
+
+    assets.forEach((asset) => {
+      const type = asset.type
+      const current = typeMap.get(type) || { total: 0, available: 0 }
+      
+      typeMap.set(type, {
+        total: current.total + 1,
+        available: current.available + (asset.status === "available" ? 1 : 0),
+      })
+    })
+
+    return Array.from(typeMap.entries()).map(([type, data]) => ({
+      type,
+      ...data,
+    }))
+  }, [assets])
+
+  const filteredReservations = reservations.filter((reservation) => {
     if (!searchQuery) return true
     const query = searchQuery.toLowerCase()
     return (
-      reservation.id.toLowerCase().includes(query) ||
+      reservation.reservationNumber?.toLowerCase().includes(query) ||
       reservation.requesterName?.toLowerCase().includes(query) ||
-      reservation.items.some((item) => item.assetTypeName.toLowerCase().includes(query))
+      reservation.requesterEmail?.toLowerCase().includes(query) ||
+      reservation.equipmentType?.toLowerCase().includes(query)
     )
   })
 
   const assetsForType = selectedAssetType
-    ? mockData.assets.filter((asset) => asset.assetType.name === selectedAssetType)
+    ? assets.filter((asset) => asset.type === selectedAssetType)
     : []
 
   const handleAssetTypeClick = (assetTypeName: string) => {
@@ -74,7 +105,12 @@ function DashboardReservationsContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {filteredReservations.length === 0 ? (
+            {reservationsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <span className="ml-3 text-muted-foreground">Loading reservations...</span>
+              </div>
+            ) : filteredReservations.length === 0 ? (
               <EmptyState
                 icon={<Calendar className="h-12 w-12" />}
                 title="No reservations found"
@@ -85,17 +121,17 @@ function DashboardReservationsContent() {
                 }}
               />
             ) : (
-              <div className="border rounded-lg">
+              <div className="border rounded-lg overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-muted/50">
-                      <TableHead className="font-semibold">Asset ID</TableHead>
-                      <TableHead className="font-semibold">Type</TableHead>
-                      <TableHead className="font-semibold">Summary</TableHead>
-                      <TableHead className="font-semibold">Assigned Date</TableHead>
-                      <TableHead className="font-semibold">Return Date</TableHead>
-                      <TableHead className="font-semibold">Status</TableHead>
-                      <TableHead className="font-semibold">Approver</TableHead>
+                      <TableHead className="font-semibold w-[140px]">Reservation #</TableHead>
+                      <TableHead className="font-semibold w-[120px]">Equipment</TableHead>
+                      <TableHead className="font-semibold w-[80px]">Qty</TableHead>
+                      <TableHead className="font-semibold w-[120px]">Request Date</TableHead>
+                      <TableHead className="font-semibold w-[120px]">Return Date</TableHead>
+                      <TableHead className="font-semibold w-[100px]">Status</TableHead>
+                      <TableHead className="font-semibold w-[140px]">Requester</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -103,19 +139,17 @@ function DashboardReservationsContent() {
                       <TableRow
                         key={reservation.id}
                         className="cursor-pointer hover:bg-accent/50 transition-colors"
-                        onClick={() => (window.location.href = `/reservations/${reservation.id}`)}
+                        onClick={() => router.push(`/reservations/${reservation.id}`)}
                       >
-                        <TableCell className="font-mono font-medium">#{reservation.id.slice(0, 8)}</TableCell>
-                        <TableCell>{reservation.items.map((item) => item.assetTypeName).join(", ")}</TableCell>
-                        <TableCell className="max-w-xs truncate">
-                          {reservation.items.map((item) => `${item.quantity}x ${item.assetTypeName}`).join(", ")}
-                        </TableCell>
+                        <TableCell className="font-mono font-medium">{reservation.reservationNumber}</TableCell>
+                        <TableCell>{reservation.equipmentType}</TableCell>
+                        <TableCell>{reservation.quantity}</TableCell>
                         <TableCell>{formatDate(reservation.requestDate)}</TableCell>
                         <TableCell>{formatDate(reservation.returnDate)}</TableCell>
                         <TableCell>
                           <StatusBadge status={reservation.status} type="reservation" />
                         </TableCell>
-                        <TableCell>{reservation.requester?.name || "-"}</TableCell>
+                        <TableCell className="text-sm">{reservation.requesterName || reservation.requesterEmail || "-"}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -133,21 +167,33 @@ function DashboardReservationsContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mockData.equipmentAvailability.map((equipment) => (
-                <button
-                  key={equipment.assetTypeId}
-                  onClick={() => handleAssetTypeClick(equipment.assetTypeName)}
-                  className="p-4 border rounded-lg hover:bg-accent/50 transition-colors text-left"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-medium">{equipment.assetTypeName}</p>
-                    <Package className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-2xl font-bold text-green-600">{equipment.availableCount}</p>
-                    <p className="text-sm text-muted-foreground">/ {equipment.totalCount} available</p>
-                  </div>
+            {assetsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <span className="ml-3 text-muted-foreground">Loading equipment...</span>
+              </div>
+            ) : availabilityByType.length === 0 ? (
+              <EmptyState
+                icon={<Package className="h-12 w-12" />}
+                title="No equipment available"
+                description="Add assets to see equipment availability."
+              />
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {availabilityByType.map((equipment) => (
+                  <button
+                    key={equipment.type}
+                    onClick={() => handleAssetTypeClick(equipment.type)}
+                    className="p-4 border rounded-lg hover:bg-accent/50 transition-colors text-left"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="font-medium">{equipment.type}</p>
+                      <Package className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-2xl font-bold text-green-600">{equipment.available}</p>
+                      <p className="text-sm text-muted-foreground">/ {equipment.total} available</p>
+                    </div>
                   <p className="text-xs text-muted-foreground mt-1">Click to view assets</p>
                 </button>
               ))}
