@@ -70,6 +70,7 @@ describe('UserService', () => {
       const registerDto = {
         email: 'existing@example.com',
         password: 'Password123!',
+        name: 'Existing User',
       };
 
       mockUserFindUnique.mockResolvedValue({
