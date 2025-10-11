@@ -1,13 +1,15 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/client"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = "../generated/client"
+  binaryTargets   = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  schemas           = ["reservation"]
 }
 
 enum ReservationStatus {
@@ -16,7 +18,10 @@ enum ReservationStatus {
   denied
   active // Approved and currently in use
   returned
+  completed // Returned and closed
   cancelled
+
+  @@schema("reservation")
 }
 
 model Reservation {
@@ -42,6 +47,9 @@ model Reservation {
   deniedBy     String? // Operator/Admin user ID
   denialReason String?
 
+  // Pickup/Return tracking
+  pickedUpAt DateTime? // When equipment was picked up
+
   // Cancellation tracking
   cancelledAt        DateTime? // NEW: When cancelled
   cancellationReason String? // NEW: Why cancelled
@@ -57,6 +65,7 @@ model Reservation {
   @@index([status, createdAt])
   @@index([reservationNumber])
   @@map("Reservation")
+  @@schema("reservation")
 }
 
 // Snapshot of equipment availability (for quick lookups)
@@ -71,6 +80,7 @@ model EquipmentAvailability {
   updatedAt      DateTime @updatedAt
 
   @@map("EquipmentAvailability")
+  @@schema("reservation")
 }
 
 // Audit log for reservation service
@@ -85,4 +95,5 @@ model AuditLog {
 
   @@index([entity, entityId, at])
   @@map("AuditLog")
+  @@schema("reservation")
 }

@@ -139,6 +139,7 @@ exports.Prisma.ReservationScalarFieldEnum = {
   approvedBy: 'approvedBy',
   deniedBy: 'deniedBy',
   denialReason: 'denialReason',
+  pickedUpAt: 'pickedUpAt',
   cancelledAt: 'cancelledAt',
   cancellationReason: 'cancellationReason',
   assignedAssetIds: 'assignedAssetIds',
@@ -199,6 +200,7 @@ exports.ReservationStatus = exports.$Enums.ReservationStatus = {
   denied: 'denied',
   active: 'active',
   returned: 'returned',
+  completed: 'completed',
   cancelled: 'cancelled'
 };
 

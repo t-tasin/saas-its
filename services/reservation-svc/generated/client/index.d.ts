@@ -39,6 +39,7 @@ export namespace $Enums {
   denied: 'denied',
   active: 'active',
   returned: 'returned',
+  completed: 'completed',
   cancelled: 'cancelled'
 };
 
@@ -1073,6 +1074,7 @@ export namespace Prisma {
     approvedBy: string | null
     deniedBy: string | null
     denialReason: string | null
+    pickedUpAt: Date | null
     cancelledAt: Date | null
     cancellationReason: string | null
     assignedAssetIds: string | null
@@ -1098,6 +1100,7 @@ export namespace Prisma {
     approvedBy: string | null
     deniedBy: string | null
     denialReason: string | null
+    pickedUpAt: Date | null
     cancelledAt: Date | null
     cancellationReason: string | null
     assignedAssetIds: string | null
@@ -1123,6 +1126,7 @@ export namespace Prisma {
     approvedBy: number
     deniedBy: number
     denialReason: number
+    pickedUpAt: number
     cancelledAt: number
     cancellationReason: number
     assignedAssetIds: number
@@ -1158,6 +1162,7 @@ export namespace Prisma {
     approvedBy?: true
     deniedBy?: true
     denialReason?: true
+    pickedUpAt?: true
     cancelledAt?: true
     cancellationReason?: true
     assignedAssetIds?: true
@@ -1183,6 +1188,7 @@ export namespace Prisma {
     approvedBy?: true
     deniedBy?: true
     denialReason?: true
+    pickedUpAt?: true
     cancelledAt?: true
     cancellationReason?: true
     assignedAssetIds?: true
@@ -1208,6 +1214,7 @@ export namespace Prisma {
     approvedBy?: true
     deniedBy?: true
     denialReason?: true
+    pickedUpAt?: true
     cancelledAt?: true
     cancellationReason?: true
     assignedAssetIds?: true
@@ -1320,6 +1327,7 @@ export namespace Prisma {
     approvedBy: string | null
     deniedBy: string | null
     denialReason: string | null
+    pickedUpAt: Date | null
     cancelledAt: Date | null
     cancellationReason: string | null
     assignedAssetIds: string | null
@@ -1364,6 +1372,7 @@ export namespace Prisma {
     approvedBy?: boolean
     deniedBy?: boolean
     denialReason?: boolean
+    pickedUpAt?: boolean
     cancelledAt?: boolean
     cancellationReason?: boolean
     assignedAssetIds?: boolean
@@ -1389,6 +1398,7 @@ export namespace Prisma {
     approvedBy?: boolean
     deniedBy?: boolean
     denialReason?: boolean
+    pickedUpAt?: boolean
     cancelledAt?: boolean
     cancellationReason?: boolean
     assignedAssetIds?: boolean
@@ -1414,6 +1424,7 @@ export namespace Prisma {
     approvedBy?: boolean
     deniedBy?: boolean
     denialReason?: boolean
+    pickedUpAt?: boolean
     cancelledAt?: boolean
     cancellationReason?: boolean
     assignedAssetIds?: boolean
@@ -1443,6 +1454,7 @@ export namespace Prisma {
       approvedBy: string | null
       deniedBy: string | null
       denialReason: string | null
+      pickedUpAt: Date | null
       cancelledAt: Date | null
       cancellationReason: string | null
       assignedAssetIds: string | null
@@ -1858,6 +1870,7 @@ export namespace Prisma {
     readonly approvedBy: FieldRef<"Reservation", 'String'>
     readonly deniedBy: FieldRef<"Reservation", 'String'>
     readonly denialReason: FieldRef<"Reservation", 'String'>
+    readonly pickedUpAt: FieldRef<"Reservation", 'DateTime'>
     readonly cancelledAt: FieldRef<"Reservation", 'DateTime'>
     readonly cancellationReason: FieldRef<"Reservation", 'String'>
     readonly assignedAssetIds: FieldRef<"Reservation", 'String'>
@@ -4041,6 +4054,7 @@ export namespace Prisma {
     approvedBy: 'approvedBy',
     deniedBy: 'deniedBy',
     denialReason: 'denialReason',
+    pickedUpAt: 'pickedUpAt',
     cancelledAt: 'cancelledAt',
     cancellationReason: 'cancellationReason',
     assignedAssetIds: 'assignedAssetIds',
@@ -4225,6 +4239,7 @@ export namespace Prisma {
     approvedBy?: StringNullableFilter<"Reservation"> | string | null
     deniedBy?: StringNullableFilter<"Reservation"> | string | null
     denialReason?: StringNullableFilter<"Reservation"> | string | null
+    pickedUpAt?: DateTimeNullableFilter<"Reservation"> | Date | string | null
     cancelledAt?: DateTimeNullableFilter<"Reservation"> | Date | string | null
     cancellationReason?: StringNullableFilter<"Reservation"> | string | null
     assignedAssetIds?: StringNullableFilter<"Reservation"> | string | null
@@ -4250,6 +4265,7 @@ export namespace Prisma {
     approvedBy?: SortOrderInput | SortOrder
     deniedBy?: SortOrderInput | SortOrder
     denialReason?: SortOrderInput | SortOrder
+    pickedUpAt?: SortOrderInput | SortOrder
     cancelledAt?: SortOrderInput | SortOrder
     cancellationReason?: SortOrderInput | SortOrder
     assignedAssetIds?: SortOrderInput | SortOrder
@@ -4278,6 +4294,7 @@ export namespace Prisma {
     approvedBy?: StringNullableFilter<"Reservation"> | string | null
     deniedBy?: StringNullableFilter<"Reservation"> | string | null
     denialReason?: StringNullableFilter<"Reservation"> | string | null
+    pickedUpAt?: DateTimeNullableFilter<"Reservation"> | Date | string | null
     cancelledAt?: DateTimeNullableFilter<"Reservation"> | Date | string | null
     cancellationReason?: StringNullableFilter<"Reservation"> | string | null
     assignedAssetIds?: StringNullableFilter<"Reservation"> | string | null
@@ -4303,6 +4320,7 @@ export namespace Prisma {
     approvedBy?: SortOrderInput | SortOrder
     deniedBy?: SortOrderInput | SortOrder
     denialReason?: SortOrderInput | SortOrder
+    pickedUpAt?: SortOrderInput | SortOrder
     cancelledAt?: SortOrderInput | SortOrder
     cancellationReason?: SortOrderInput | SortOrder
     assignedAssetIds?: SortOrderInput | SortOrder
@@ -4336,6 +4354,7 @@ export namespace Prisma {
     approvedBy?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     deniedBy?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     denialReason?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
+    pickedUpAt?: DateTimeNullableWithAggregatesFilter<"Reservation"> | Date | string | null
     cancelledAt?: DateTimeNullableWithAggregatesFilter<"Reservation"> | Date | string | null
     cancellationReason?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
     assignedAssetIds?: StringNullableWithAggregatesFilter<"Reservation"> | string | null
@@ -4492,6 +4511,7 @@ export namespace Prisma {
     approvedBy?: string | null
     deniedBy?: string | null
     denialReason?: string | null
+    pickedUpAt?: Date | string | null
     cancelledAt?: Date | string | null
     cancellationReason?: string | null
     assignedAssetIds?: string | null
@@ -4517,6 +4537,7 @@ export namespace Prisma {
     approvedBy?: string | null
     deniedBy?: string | null
     denialReason?: string | null
+    pickedUpAt?: Date | string | null
     cancelledAt?: Date | string | null
     cancellationReason?: string | null
     assignedAssetIds?: string | null
@@ -4542,6 +4563,7 @@ export namespace Prisma {
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
     denialReason?: NullableStringFieldUpdateOperationsInput | string | null
+    pickedUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancellationReason?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAssetIds?: NullableStringFieldUpdateOperationsInput | string | null
@@ -4567,6 +4589,7 @@ export namespace Prisma {
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
     denialReason?: NullableStringFieldUpdateOperationsInput | string | null
+    pickedUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancellationReason?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAssetIds?: NullableStringFieldUpdateOperationsInput | string | null
@@ -4592,6 +4615,7 @@ export namespace Prisma {
     approvedBy?: string | null
     deniedBy?: string | null
     denialReason?: string | null
+    pickedUpAt?: Date | string | null
     cancelledAt?: Date | string | null
     cancellationReason?: string | null
     assignedAssetIds?: string | null
@@ -4617,6 +4641,7 @@ export namespace Prisma {
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
     denialReason?: NullableStringFieldUpdateOperationsInput | string | null
+    pickedUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancellationReason?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAssetIds?: NullableStringFieldUpdateOperationsInput | string | null
@@ -4642,6 +4667,7 @@ export namespace Prisma {
     approvedBy?: NullableStringFieldUpdateOperationsInput | string | null
     deniedBy?: NullableStringFieldUpdateOperationsInput | string | null
     denialReason?: NullableStringFieldUpdateOperationsInput | string | null
+    pickedUpAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancellationReason?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAssetIds?: NullableStringFieldUpdateOperationsInput | string | null
@@ -4889,6 +4915,7 @@ export namespace Prisma {
     approvedBy?: SortOrder
     deniedBy?: SortOrder
     denialReason?: SortOrder
+    pickedUpAt?: SortOrder
     cancelledAt?: SortOrder
     cancellationReason?: SortOrder
     assignedAssetIds?: SortOrder
@@ -4918,6 +4945,7 @@ export namespace Prisma {
     approvedBy?: SortOrder
     deniedBy?: SortOrder
     denialReason?: SortOrder
+    pickedUpAt?: SortOrder
     cancelledAt?: SortOrder
     cancellationReason?: SortOrder
     assignedAssetIds?: SortOrder
@@ -4943,6 +4971,7 @@ export namespace Prisma {
     approvedBy?: SortOrder
     deniedBy?: SortOrder
     denialReason?: SortOrder
+    pickedUpAt?: SortOrder
     cancelledAt?: SortOrder
     cancellationReason?: SortOrder
     assignedAssetIds?: SortOrder

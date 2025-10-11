@@ -206,9 +206,33 @@ export class ReservationController {
         },
       });
 
+      // Auto-assign assets to the requester via Asset Service API
+      const ASSET_SERVICE_URL = process.env.ASSET_SERVICE_URL || 'https://asset-svc-production.up.railway.app/v1';
+      const authToken = req.headers.authorization;
+
+      for (const assetId of dto.assetIds) {
+        try {
+          const response = await fetch(`${ASSET_SERVICE_URL}/assets/${assetId}/assign`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': authToken || '',
+            },
+            body: JSON.stringify({ userId: reservation.requesterId })
+          });
+
+          if (!response.ok) {
+            console.error(`Failed to assign asset ${assetId}:`, await response.text());
+          }
+        } catch (error) {
+          console.error(`Error assigning asset ${assetId}:`, error);
+          // Continue with other assets even if one fails
+        }
+      }
+
       return {
         success: true,
-        message: 'Reservation approved successfully',
+        message: 'Reservation approved and assets assigned to requester',
         reservation: updated,
       };
     });
@@ -246,6 +270,122 @@ export class ReservationController {
           denialReason: dto.reason,
         },
       });
+    });
+  }
+
+  /**
+   * Mark reservation as picked up (operator/admin only)
+   */
+  @Roles('operator', 'admin')
+  @Post('/reservations/:id/pickup')
+  async markAsPickedUp(
+    @Req() req: any,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return withTx(async (tx) => {
+      const reservation = await tx.reservation.findUnique({
+        where: { id },
+      });
+
+      if (!reservation) {
+        throw new NotFoundException('Reservation not found');
+      }
+
+      if (reservation.status !== 'approved') {
+        throw new BadRequestException('Can only mark approved reservations as picked up');
+      }
+
+      if (reservation.pickedUpAt) {
+        throw new BadRequestException('Reservation already marked as picked up');
+      }
+
+      const updated = await tx.reservation.update({
+        where: { id },
+        data: {
+          pickedUpAt: new Date(),
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Reservation marked as picked up',
+        reservation: updated,
+      };
+    });
+  }
+
+  /**
+   * Complete reservation - mark as returned, unassign assets (operator/admin only)
+   */
+  @Roles('operator', 'admin')
+  @Post('/reservations/:id/complete')
+  async completeReservation(
+    @Req() req: any,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: { returnNotes?: string },
+  ) {
+    return withTx(async (tx) => {
+      const reservation = await tx.reservation.findUnique({
+        where: { id },
+      });
+
+      if (!reservation) {
+        throw new NotFoundException('Reservation not found');
+      }
+
+      if (reservation.status !== 'approved') {
+        throw new BadRequestException('Can only complete approved reservations');
+      }
+
+      if (reservation.actualReturnDate) {
+        throw new BadRequestException('Reservation already completed');
+      }
+
+      // Update reservation
+      const updated = await tx.reservation.update({
+        where: { id },
+        data: {
+          status: 'completed',
+          actualReturnDate: new Date(),
+          notes: dto.returnNotes
+            ? `${reservation.notes || ''}\n\nReturn Notes: ${dto.returnNotes}`
+            : reservation.notes,
+        },
+      });
+
+      // Unassign all assets via Asset Service API
+      const ASSET_SERVICE_URL = process.env.ASSET_SERVICE_URL || 'https://asset-svc-production.up.railway.app/v1';
+      const authToken = req.headers.authorization;
+
+      if (reservation.assignedAssetIds) {
+        const assetIds = reservation.assignedAssetIds.split(',');
+
+        for (const assetId of assetIds) {
+          try {
+            const response = await fetch(`${ASSET_SERVICE_URL}/assets/${assetId.trim()}/unassign`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': authToken || '',
+              },
+              body: JSON.stringify({})
+            });
+
+            if (!response.ok) {
+              console.error(`Failed to unassign asset ${assetId}:`, await response.text());
+            }
+          } catch (error) {
+            console.error(`Error unassigning asset ${assetId}:`, error);
+            // Continue with other assets even if one fails
+          }
+        }
+      }
+
+      return {
+        success: true,
+        message: 'Reservation completed and assets returned',
+        reservation: updated,
+      };
     });
   }
 
