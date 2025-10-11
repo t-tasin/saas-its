@@ -2,7 +2,7 @@
  * DTOs for Reservation endpoints
  */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsUUID, IsInt, Min, MaxLength, IsDateString, IsEmail, IsArray, ValidateNested } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID, IsInt, Min, MaxLength, IsDateString, IsEmail, IsArray, ValidateNested, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum ReservationStatus {
@@ -54,6 +54,11 @@ export class CreateReservationDto {
   @IsString()
   @MaxLength(1000)
   notes?: string;
+
+  @ApiPropertyOptional({ description: 'Force request even if equipment unavailable (special request)', default: false })
+  @IsOptional()
+  @IsBoolean()
+  forceRequest?: boolean;
 }
 
 export class ApproveReservationDto {

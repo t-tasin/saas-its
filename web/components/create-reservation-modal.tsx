@@ -4,6 +4,16 @@ import type React from "react"
 
 import { useState } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,8 +21,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCreateReservation } from "@/hooks/use-reservations"
 import { useAuth } from "@/contexts/auth-context"
-import mockData from "@/data/mock-data.json"
-import { Loader2, Plus, Minus, CheckCircle2 } from "lucide-react"
+import { useAssets } from "@/hooks/use-assets"
+import { Loader2, Plus, Minus, CheckCircle2, AlertTriangle } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 interface CreateReservationModalProps {
@@ -23,6 +33,7 @@ interface CreateReservationModalProps {
 export function CreateReservationModal({ open, onOpenChange }: CreateReservationModalProps) {
   const { user } = useAuth()
   const createReservation = useCreateReservation()
+  const { data: assetsResponse } = useAssets()
   const [formData, setFormData] = useState({
     purpose: "",
     startDate: "",
@@ -32,11 +43,15 @@ export function CreateReservationModal({ open, onOpenChange }: CreateReservation
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [showInsufficientAssetDialog, setShowInsufficientAssetDialog] = useState(false)
+  const [pendingReservationData, setPendingReservationData] = useState<any>(null)
 
-  // Get unique asset types
-  const assetTypes = Array.from(new Set(mockData.assets.map((a) => a.assetType.name)))
+  // Get unique asset types from backend
+  const assetTypes = Array.from(
+    new Set((assetsResponse?.data || []).map((asset: any) => asset.type))
+  ).filter(Boolean)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, forceRequest = false) => {
     e.preventDefault()
 
     if (formData.purpose.length < 5 || formData.purpose.length > 500) {
@@ -76,26 +91,67 @@ export function CreateReservationModal({ open, onOpenChange }: CreateReservation
     setIsSubmitting(true)
     setIsSuccess(false)
 
+    const reservationData = {
+      equipmentType: formData.assetType,
+      quantity: formData.quantity,
+      purpose: formData.purpose,
+      requestDate: formData.startDate,
+      returnDate: formData.endDate,
+      forceRequest, // Add flag to indicate special request
+    }
+
     try {
-      await createReservation.mutateAsync({
-        equipmentType: formData.assetType, // Backend expects equipmentType, not items array
-        quantity: formData.quantity,
-        purpose: formData.purpose,
-        requestDate: formData.startDate, // Backend expects requestDate
-        returnDate: formData.endDate, // Backend expects returnDate
-      })
+      await createReservation.mutateAsync(reservationData)
 
       setIsSuccess(true)
-      toast.success("Reservation request submitted successfully!")
+      // Toast is shown by the mutation hook
 
       setTimeout(() => {
         setFormData({ purpose: "", startDate: "", endDate: "", assetType: "", quantity: 1 })
         setIsSuccess(false)
+        setPendingReservationData(null)
         onOpenChange(false)
       }, 1500)
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create reservation:", error)
-      toast.error("Failed to create reservation. Please try again.")
+      
+      // Check if the error is due to insufficient assets
+      const errorMsg = error.response?.data?.message || error.response?.data?.error?.message || error.message || ""
+      if (errorMsg.toLowerCase().includes("insufficient") || errorMsg.toLowerCase().includes("not available") || errorMsg.toLowerCase().includes("no available")) {
+        // Show the insufficient asset dialog
+        setPendingReservationData(reservationData)
+        setShowInsufficientAssetDialog(true)
+      }
+      // Toast error is shown by the mutation hook
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleSpecialRequest = async () => {
+    setShowInsufficientAssetDialog(false)
+    setIsSubmitting(true)
+    
+    try {
+      // Retry with force request flag
+      if (pendingReservationData) {
+        await createReservation.mutateAsync({
+          ...pendingReservationData,
+          forceRequest: true,
+        })
+
+        setIsSuccess(true)
+        toast.success("Special request submitted successfully!")
+
+        setTimeout(() => {
+          setFormData({ purpose: "", startDate: "", endDate: "", assetType: "", quantity: 1 })
+          setIsSuccess(false)
+          setPendingReservationData(null)
+          onOpenChange(false)
+        }, 1500)
+      }
+    } catch (error) {
+      console.error("Failed to submit special request:", error)
     } finally {
       setIsSubmitting(false)
     }
@@ -227,6 +283,35 @@ export function CreateReservationModal({ open, onOpenChange }: CreateReservation
           </div>
         </form>
       </DialogContent>
+
+      {/* Insufficient Asset Alert Dialog */}
+      <AlertDialog open={showInsufficientAssetDialog} onOpenChange={setShowInsufficientAssetDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
+                <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+              </div>
+              <AlertDialogTitle>Item Not Available</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription>
+              The requested equipment is not available at this moment. However, you can submit a special request and an operator may be able to reassign devices to fulfill your request.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowInsufficientAssetDialog(false)
+              setPendingReservationData(null)
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleSpecialRequest} disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Submit Special Request
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   )
 }

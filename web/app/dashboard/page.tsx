@@ -15,7 +15,8 @@ import { useTickets } from "@/hooks/use-tickets"
 import { useReservations } from "@/hooks/use-reservations"
 import { useAssets } from "@/hooks/use-assets"
 import mockData from "@/data/mock-data.json"
-import { Package, Ticket, Calendar, Plus, CheckCircle2, Clock, XCircle } from "lucide-react"
+import { Package, Ticket, Calendar, Plus, CheckCircle2, Clock, XCircle, Filter } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { formatDate, formatRelativeTime } from "@/lib/utils"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
@@ -24,6 +25,8 @@ function UserDashboard() {
   const { user } = useAuth()
   const [ticketModalOpen, setTicketModalOpen] = useState(false)
   const [reservationModalOpen, setReservationModalOpen] = useState(false)
+  const [ticketFilter, setTicketFilter] = useState<"all" | "active">("all")
+  const [reservationFilter, setReservationFilter] = useState<"all" | "active">("all")
 
   // Fetch real data from backend
   const { data: ticketsResponse } = useTickets()
@@ -32,7 +35,7 @@ function UserDashboard() {
 
   // Get user's tickets (filter by requester email or ID)
   // Backend uses: requesterEmail, requestedBy, requestedByUser
-  const userTickets = (ticketsResponse?.data || []).filter(
+  const allUserTickets = (ticketsResponse?.data || []).filter(
     (ticket: any) => {
       const matchesEmail = 
         ticket.requesterEmail === user?.email || 
@@ -46,6 +49,13 @@ function UserDashboard() {
     }
   )
 
+  // Apply ticket filter
+  const userTickets = ticketFilter === "active" 
+    ? allUserTickets.filter((ticket: any) => 
+        !["resolved", "closed", "cancelled"].includes(ticket.status.toLowerCase())
+      )
+    : allUserTickets
+
   // Debug logging for tickets
   console.log('[Dashboard] Ticket data:', {
     totalTickets: ticketsResponse?.data?.length || 0,
@@ -57,9 +67,16 @@ function UserDashboard() {
   })
 
   // Get user's reservations
-  const userReservations = (reservationsResponse?.data || []).filter(
+  const allUserReservations = (reservationsResponse?.data || []).filter(
     (res: any) => res.requesterId === user?.id || res.requesterEmail === user?.email
   )
+
+  // Apply reservation filter
+  const userReservations = reservationFilter === "active"
+    ? allUserReservations.filter((res: any) => 
+        !["completed", "cancelled", "rejected", "returned"].includes(res.status.toLowerCase())
+      )
+    : allUserReservations
 
   // Get user's assigned assets
   const assignedAssets = (assetsResponse?.data || []).filter(
@@ -152,12 +169,12 @@ function UserDashboard() {
           <p className="text-muted-foreground mt-2">Here's an overview of your IT resources and requests</p>
         </div>
 
-        <div className="flex gap-3 mb-6">
-          <Button onClick={() => setTicketModalOpen(true)}>
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <Button onClick={() => setTicketModalOpen(true)} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Create Ticket
           </Button>
-          <Button variant="outline" onClick={() => setReservationModalOpen(true)}>
+          <Button variant="outline" onClick={() => setReservationModalOpen(true)} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Create Reservation
           </Button>
@@ -193,10 +210,22 @@ function UserDashboard() {
         {/* My Tickets */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Ticket className="h-5 w-5" />
-              My Tickets
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Ticket className="h-5 w-5" />
+                My Tickets
+              </CardTitle>
+              <Select value={ticketFilter} onValueChange={(value: any) => setTicketFilter(value)}>
+                <SelectTrigger className="w-[140px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Tickets</SelectItem>
+                  <SelectItem value="active">Active Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </CardHeader>
           <CardContent>
             {userTickets.length === 0 ? (
@@ -219,8 +248,8 @@ function UserDashboard() {
                           <p className="text-xs text-muted-foreground">{formatRelativeTime(ticket.createdAt)}</p>
                         </div>
                         
-                        {/* Progress bar with stages */}
-                        <div className="flex items-center justify-between">
+                        {/* Progress bar with stages - Hidden on mobile */}
+                        <div className="hidden md:flex items-center justify-between">
                           {stages.map((stage, index) => {
                             const Icon = stage.icon
                             return (
@@ -259,10 +288,22 @@ function UserDashboard() {
         {/* My Reservations */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              My Reservations
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                My Reservations
+              </CardTitle>
+              <Select value={reservationFilter} onValueChange={(value: any) => setReservationFilter(value)}>
+                <SelectTrigger className="w-[160px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Reservations</SelectItem>
+                  <SelectItem value="active">Active Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </CardHeader>
           <CardContent>
             {userReservations.length === 0 ? (
@@ -284,7 +325,8 @@ function UserDashboard() {
                           </div>
                         </div>
 
-                        <div className="mb-4">
+                        {/* Progress bar with stages - Hidden on mobile */}
+                        <div className="mb-4 hidden md:block">
                           <div className="flex items-center justify-between mb-2">
                             {stages.map((stage, index) => {
                               const Icon = stage.icon
@@ -347,6 +389,18 @@ function UserDashboard() {
                                 </div>
                               )
                             })}
+                          </div>
+                        </div>
+
+                        {/* Show dates on mobile */}
+                        <div className="md:hidden mb-3 flex justify-between text-sm">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Start Date</p>
+                            <p className="text-xs font-medium">{formatDate(reservation.requestDate || reservation.startDate)}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Return Date</p>
+                            <p className="text-xs font-medium">{formatDate(reservation.returnDate || reservation.endDate)}</p>
                           </div>
                         </div>
 

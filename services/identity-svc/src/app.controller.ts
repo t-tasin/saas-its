@@ -8,7 +8,7 @@ import { Public } from './auth/public.decorator';
 import { Roles } from './auth/roles.decorator';
 import { 
   RegisterDto, LoginDto, UpdateUserDto, ChangePasswordDto, CreateUserDto,
-  RequestOTPDto, VerifyOTPDto, UserRole
+  RequestOTPDto, VerifyOTPDto, ResetPasswordDto, UserRole
 } from './dto/user.dto';
 import { generateToken, generateRefreshToken, generateTempToken, verifyTempToken } from './jwt.util';
 import { PrismaClient } from '../generated/client';
@@ -146,6 +146,60 @@ export class AppController {
         role: user.role,
         createdAt: user.createdAt,
       },
+    };
+  }
+
+  /**
+   * Request password reset (forgot password)
+   * Sends OTP to user's email for password reset
+   */
+  @Public()
+  @Post('/auth/forgot-password')
+  async forgotPassword(@Body() dto: RequestOTPDto) {
+    // Check if user exists
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!user) {
+      // Don't reveal if email exists or not for security
+      return {
+        success: true,
+        message: 'If an account exists with this email, a password reset OTP has been sent.',
+      };
+    }
+
+    // Send OTP for password reset
+    await this.otpService.requestOTPForUser(this.prisma, user.id);
+
+    return {
+      success: true,
+      message: 'Password reset OTP sent to your email',
+    };
+  }
+
+  /**
+   * Reset password using OTP
+   * Verifies OTP and sets new password
+   */
+  @Public()
+  @Post('/auth/reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    // Verify OTP
+    const user = await this.otpService.verifyOTP(this.prisma, dto.email, dto.otp);
+
+    // Update password
+    const bcrypt = require('bcrypt');
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+
+    return {
+      success: true,
+      message: 'Password reset successfully',
     };
   }
 

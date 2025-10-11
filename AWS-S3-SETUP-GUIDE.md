@@ -48,7 +48,7 @@ AWS_REGION=us-east-1
 S3_BUCKET_NAME=saas-its-ticket-attachments
 
 # Make sure NODE_ENV is set to production (this disables LocalStack)
-NODE_ENV=production
+
 ```
 
 **To add these in Railway:**

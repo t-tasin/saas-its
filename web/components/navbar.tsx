@@ -12,11 +12,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Headset, User, LogOut, LayoutDashboard, Ticket, Calendar, Package, Users } from "lucide-react"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { Headset, User, LogOut, LayoutDashboard, Ticket, Calendar, Package, Users, Menu } from "lucide-react"
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth()
   const [mounted, setMounted] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Prevent hydration mismatch by only showing auth-dependent UI after mount
   useEffect(() => {
@@ -38,7 +46,7 @@ export function Navbar() {
               <div className="h-9 w-32" />
             ) : isAuthenticated ? (
               <>
-                {/* Navigation Links for Operator/Admin */}
+                {/* Navigation Links for Operator/Admin - Desktop */}
                 {(user?.role === "operator" || user?.role === "admin") && (
                   <div className="hidden md:flex items-center gap-2">
                     {user?.role === "admin" && (
@@ -78,9 +86,9 @@ export function Navbar() {
                   </div>
                 )}
 
-                {/* User Dashboard Link for general users */}
+                {/* User Dashboard Link for general users - Desktop */}
                 {user?.role === "general" && (
-                  <Link href="/dashboard">
+                  <Link href="/dashboard" className="hidden md:block">
                     <Button variant="ghost" size="sm">
                       <LayoutDashboard className="h-4 w-4 mr-2" />
                       My Dashboard
@@ -88,10 +96,95 @@ export function Navbar() {
                   </Link>
                 )}
 
-                {/* Profile Dropdown */}
+                {/* Mobile Menu - Hamburger */}
+                <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                  <SheetTrigger asChild className="md:hidden">
+                    <Button variant="ghost" size="icon">
+                      <Menu className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                    <SheetHeader>
+                      <SheetTitle>Menu</SheetTitle>
+                    </SheetHeader>
+                    <div className="flex flex-col gap-4 mt-6">
+                      {/* General User Navigation */}
+                      {user?.role === "general" && (
+                        <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start">
+                            <LayoutDashboard className="h-4 w-4 mr-2" />
+                            My Dashboard
+                          </Button>
+                        </Link>
+                      )}
+
+                      {/* Operator/Admin Navigation */}
+                      {(user?.role === "operator" || user?.role === "admin") && (
+                        <>
+                          {user?.role === "admin" && (
+                            <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                              <Button variant="ghost" className="w-full justify-start">
+                                <LayoutDashboard className="h-4 w-4 mr-2" />
+                                Dashboard
+                              </Button>
+                            </Link>
+                          )}
+                          <Link href="/dashboard/tickets" onClick={() => setMobileMenuOpen(false)}>
+                            <Button variant="ghost" className="w-full justify-start">
+                              <Ticket className="h-4 w-4 mr-2" />
+                              Tickets
+                            </Button>
+                          </Link>
+                          <Link href="/dashboard/reservations" onClick={() => setMobileMenuOpen(false)}>
+                            <Button variant="ghost" className="w-full justify-start">
+                              <Calendar className="h-4 w-4 mr-2" />
+                              Reservations
+                            </Button>
+                          </Link>
+                          <Link href="/dashboard/assets" onClick={() => setMobileMenuOpen(false)}>
+                            <Button variant="ghost" className="w-full justify-start">
+                              <Package className="h-4 w-4 mr-2" />
+                              Assets
+                            </Button>
+                          </Link>
+                          {user?.role === "admin" && (
+                            <Link href="/dashboard/users" onClick={() => setMobileMenuOpen(false)}>
+                              <Button variant="ghost" className="w-full justify-start">
+                                <Users className="h-4 w-4 mr-2" />
+                                Users
+                              </Button>
+                            </Link>
+                          )}
+                        </>
+                      )}
+
+                      <div className="border-t pt-4 mt-4">
+                        <Link href="/dashboard/profile" onClick={() => setMobileMenuOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start">
+                            <User className="h-4 w-4 mr-2" />
+                            Profile
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start text-destructive hover:text-destructive"
+                          onClick={() => {
+                            setMobileMenuOpen(false)
+                            logout()
+                          }}
+                        >
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Logout
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+
+                {/* Profile Dropdown - Desktop */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
+                    <Button variant="ghost" size="icon" className="rounded-full hidden md:flex">
                       <User className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>

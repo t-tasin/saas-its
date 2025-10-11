@@ -1,8 +1,0 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/assets/[...path]/route": "app/api/assets/[...path]/route.js",
-  "/dashboard/assets/page": "app/dashboard/assets/page.js",
-  "/dashboard/assets/[id]/page": "app/dashboard/assets/[id]/page.js",
-  "/dashboard/reservations/page": "app/dashboard/reservations/page.js",
-  "/reservations/[id]/page": "app/reservations/[id]/page.js"
-}

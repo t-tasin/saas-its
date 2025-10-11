@@ -4,6 +4,7 @@ node_modules/
 # Builds
 dist/
 build/
+.next/
 *.tsbuildinfo
 
 # Environment variables (contains secrets - DO NOT COMMIT)

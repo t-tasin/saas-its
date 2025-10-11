@@ -109,7 +109,7 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
       })
 
       setIsSuccess(true)
-      toast.success("Ticket created successfully!")
+      // Toast is shown by the mutation hook
 
       setTimeout(() => {
         setFormData({ title: "", description: "", email: user?.email || "" })
@@ -119,7 +119,7 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
       }, 1500)
     } catch (error) {
       console.error("Failed to create ticket:", error)
-      toast.error("Failed to create ticket. Please try again.")
+      // Toast error is shown by the mutation hook
     } finally {
       setIsSubmitting(false)
     }

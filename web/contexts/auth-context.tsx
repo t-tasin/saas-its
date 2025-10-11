@@ -44,6 +44,21 @@ const identityService = {
     const response = await identityClient.post("/logout")
     return response.data
   },
+
+  changePassword: async (data: { currentPassword: string; newPassword: string }) => {
+    const response = await identityClient.post("/change-password", data)
+    return response.data
+  },
+
+  forgotPassword: async (email: string) => {
+    const response = await identityClient.post("/forgot-password", { email })
+    return response.data
+  },
+
+  resetPassword: async (data: { email: string; otp: string; newPassword: string }) => {
+    const response = await identityClient.post("/reset-password", data)
+    return response.data
+  },
 }
 
 interface AuthContextType {
@@ -58,6 +73,9 @@ interface AuthContextType {
   register: (data: { email: string; password: string; name: string }) => Promise<void>
   resendOTP: () => Promise<void>
   logout: () => void
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>
+  forgotPassword: (email: string) => Promise<void>
+  resetPassword: (email: string, otp: string, newPassword: string) => Promise<void>
   isAuthenticated: boolean
   isOperator: boolean
   isAdmin: boolean
@@ -353,6 +371,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    try {
+      await identityService.changePassword({ currentPassword, newPassword })
+      toast.success("Password changed successfully")
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to change password"
+      toast.error(errorMessage)
+      throw new Error(errorMessage)
+    }
+  }
+
+  const forgotPassword = async (email: string) => {
+    try {
+      await identityService.forgotPassword(email)
+      toast.success("Password reset OTP sent to your email")
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to send reset OTP"
+      toast.error(errorMessage)
+      throw new Error(errorMessage)
+    }
+  }
+
+  const resetPassword = async (email: string, otp: string, newPassword: string) => {
+    try {
+      await identityService.resetPassword({ email, otp, newPassword })
+      toast.success("Password reset successfully! Please login with your new password")
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Failed to reset password"
+      toast.error(errorMessage)
+      throw new Error(errorMessage)
+    }
+  }
+
   const logout = () => {
     // Clear all auth data from localStorage
     setToken(null)
@@ -378,6 +429,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     register,
     resendOTP,
     logout,
+    changePassword,
+    forgotPassword,
+    resetPassword,
     isAuthenticated: !!user,
     isOperator: user?.role === "operator" || user?.role === "admin",
     isAdmin: user?.role === "admin",

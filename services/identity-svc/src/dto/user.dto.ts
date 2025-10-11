@@ -119,6 +119,24 @@ export class VerifyOTPDto {
   tempToken?: string;
 }
 
+export class ResetPasswordDto {
+  @ApiProperty({ example: 'user@example.com' })
+  @IsEmail()
+  email!: string;
+
+  @ApiProperty({ example: '123456', description: '6-digit OTP code' })
+  @IsString()
+  @MinLength(6)
+  @MaxLength(6)
+  otp!: string;
+
+  @ApiProperty({ example: 'NewPassword123!' })
+  @IsString()
+  @MinLength(6)
+  @MaxLength(100)
+  newPassword!: string;
+}
+
 // Response DTOs
 export class OTPResponseDto {
   success!: boolean;

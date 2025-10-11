@@ -53,15 +53,17 @@ export class ReservationController {
         throw new BadRequestException('Return date must be within 14 days of requested date');
       }
 
-      // Check equipment availability
-      const available = await this.reservationService.checkAvailability(
-        dto.equipmentType,
-        requestDate,
-        returnDate
-      );
+      // Check equipment availability (unless force request)
+      if (!dto.forceRequest) {
+        const available = await this.reservationService.checkAvailability(
+          dto.equipmentType,
+          requestDate,
+          returnDate
+        );
 
-      if (available < dto.quantity) {
-        throw new BadRequestException('Insufficient equipment available for requested dates');
+        if (available < dto.quantity) {
+          throw new BadRequestException('Insufficient equipment available for requested dates');
+        }
       }
 
       // Generate reservation number
