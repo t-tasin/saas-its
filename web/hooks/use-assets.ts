@@ -142,6 +142,58 @@ export function useCreateAsset() {
   })
 }
 
+export function useUpdateAsset() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<CreateAssetData> }) => {
+      try {
+        // Transform frontend data to backend format
+        const backendData: any = {}
+        
+        if (data.assetId) backendData.assetId = data.assetId
+        if (data.type) backendData.type = data.type
+        if (data.description) backendData.description = data.description
+        if (data.fundingDepartment) backendData.fundingDepartment = data.fundingDepartment
+        if (data.manufacturer) backendData.manufacturer = data.manufacturer
+        if (data.model) backendData.model = data.model
+        if (data.modelGeneration) backendData.modelGeneration = data.modelGeneration
+        if (data.serialNumber) backendData.serialNumber = data.serialNumber
+        if (data.vendor) backendData.vendor = data.vendor
+        if (data.memory) backendData.memory = data.memory
+        if (data.hddSize) backendData.hddSize = data.hddSize
+        if (data.hddType) backendData.hddType = data.hddType
+        if (data.cpuGeneration) backendData.cpuGeneration = data.cpuGeneration
+        if (data.cpuSpeed) backendData.cpuSpeed = data.cpuSpeed
+        if (data.gpuModel) backendData.gpuModel = data.gpuModel
+        if (data.videoCard) backendData.videoCard = data.videoCard
+        if (data.wiredMac) backendData.wiredMac = data.wiredMac
+        if (data.wirelessMac) backendData.wirelessMac = data.wirelessMac
+        if (data.output1) backendData.output1 = data.output1
+        if (data.output2) backendData.output2 = data.output2
+        if (data.receivedDate) backendData.receivedDate = data.receivedDate
+        if (data.cost !== undefined) backendData.cost = data.cost
+        if (data.po) backendData.po = data.po
+        if (data.disposalDate) backendData.disposalDate = data.disposalDate
+        if (data.disposalType) backendData.disposalType = data.disposalType
+        if (data.location) backendData.location = data.location
+        if (data.status) backendData.status = transformAssetStatusToBackend(data.status)
+
+        const response = await assetApi.patch(`/${id}`, backendData)
+        toast.success("Asset updated successfully")
+        return response.data
+      } catch (error: any) {
+        toast.error(error.message || "Failed to update asset")
+        throw error
+      }
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["asset", variables.id] })
+      queryClient.invalidateQueries({ queryKey: ["assets"] })
+    },
+  })
+}
+
 export function useAssignAsset() {
   const queryClient = useQueryClient()
 

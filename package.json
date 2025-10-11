@@ -7,6 +7,7 @@
   "scripts": {
     "install:all": "npm install",
     "ls:ws": "npm ls --workspaces --depth=0 --json | jq '.workspaces | keys' || npm pkg get workspaces",
+    "seed": "tsx scripts/seed-data.ts",
     "test:unit": "npm run test --workspaces --if-present",
     "test:e2e": "jest --config jest-e2e.config.js",
     "test:e2e:auth": "jest --config jest-e2e.config.js test/auth.e2e-spec.ts",

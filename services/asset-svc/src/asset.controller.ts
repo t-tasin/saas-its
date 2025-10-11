@@ -96,6 +96,29 @@ export class AssetController {
     });
   }
 
+  @Get(':id')
+  @Roles('operator', 'admin')
+  async getOne(@Param('id', new ParseUUIDPipe()) id: string) {
+    return withTx(async (tx) => {
+      const asset = await tx.asset.findUnique({
+        where: { id },
+        include: {
+          assetType: true,
+          assignments: {
+            where: { unassignedAt: null },
+            orderBy: { assignedAt: 'desc' },
+          },
+        },
+      });
+
+      if (!asset) {
+        throw new ConflictException('Asset not found');
+      }
+
+      return asset;
+    });
+  }
+
   @Post()
   @Roles('operator', 'admin')
   async create(@Req() req: any, @Body() dto: CreateAssetDto) {

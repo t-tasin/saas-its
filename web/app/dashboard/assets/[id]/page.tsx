@@ -1,14 +1,32 @@
 "use client"
 
-import { use } from "react"
+import { use, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { InfoRow } from "@/components/info-row"
 import { PageHeader } from "@/components/page-header"
 import { ProtectedRoute } from "@/components/protected-route"
-import { ArrowLeft, Edit, Package } from "lucide-react"
-import { useAsset } from "@/hooks/use-assets"
+import { ArrowLeft, Edit, Package, Save } from "lucide-react"
+import { useAsset, useUpdateAsset } from "@/hooks/use-assets"
 import { useUser } from "@/hooks/use-users"
 
 function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
@@ -16,8 +34,53 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { data: assetResponse, isLoading } = useAsset(id)
   const asset = assetResponse?.data
+  const updateAsset = useUpdateAsset()
 
   const { data: assignedUser } = useUser(asset?.assignedToId)
+
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editFormData, setEditFormData] = useState<any>({})
+
+  const handleEditClick = () => {
+    setEditFormData({
+      assetId: asset?.assetId || "",
+      type: asset?.type || "",
+      description: asset?.description || "",
+      status: asset?.status || "available",
+      location: asset?.location || "",
+      fundingDepartment: asset?.fundingDepartment || "",
+      manufacturer: asset?.manufacturer || "",
+      model: asset?.model || "",
+      modelGeneration: asset?.modelGeneration || "",
+      serialNumber: asset?.serialNumber || "",
+      vendor: asset?.vendor || "",
+      memory: asset?.memory || "",
+      hddSize: asset?.hddSize || "",
+      hddType: asset?.hddType || "",
+      cpuGeneration: asset?.cpuGeneration || "",
+      cpuSpeed: asset?.cpuSpeed || "",
+      gpuModel: asset?.gpuModel || "",
+      videoCard: asset?.videoCard || "",
+      wiredMac: asset?.wiredMac || "",
+      wirelessMac: asset?.wirelessMac || "",
+      output1: asset?.output1 || "",
+      output2: asset?.output2 || "",
+      receivedDate: asset?.receivedDate || "",
+      cost: asset?.cost || "",
+      po: asset?.po || "",
+      disposalDate: asset?.disposalDate || "",
+      disposalType: asset?.disposalType || "",
+    })
+    setShowEditModal(true)
+  }
+
+  const handleSaveEdit = async () => {
+    await updateAsset.mutateAsync({
+      id,
+      data: editFormData,
+    })
+    setShowEditModal(false)
+  }
 
   if (isLoading) {
     return (
@@ -63,7 +126,7 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
             title={asset.assetId || `Asset ${asset.id.slice(0, 8)}`}
             description={asset.type}
             action={
-              <Button>
+              <Button onClick={handleEditClick}>
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Asset
               </Button>
@@ -190,6 +253,323 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
           </Card>
         </div>
       </main>
+
+      {/* Edit Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Asset</DialogTitle>
+            <DialogDescription>Update asset information</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Basic Information */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase">Basic Information</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="assetId">Asset ID *</Label>
+                  <Input
+                    id="assetId"
+                    value={editFormData.assetId || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, assetId: e.target.value })}
+                    placeholder="e.g. LAPTOP-001"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="type">Type *</Label>
+                  <Select value={editFormData.type || ""} onValueChange={(value) => setEditFormData({ ...editFormData, type: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Laptop">Laptop</SelectItem>
+                      <SelectItem value="Desktop">Desktop</SelectItem>
+                      <SelectItem value="Monitor">Monitor</SelectItem>
+                      <SelectItem value="Phone">Phone</SelectItem>
+                      <SelectItem value="Tablet">Tablet</SelectItem>
+                      <SelectItem value="Printer">Printer</SelectItem>
+                      <SelectItem value="Server">Server</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={editFormData.description || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                    placeholder="Asset description..."
+                    rows={2}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="status">Status</Label>
+                  <Select value={editFormData.status || ""} onValueChange={(value) => setEditFormData({ ...editFormData, status: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="assigned">Assigned</SelectItem>
+                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                      <SelectItem value="disposed">Disposed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    value={editFormData.location || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
+                    placeholder="e.g. Room 301"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="fundingDepartment">Funding Department *</Label>
+                  <Input
+                    id="fundingDepartment"
+                    value={editFormData.fundingDepartment || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, fundingDepartment: e.target.value })}
+                    placeholder="e.g. IT Department"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Hardware Details */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase">Hardware Details</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="manufacturer">Manufacturer</Label>
+                  <Input
+                    id="manufacturer"
+                    value={editFormData.manufacturer || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, manufacturer: e.target.value })}
+                    placeholder="e.g. Dell, HP, Apple"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="model">Model</Label>
+                  <Input
+                    id="model"
+                    value={editFormData.model || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, model: e.target.value })}
+                    placeholder="e.g. Latitude 5420"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="modelGeneration">Model Generation</Label>
+                  <Input
+                    id="modelGeneration"
+                    value={editFormData.modelGeneration || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, modelGeneration: e.target.value })}
+                    placeholder="e.g. Gen 11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="serialNumber">Serial Number</Label>
+                  <Input
+                    id="serialNumber"
+                    value={editFormData.serialNumber || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, serialNumber: e.target.value })}
+                    placeholder="Serial number"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vendor">Vendor</Label>
+                  <Input
+                    id="vendor"
+                    value={editFormData.vendor || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, vendor: e.target.value })}
+                    placeholder="Vendor name"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Technical Specifications */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase">Technical Specifications</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="memory">Memory</Label>
+                  <Input
+                    id="memory"
+                    value={editFormData.memory || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, memory: e.target.value })}
+                    placeholder="e.g. 16GB DDR4"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="hddSize">Storage Size</Label>
+                  <Input
+                    id="hddSize"
+                    value={editFormData.hddSize || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, hddSize: e.target.value })}
+                    placeholder="e.g. 512GB"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="hddType">Storage Type</Label>
+                  <Input
+                    id="hddType"
+                    value={editFormData.hddType || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, hddType: e.target.value })}
+                    placeholder="e.g. SSD, HDD"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cpuGeneration">CPU Generation</Label>
+                  <Input
+                    id="cpuGeneration"
+                    value={editFormData.cpuGeneration || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, cpuGeneration: e.target.value })}
+                    placeholder="e.g. Intel i7 11th Gen"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cpuSpeed">CPU Speed</Label>
+                  <Input
+                    id="cpuSpeed"
+                    value={editFormData.cpuSpeed || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, cpuSpeed: e.target.value })}
+                    placeholder="e.g. 2.8 GHz"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="gpuModel">GPU Model</Label>
+                  <Input
+                    id="gpuModel"
+                    value={editFormData.gpuModel || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, gpuModel: e.target.value })}
+                    placeholder="e.g. NVIDIA RTX 3060"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="videoCard">Video Card</Label>
+                  <Input
+                    id="videoCard"
+                    value={editFormData.videoCard || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, videoCard: e.target.value })}
+                    placeholder="Video card details"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Network & Connectivity */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase">Network & Connectivity</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="wiredMac">Wired MAC Address</Label>
+                  <Input
+                    id="wiredMac"
+                    value={editFormData.wiredMac || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, wiredMac: e.target.value })}
+                    placeholder="e.g. 00:1A:2B:3C:4D:5E"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="wirelessMac">Wireless MAC Address</Label>
+                  <Input
+                    id="wirelessMac"
+                    value={editFormData.wirelessMac || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, wirelessMac: e.target.value })}
+                    placeholder="e.g. 00:1A:2B:3C:4D:5F"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="output1">Output 1</Label>
+                  <Input
+                    id="output1"
+                    value={editFormData.output1 || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, output1: e.target.value })}
+                    placeholder="e.g. HDMI"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="output2">Output 2</Label>
+                  <Input
+                    id="output2"
+                    value={editFormData.output2 || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, output2: e.target.value })}
+                    placeholder="e.g. DisplayPort"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Financial Information */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase">Financial Information</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cost">Cost ($)</Label>
+                  <Input
+                    id="cost"
+                    type="number"
+                    step="0.01"
+                    value={editFormData.cost || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, cost: parseFloat(e.target.value) || 0 })}
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="po">Purchase Order</Label>
+                  <Input
+                    id="po"
+                    value={editFormData.po || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, po: e.target.value })}
+                    placeholder="PO number"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="receivedDate">Received Date</Label>
+                  <Input
+                    id="receivedDate"
+                    type="date"
+                    value={editFormData.receivedDate || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, receivedDate: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="disposalDate">Disposal Date</Label>
+                  <Input
+                    id="disposalDate"
+                    type="date"
+                    value={editFormData.disposalDate || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, disposalDate: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="disposalType">Disposal Type</Label>
+                  <Input
+                    id="disposalType"
+                    value={editFormData.disposalType || ""}
+                    onChange={(e) => setEditFormData({ ...editFormData, disposalType: e.target.value })}
+                    placeholder="e.g. Recycled, Donated"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditModal(false)} className="bg-transparent">
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit} disabled={updateAsset.isPending}>
+              <Save className="mr-2 h-4 w-4" />
+              {updateAsset.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
@@ -201,4 +581,3 @@ export default function AssetDetailPage({ params }: { params: Promise<{ id: stri
     </ProtectedRoute>
   )
 }
-
