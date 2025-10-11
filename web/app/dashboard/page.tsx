@@ -31,11 +31,19 @@ function UserDashboard() {
   const { data: assetsResponse } = useAssets()
 
   // Get user's tickets (filter by requester email or ID)
+  // Backend uses: requesterEmail, requestedBy, requestedByUser
   const userTickets = (ticketsResponse?.data || []).filter(
-    (ticket: any) => 
-      ticket.requesterEmail === user?.email || 
-      ticket.requestedBy === user?.email ||
-      ticket.requesterId === user?.id
+    (ticket: any) => {
+      const matchesEmail = 
+        ticket.requesterEmail === user?.email || 
+        ticket.requestedBy === user?.email
+      
+      const matchesId = 
+        ticket.requestedByUser === user?.id ||
+        ticket.requestedByUser === user?.sub
+      
+      return matchesEmail || matchesId
+    }
   )
 
   // Get user's reservations
@@ -86,21 +94,41 @@ function UserDashboard() {
   }
 
   const getReservationStages = (status: string) => {
+    // Determine final stage based on status
+    let finalStageLabel = "Returned"
+    let finalStageIcon = CheckCircle2
+    
+    if (status === "denied" || status === "rejected") {
+      finalStageLabel = "Rejected"
+      finalStageIcon = XCircle
+    } else if (status === "cancelled") {
+      finalStageLabel = "Cancelled"
+      finalStageIcon = XCircle
+    }
+
     const stages = [
       { key: "pending", label: "Pending", icon: Clock },
       { key: "approved", label: "Approved", icon: CheckCircle2 },
-      { key: "rejected", label: "Rejected", icon: XCircle },
-      { key: "cancelled", label: "Cancelled", icon: XCircle },
+      { key: "final", label: finalStageLabel, icon: finalStageIcon },
     ]
 
-    const currentIndex = stages.findIndex((s) => s.key === status)
+    // Determine which stages are active
+    let activeUntilIndex = 0
+    if (status === "pending") activeUntilIndex = 0
+    else if (status === "approved" || status === "active") activeUntilIndex = 1
+    else if (status === "returned" || status === "completed") activeUntilIndex = 2
+    else if (status === "denied" || status === "rejected") activeUntilIndex = 2
+    else if (status === "cancelled") activeUntilIndex = 2
+
+    const isRejected = status === "denied" || status === "rejected"
+    const isCancelled = status === "cancelled"
 
     return stages.map((stage, index) => ({
       ...stage,
-      isActive: index <= currentIndex,
-      isCurrent: index === currentIndex,
-      isRejected: status === "rejected" && stage.key === "rejected",
-      isCancelled: status === "cancelled" && stage.key === "cancelled",
+      isActive: index <= activeUntilIndex,
+      isCurrent: index === activeUntilIndex,
+      isRejected,
+      isCancelled,
     }))
   }
 
@@ -229,11 +257,13 @@ function UserDashboard() {
                                     <div
                                       className={cn(
                                         "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
-                                        stage.isActive
-                                          ? "bg-primary border-primary text-primary-foreground"
-                                          : "bg-background border-muted-foreground/30 text-muted-foreground",
-                                        (stage.isRejected || stage.isCancelled) &&
-                                          "bg-destructive border-destructive text-destructive-foreground",
+                                        // Cancelled: grey
+                                        stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
+                                        // Rejected: red
+                                        stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
+                                        // Normal flow: primary or inactive
+                                        !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
+                                        !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
                                       )}
                                     >
                                       <Icon className="h-5 w-5" />
@@ -251,7 +281,13 @@ function UserDashboard() {
                                     <div
                                       className={cn(
                                         "h-0.5 flex-1 -mx-2",
-                                        stage.isActive ? "bg-primary" : "bg-muted-foreground/30",
+                                        // Cancelled: grey bar
+                                        stage.isCancelled && stage.isActive && "bg-muted",
+                                        // Rejected: red bar
+                                        stage.isRejected && stage.isActive && "bg-destructive",
+                                        // Normal flow: primary or inactive
+                                        !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary",
+                                        !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-muted-foreground/30",
                                       )}
                                     />
                                   )}
