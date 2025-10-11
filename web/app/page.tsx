@@ -191,7 +191,7 @@ export default function HomePage() {
                   type="submit"
                   size="lg"
                   className="w-full"
-                  disabled={nlLoading || nlSuccess || !nlText.trim()}
+                  disabled={nlLoading || nlSuccess}
                 >
                   {nlLoading ? (
                     <>
