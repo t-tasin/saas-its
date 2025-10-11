@@ -22,24 +22,40 @@ export function useTickets(params?: any) {
     queryFn: async () => {
       const authToken = typeof window !== "undefined" ? localStorage.getItem("authToken") : null
       if (!authToken) {
+        console.log('[useTickets] No auth token found')
         return { data: [], total: 0 }
       }
 
-      const response = await ticketApi.get("/tickets", { params })
-      const data = response.data
+      try {
+        console.log('[useTickets] Fetching tickets...')
+        const response = await ticketApi.get("/tickets", { params })
+        const data = response.data
+        
+        console.log('[useTickets] API Response:', {
+          status: response.status,
+          dataKeys: Object.keys(data),
+          items: data.items?.length,
+          data: data.data?.length,
+          fullResponse: data,
+        })
 
-      // Backend returns { items: [], nextCursor: string }
-      const tickets = data.items || data.data || []
-      
-      // Transform data to match UI expectations
-      const transformedData = tickets.map((ticket: any) => ({
-        ...ticket,
-        status: transformStatus(ticket.status),
-        priority: ticket.priority?.toLowerCase() || 'medium',
-        category: { name: ticket.category || ticket.type || 'other' },
-      }))
+        // Backend returns { items: [], nextCursor: string }
+        const tickets = data.items || data.data || []
+        
+        // Transform data to match UI expectations
+        const transformedData = tickets.map((ticket: any) => ({
+          ...ticket,
+          status: transformStatus(ticket.status),
+          priority: ticket.priority?.toLowerCase() || 'medium',
+          category: { name: ticket.category || ticket.type || 'other' },
+        }))
 
-      return { data: transformedData, total: tickets.length }
+        console.log('[useTickets] Transformed tickets:', transformedData.length)
+        return { data: transformedData, total: tickets.length }
+      } catch (error: any) {
+        console.error('[useTickets] Error fetching tickets:', error.message, error.response?.data)
+        throw error
+      }
     },
     enabled: !loading && isAuthenticated && !!token,
     retry: false,
