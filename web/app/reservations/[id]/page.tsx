@@ -27,12 +27,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useAuth } from "@/contexts/auth-context"
-import { useReservation, useApproveReservation, useDenyReservation } from "@/hooks/use-reservations"
+import { useReservation, useApproveReservation, useDenyReservation, useMarkAsPickedUp, useCompleteReservation } from "@/hooks/use-reservations"
 import { useAssets } from "@/hooks/use-assets"
 import { reservationApi } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
 import { formatDate } from "@/lib/utils"
-import { ArrowLeft, Package, Calendar, CheckCircle, XCircle, PlayCircle, RotateCcw } from "lucide-react"
+import { ArrowLeft, Package, Calendar, CheckCircle, XCircle, PackageCheck, PackageX } from "lucide-react"
 
 export default function ReservationDetailPage() {
   const params = useParams()
@@ -45,6 +45,8 @@ export default function ReservationDetailPage() {
   const reservation = data?.data
   const approveReservation = useApproveReservation()
   const denyReservation = useDenyReservation()
+  const markAsPickedUp = useMarkAsPickedUp()
+  const completeReservation = useCompleteReservation()
 
   // Fetch available assets for approval
   const { data: assetsResponse } = useAssets()
@@ -52,9 +54,11 @@ export default function ReservationDetailPage() {
 
   const [showApproveDialog, setShowApproveDialog] = useState(false)
   const [showDenyDialog, setShowDenyDialog] = useState(false)
+  const [showReturnDialog, setShowReturnDialog] = useState(false)
   const [selectedAssetIds, setSelectedAssetIds] = useState<string[]>([])
   const [approvalNotes, setApprovalNotes] = useState("")
   const [denialReason, setDenialReason] = useState("")
+  const [returnNotes, setReturnNotes] = useState("")
   const [actionLoading, setActionLoading] = useState(false)
 
   // Filter available assets by equipment type requested
@@ -67,10 +71,21 @@ export default function ReservationDetailPage() {
   }, [allAssets, reservation?.equipmentType])
 
   const handleApprove = async () => {
+    const requiredQuantity = reservation?.quantity || 1
+    
     if (selectedAssetIds.length === 0) {
       toast({
         title: "Error",
         description: "Please select at least one asset.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (selectedAssetIds.length !== requiredQuantity) {
+      toast({
+        title: "Error",
+        description: `Please select exactly ${requiredQuantity} asset${requiredQuantity > 1 ? 's' : ''} (currently selected: ${selectedAssetIds.length})`,
         variant: "destructive",
       })
       return
@@ -110,6 +125,29 @@ export default function ReservationDetailPage() {
     setSelectedAssetIds(selectedAssetIds.filter((id) => id !== assetId))
   }
 
+  const handlePickup = async () => {
+    try {
+      await markAsPickedUp.mutateAsync({ id: reservationId })
+      refetch()
+    } catch (error) {
+      // Error already handled by mutation
+    }
+  }
+
+  const handleReturn = async () => {
+    try {
+      await completeReservation.mutateAsync({
+        id: reservationId,
+        returnNotes: returnNotes.trim() || undefined,
+      })
+      setShowReturnDialog(false)
+      setReturnNotes("")
+      refetch()
+    } catch (error) {
+      // Error already handled by mutation
+    }
+  }
+
   const handleDeny = async () => {
     if (!denialReason.trim()) {
       toast({
@@ -142,45 +180,7 @@ export default function ReservationDetailPage() {
     }
   }
 
-  const handleActivate = async () => {
-    setActionLoading(true)
-    try {
-      await reservationApi.activate(reservationId)
-      toast({
-        title: "Success",
-        description: "Reservation marked as active (picked up).",
-      })
-      refetch()
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to activate reservation. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setActionLoading(false)
-    }
-  }
-
-  const handleReturn = async () => {
-    setActionLoading(true)
-    try {
-      await reservationApi.return(reservationId)
-      toast({
-        title: "Success",
-        description: "Equipment marked as returned.",
-      })
-      refetch()
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to mark as returned. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setActionLoading(false)
-    }
-  }
+  // Old handlers removed - now using handlePickup and handleReturn with hooks
 
   const handleCancel = async () => {
     setActionLoading(true)
@@ -226,9 +226,9 @@ export default function ReservationDetailPage() {
 
   const canApprove = isOperator && reservation.status === "pending"
   const canDeny = isOperator && reservation.status === "pending"
-  const canActivate = isOperator && reservation.status === "approved"
-  const canReturn = isOperator && reservation.status === "active"
   const canCancel = reservation.status === "pending" || reservation.status === "approved"
+  
+  // Note: pickup/return conditions are now handled inline in the buttons
 
   return (
     <div className="min-h-screen bg-background">
@@ -335,24 +335,34 @@ export default function ReservationDetailPage() {
                       Approve
                     </Button>
                   )}
+                  {reservation?.status === "approved" && !reservation?.pickedUpAt && (
+                    <Button onClick={handlePickup} className="w-full" disabled={markAsPickedUp.isPending}>
+                      {markAsPickedUp.isPending ? (
+                        <>
+                          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <PackageCheck className="mr-2 h-4 w-4" />
+                          Mark as Picked Up
+                        </>
+                      )}
+                    </Button>
+                  )}
+                  {reservation?.status === "approved" && reservation?.pickedUpAt && !reservation?.actualReturnDate && (
+                    <Button onClick={() => setShowReturnDialog(true)} className="w-full bg-green-600 hover:bg-green-700">
+                      <PackageX className="mr-2 h-4 w-4" />
+                      Mark as Returned
+                    </Button>
+                  )}
                   {canDeny && (
                     <Button onClick={() => setShowDenyDialog(true)} variant="destructive" className="w-full">
                       <XCircle className="mr-2 h-4 w-4" />
                       Deny
                     </Button>
                   )}
-                  {canActivate && (
-                    <Button onClick={handleActivate} disabled={actionLoading} className="w-full">
-                      <PlayCircle className="mr-2 h-4 w-4" />
-                      Mark as Picked Up
-                    </Button>
-                  )}
-                  {canReturn && (
-                    <Button onClick={handleReturn} disabled={actionLoading} className="w-full">
-                      <RotateCcw className="mr-2 h-4 w-4" />
-                      Mark as Returned
-                    </Button>
-                  )}
+                  {/* Old activate/return buttons removed - using new pickup/return flow above */}
                   {canCancel && (
                     <Button
                       onClick={handleCancel}
@@ -422,9 +432,9 @@ export default function ReservationDetailPage() {
               </div>
             </div>
 
-            {/* Available assets dropdown with descriptions */}
-            <div className="space-y-2">
-              <Label>Select Assets *</Label>
+          {/* Available assets dropdown with descriptions */}
+          <div className="space-y-2">
+            <Label>Select Assets * (Need {reservation?.quantity || 1}, Selected: {selectedAssetIds.length})</Label>
               {availableAssets.length === 0 ? (
                 <p className="text-sm text-muted-foreground p-3 border rounded-lg">
                   No available {reservation?.equipmentType || "equipment"} assets found.
@@ -506,7 +516,14 @@ export default function ReservationDetailPage() {
               Cancel
             </Button>
             <Button onClick={handleApprove} disabled={approveReservation.isPending || selectedAssetIds.length === 0}>
-              {approveReservation.isPending ? "Approving..." : "Approve"}
+              {approveReservation.isPending ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                  Approving...
+                </>
+              ) : (
+                "Approve"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -536,7 +553,53 @@ export default function ReservationDetailPage() {
               Cancel
             </Button>
             <Button onClick={handleDeny} disabled={denyReservation.isPending} variant="destructive">
-              {denyReservation.isPending ? "Denying..." : "Deny"}
+              {denyReservation.isPending ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                  Denying...
+                </>
+              ) : (
+                "Deny"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Return Dialog */}
+      <Dialog open={showReturnDialog} onOpenChange={setShowReturnDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mark as Returned</DialogTitle>
+            <DialogDescription>
+              Confirm that the assets have been returned. This will unassign all assets and make them available again.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="returnNotes">Return Notes (Optional)</Label>
+              <Textarea
+                id="returnNotes"
+                placeholder="Add any notes about the return condition..."
+                value={returnNotes}
+                onChange={(e) => setReturnNotes(e.target.value)}
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowReturnDialog(false)} className="bg-transparent">
+              Cancel
+            </Button>
+            <Button onClick={handleReturn} disabled={completeReservation.isPending} className="bg-green-600 hover:bg-green-700">
+              {completeReservation.isPending ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                  Processing...
+                </>
+              ) : (
+                "Confirm Return"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

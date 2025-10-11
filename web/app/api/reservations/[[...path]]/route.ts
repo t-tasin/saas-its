@@ -55,7 +55,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (token) headers["Authorization"] = token
     if (tenantId) headers["X-Tenant-ID"] = tenantId
 
-    console.log("[v0] Reservation proxy POST:", fullUrl, body)
+    console.log("[v0] Reservation proxy POST:", fullUrl, {
+      body,
+      hasToken: !!token,
+      tokenPreview: token ? token.substring(0, 50) + "..." : "none",
+    })
 
     const response = await fetch(fullUrl, {
       method: "POST",

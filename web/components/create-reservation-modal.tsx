@@ -44,9 +44,18 @@ export function CreateReservationModal({ open, onOpenChange }: CreateReservation
       return
     }
 
-    // Validate 14-day limit
+    // Validate dates
     const start = new Date(formData.startDate)
     const end = new Date(formData.endDate)
+    const now = new Date()
+    now.setHours(0, 0, 0, 0) // Start of today
+    
+    // Check if start date is in the past
+    if (start < now) {
+      toast.error("Pickup date must be today or in the future")
+      return
+    }
+
     const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
 
     if (diffDays > 14) {
@@ -55,7 +64,7 @@ export function CreateReservationModal({ open, onOpenChange }: CreateReservation
     }
 
     if (diffDays < 1) {
-      toast.error("End date must be after start date")
+      toast.error("Return date must be after pickup date")
       return
     }
 
@@ -69,16 +78,11 @@ export function CreateReservationModal({ open, onOpenChange }: CreateReservation
 
     try {
       await createReservation.mutateAsync({
-        userId: user?.id || "",
+        equipmentType: formData.assetType, // Backend expects equipmentType, not items array
+        quantity: formData.quantity,
         purpose: formData.purpose,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-        items: [
-          {
-            assetType: formData.assetType,
-            quantity: formData.quantity,
-          },
-        ],
+        requestDate: formData.startDate, // Backend expects requestDate
+        returnDate: formData.endDate, // Backend expects returnDate
       })
 
       setIsSuccess(true)

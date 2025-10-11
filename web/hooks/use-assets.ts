@@ -15,13 +15,18 @@ const transformAssetStatus = (status: string): string => {
 }
 
 const transformAssetStatusToBackend = (status: string): string => {
+  // Backend expects lowercase enum values: available, assigned, maintenance, retired
   const statusMap: Record<string, string> = {
-    available: "AVAILABLE",
-    assigned: "IN_USE",
-    maintenance: "MAINTENANCE",
-    retired: "RETIRED",
+    Available: "available",
+    Assigned: "assigned",
+    Maintenance: "maintenance",
+    Retired: "retired",
+    AVAILABLE: "available",
+    ASSIGNED: "assigned",
+    MAINTENANCE: "maintenance",
+    RETIRED: "retired",
   }
-  return statusMap[status] || status.toUpperCase()
+  return statusMap[status] || status.toLowerCase()
 }
 
 const transformAssetType = (type: string): string => {
@@ -128,7 +133,7 @@ export function useCreateAsset() {
           status: data.status ? transformAssetStatusToBackend(data.status) : undefined,
         }
 
-        const response = await assetApi.post("/assets", backendData)
+        const response = await assetApi.post("/", backendData)
         toast.success("Asset created successfully")
         return response.data
       } catch (error: any) {
@@ -179,11 +184,18 @@ export function useUpdateAsset() {
         if (data.location) backendData.location = data.location
         if (data.status) backendData.status = transformAssetStatusToBackend(data.status)
 
+        console.log("[DEBUG] Sending PATCH to asset service:", { id, backendData })
         const response = await assetApi.patch(`/${id}`, backendData)
         toast.success("Asset updated successfully")
         return response.data
       } catch (error: any) {
-        toast.error(error.message || "Failed to update asset")
+        console.error("[DEBUG] Asset update error:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        })
+        const errorMsg = error.response?.data?.message || error.message || "Failed to update asset"
+        toast.error(errorMsg)
         throw error
       }
     },
@@ -200,9 +212,9 @@ export function useAssignAsset() {
   return useMutation({
     mutationFn: async ({ id, personId }: { id: string; personId: string }) => {
       try {
-        // Backend expects "personId" field
+        // Backend expects "userId" field (per AssignDto)
         const response = await assetApi.post(`/${id}/assign`, {
-          personId: personId,
+          userId: personId,
         })
         toast.success("Asset assigned successfully")
         return response.data

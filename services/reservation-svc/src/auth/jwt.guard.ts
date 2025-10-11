@@ -36,7 +36,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) return true;
 
     const req = context.switchToHttp().getRequest();
     const devMode = process.env.DEV_MODE === 'true';
@@ -57,7 +56,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
         };
         return true;
       }
-      // If no token in dev mode, create a default dev user
+      
+      // For public endpoints without token, allow but don't set user
+      if (isPublic) {
+        return true;
+      }
+      
+      // If no token in dev mode for protected endpoint, create a default dev user
       (req as any).user = {
         sub: 'dev-user',
         email: 'dev@example.com',
@@ -66,6 +71,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
       };
       return true;
     }
+
+    // For non-dev public endpoints, allow without authentication
+    if (isPublic) return true;
 
     // PROD (or dev with real JWT): defer to passport-jwt strategy
     const res = await super.canActivate(context);

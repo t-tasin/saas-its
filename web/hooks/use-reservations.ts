@@ -91,19 +91,70 @@ export function useCreateReservation() {
       const userEmail = user ? JSON.parse(user).email : "anonymous@example.com"
       const userName = user ? JSON.parse(user).name : "Anonymous User"
 
+      // Convert date strings to ISO format with time
+      const requestDate = data.startDate || data.requestDate
+      const returnDate = data.endDate || data.returnDate
+      
+      // Ensure dates are in ISO format (YYYY-MM-DDTHH:mm:ss.sssZ)
+      const formatDateToISO = (dateStr: string, isStartDate = false): string => {
+        const date = new Date(dateStr)
+        // If time is not specified, set appropriate time
+        if (dateStr.length === 10) { // YYYY-MM-DD format
+          if (isStartDate) {
+            // For start date, set to 10:00 AM to ensure it's in the future
+            date.setHours(10, 0, 0, 0)
+          } else {
+            // For end date, set to 5:00 PM
+            date.setHours(17, 0, 0, 0)
+          }
+        }
+        return date.toISOString()
+      }
+
       const payload = {
         equipmentType: data.equipmentType || "LAPTOP",
-        quantity: data.quantity || 1,
-        purpose: data.purpose,
-        requestDate: data.startDate || data.requestDate, // Support both field names
-        returnDate: data.endDate || data.returnDate, // Support both field names
+        quantity: typeof data.quantity === 'number' ? data.quantity : parseInt(String(data.quantity || 1), 10),
+        purpose: data.purpose || "Equipment reservation", // Purpose is required by backend
+        requestDate: formatDateToISO(requestDate, true), // true = is start date
+        returnDate: formatDateToISO(returnDate, false), // false = is end date
         requesterEmail: userEmail,
         requesterName: userName,
         notes: data.notes || undefined,
       }
 
-      const response = await reservationApi.post("/", payload)
-      return transformReservation(response.data)
+      console.log("[DEBUG] Creating reservation with payload:", JSON.stringify(payload, null, 2))
+      console.log("[DEBUG] Payload types:", {
+        equipmentType: typeof payload.equipmentType,
+        quantity: typeof payload.quantity,
+        purpose: typeof payload.purpose,
+        requestDate: typeof payload.requestDate,
+        returnDate: typeof payload.returnDate,
+      })
+
+      try {
+        const response = await reservationApi.post("/", payload)
+        console.log("[DEBUG] Reservation created successfully:", response.data)
+        return transformReservation(response.data)
+      } catch (error: any) {
+        console.error("[DEBUG] Failed to create reservation:", {
+          message: error.message,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          backendError: error.response?.data?.error,
+          backendMessage: error.response?.data?.message,
+          fullData: error.response?.data,
+          payload: payload,
+        })
+        // Show the actual backend error message if available
+        const backendError = error.response?.data?.error?.message || 
+                            error.response?.data?.message || 
+                            error.response?.data?.error
+        if (backendError) {
+          const errorMsg = Array.isArray(backendError) ? backendError.join(', ') : backendError
+          toast.error(errorMsg)
+        }
+        throw error
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reservations"] })
@@ -120,7 +171,7 @@ export function useApproveReservation() {
 
   return useMutation({
     mutationFn: async ({ id, assetIds, notes }: { id: string; assetIds: string[]; notes?: string }) => {
-      const response = await reservationApi.post(`/reservations/${id}/approve`, {
+      const response = await reservationApi.post(`/${id}/approve`, {
         assetIds,
         notes,
       })
@@ -142,7 +193,7 @@ export function useDenyReservation() {
 
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const response = await reservationApi.post(`/reservations/${id}/deny`, {
+      const response = await reservationApi.post(`/${id}/deny`, {
         reason,
       })
       return transformReservation(response.data)
@@ -163,7 +214,7 @@ export function useCancelReservation() {
 
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const response = await reservationApi.post(`/reservations/${id}/cancel`, {
+      const response = await reservationApi.post(`/${id}/cancel`, {
         reason: reason || "Cancelled by user",
       })
       return transformReservation(response.data.reservation || response.data)
