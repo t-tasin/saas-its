@@ -1,26 +1,30 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/client" // service-local output
-  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = "../generated/client" // service-local output
+  binaryTargets   = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  schemas           = ["identity"]
 }
 
 enum UserRole {
   general
   operator
   admin
+
+  @@schema("identity")
 }
 
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String? // hashed password - optional for general users who use OTP
-  name      String?
+  name      String // Required: user's full name
   role      UserRole @default(general)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -30,6 +34,7 @@ model User {
 
   @@index([email])
   @@index([role])
+  @@schema("identity")
 }
 
 model OTP {
@@ -43,4 +48,5 @@ model OTP {
 
   @@index([userId])
   @@index([code])
+  @@schema("identity")
 }

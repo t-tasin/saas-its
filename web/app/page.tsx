@@ -4,13 +4,90 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Ticket, Calendar, Package, Headset, ArrowRight } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Ticket, Calendar, Package, Headset, ArrowRight, Sparkles, Loader2, CheckCircle2 } from "lucide-react"
 import { CreateTicketModal } from "@/components/create-ticket-modal"
 import { CreateReservationModal } from "@/components/create-reservation-modal"
+import { useAuth } from "@/contexts/auth-context"
+import { toast } from "react-hot-toast"
 
 export default function HomePage() {
+  const { user } = useAuth()
   const [showTicketModal, setShowTicketModal] = useState(false)
   const [showReservationModal, setShowReservationModal] = useState(false)
+  
+  // NL Ticket Creation State
+  const [nlText, setNlText] = useState("")
+  const [nlName, setNlName] = useState("")
+  const [nlEmail, setNlEmail] = useState("")
+  const [nlLoading, setNlLoading] = useState(false)
+  const [nlSuccess, setNlSuccess] = useState(false)
+
+  const handleNLSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Validation
+    if (!nlText.trim()) {
+      toast.error("Please describe your issue")
+      return
+    }
+    
+    if (!user && (!nlName.trim() || !nlEmail.trim())) {
+      toast.error("Please provide your name and email")
+      return
+    }
+    
+    if (!user && nlEmail && !/\S+@\S+\.\S+/.test(nlEmail)) {
+      toast.error("Please provide a valid email address")
+      return
+    }
+
+    setNlLoading(true)
+    setNlSuccess(false)
+
+    try {
+      const nlGatewayUrl = process.env.NEXT_PUBLIC_NL_GATEWAY_API || "https://nl-gateway-production.up.railway.app"
+      
+      const response = await fetch(`${nlGatewayUrl}/nl/tickets`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: nlText,
+          fallback: !user ? {
+            name: nlName,
+            email: nlEmail,
+          } : undefined,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: "Failed to create ticket" }))
+        throw new Error(error.error || error.message || "Failed to create ticket")
+      }
+
+      const ticket = await response.json()
+      
+      setNlSuccess(true)
+      toast.success(`Ticket created successfully! Ticket #${ticket.ticketNumber || ticket.id}`)
+      
+      // Reset form
+      setNlText("")
+      setNlName("")
+      setNlEmail("")
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => setNlSuccess(false), 5000)
+    } catch (error: any) {
+      console.error("Failed to create ticket:", error)
+      toast.error(error.message || "Failed to create ticket. Please try again.")
+    } finally {
+      setNlLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,6 +114,117 @@ export default function HomePage() {
               Request Equipment
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* AI-Powered Quick Ticket Creation */}
+      <section className="container mx-auto px-4 py-16">
+        <div className="max-w-3xl mx-auto">
+          <Card className="border-primary/20 shadow-lg">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Sparkles className="h-8 w-8" />
+                </div>
+              </div>
+              <CardTitle className="text-2xl md:text-3xl">Describe Your Issue in Plain English</CardTitle>
+              <CardDescription className="text-base">
+                Our AI will understand your problem and create a ticket automatically
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleNLSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nl-description" className="text-base">
+                    What do you need help with?
+                  </Label>
+                  <Textarea
+                    id="nl-description"
+                    placeholder="Example: My laptop keeps overheating during Zoom meetings. It gets very hot and the fans are loud. I need this fixed urgently as I have important client calls this week."
+                    value={nlText}
+                    onChange={(e) => setNlText(e.target.value)}
+                    className="min-h-[120px] text-base"
+                    disabled={nlLoading || nlSuccess}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    💡 Tip: Be specific about the problem, when it happens, and how urgent it is
+                  </p>
+                </div>
+
+                {!user && (
+                  <div className="grid md:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="nl-name">Your Name</Label>
+                      <Input
+                        id="nl-name"
+                        type="text"
+                        placeholder="John Doe"
+                        value={nlName}
+                        onChange={(e) => setNlName(e.target.value)}
+                        disabled={nlLoading || nlSuccess}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="nl-email">Your Email</Label>
+                      <Input
+                        id="nl-email"
+                        type="email"
+                        placeholder="john@example.com"
+                        value={nlEmail}
+                        onChange={(e) => setNlEmail(e.target.value)}
+                        disabled={nlLoading || nlSuccess}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {nlSuccess && (
+                  <div className="flex items-center gap-2 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      Ticket created successfully! We'll get back to you soon.
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full"
+                  disabled={nlLoading || nlSuccess || !nlText.trim()}
+                >
+                  {nlLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Creating Ticket...
+                    </>
+                  ) : nlSuccess ? (
+                    <>
+                      <CheckCircle2 className="mr-2 h-5 w-5" />
+                      Ticket Created!
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Create Ticket with AI
+                    </>
+                  )}
+                </Button>
+
+                <p className="text-center text-xs text-muted-foreground">
+                  Or use the{" "}
+                  <button
+                    type="button"
+                    onClick={() => setShowTicketModal(true)}
+                    className="text-primary hover:underline"
+                  >
+                    traditional form
+                  </button>{" "}
+                  for more control
+                </p>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </section>
 

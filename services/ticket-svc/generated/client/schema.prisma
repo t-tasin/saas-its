@@ -1,14 +1,16 @@
 // services/ticket-svc/prisma/schema.prisma
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/client"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = "../generated/client"
+  binaryTargets   = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  schemas           = ["ticket"]
 }
 
 enum TicketStatus {
@@ -16,11 +18,15 @@ enum TicketStatus {
   in_progress
   resolved
   closed
+
+  @@schema("ticket")
 }
 
 enum TicketType {
   incident
   request
+
+  @@schema("ticket")
 }
 
 enum TicketPriority {
@@ -28,6 +34,8 @@ enum TicketPriority {
   medium
   high
   urgent
+
+  @@schema("ticket")
 }
 
 model Ticket {
@@ -60,6 +68,7 @@ model Ticket {
   @@index([assignedTo])
   @@index([createdAt])
   @@map("Ticket")
+  @@schema("ticket")
 }
 
 model TicketComment {
@@ -75,6 +84,7 @@ model TicketComment {
 
   @@index([ticketId, createdAt])
   @@map("TicketComment")
+  @@schema("ticket")
 }
 
 model Category {
@@ -86,6 +96,7 @@ model Category {
   subcategories SubCategory[]
 
   @@map("Category")
+  @@schema("ticket")
 }
 
 model SubCategory {
@@ -99,6 +110,7 @@ model SubCategory {
 
   @@unique([categoryId, name])
   @@map("SubCategory")
+  @@schema("ticket")
 }
 
 // Per-day ticket counters for concurrent safe number generation
@@ -107,6 +119,7 @@ model TicketDayCounter {
   seq    Int
 
   @@map("TicketDayCounter")
+  @@schema("ticket")
 }
 
 // Append-only audit log for ticket service
@@ -121,4 +134,5 @@ model AuditLog {
 
   @@index([entity, entityId, at])
   @@map("AuditLog")
+  @@schema("ticket")
 }

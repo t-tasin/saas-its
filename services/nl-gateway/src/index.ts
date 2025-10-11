@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { log } from "./lib/logger.js";
 import { getCategories, flattenEnums } from "./lib/categories.js";
 import { buildJsonSchema, CreateTicketDto } from "./lib/schema.js";
@@ -10,6 +11,14 @@ const PORT = Number(process.env.PORT ?? 3100);
 const TICKET_BASE = process.env.TICKET_BASE!;
 
 const app = express();
+
+// Enable CORS for all origins (adjust for production if needed)
+app.use(cors({
+  origin: "*", // Allow all origins - you can restrict this to specific domains in production
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
 app.use(express.json());
 
 app.get("/healthz", (_, res) => res.json({ ok: true }));

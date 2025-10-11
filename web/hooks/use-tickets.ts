@@ -156,26 +156,32 @@ export function useCreateTicket() {
       const response = await ticketApi.post("/tickets", backendData)
       const ticket = response.data
 
-      // Note: Attachment uploads are disabled as the backend doesn't support them yet
-      // Keeping the code here for future implementation
+      // Upload attachments using presigned S3 URLs
       if (data.attachments && data.attachments.length > 0) {
-        console.warn("[v0] Attachments are not supported by the backend yet. Skipping upload.")
-        // Silently skip attachments - don't show errors to user since ticket was created
-        /*
         for (const file of data.attachments) {
-          const formData = new FormData()
-          formData.append("file", file)
-
           try {
-            await ticketApi.post(`/tickets/${ticket.id}/attachments`, formData, {
-              headers: { "Content-Type": "multipart/form-data" },
+            // 1. Request presigned upload URL from backend
+            const urlResponse = await ticketApi.post(`/tickets/${ticket.id}/attachments/upload-url`, {
+              filename: file.name,
+              contentType: file.type || "application/octet-stream",
             })
+            const { uploadUrl, attachmentId } = urlResponse.data
+
+            // 2. Upload file directly to S3 using presigned URL
+            await fetch(uploadUrl, {
+              method: "PUT",
+              body: file,
+              headers: {
+                "Content-Type": file.type || "application/octet-stream",
+              },
+            })
+
+            console.log(`[v0] Successfully uploaded attachment: ${file.name}`)
           } catch (error) {
             console.error("Failed to upload attachment:", error)
             toast.error(`Failed to upload ${file.name}`)
           }
         }
-        */
       }
 
       return ticket

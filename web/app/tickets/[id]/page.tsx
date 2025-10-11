@@ -187,7 +187,19 @@ export default function TicketDetailPage() {
                             </p>
                           </div>
                         </div>
-                        <Button variant="ghost" size="sm" onClick={() => window.open(attachment.fileUrl, "_blank")}>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={async () => {
+                            try {
+                              const { ticketApi } = await import("@/lib/api-client")
+                              const response = await ticketApi.get(`/tickets/${ticketData.id}/attachments/${attachment.id}/download-url`)
+                              window.open(response.data.downloadUrl, "_blank")
+                            } catch (error) {
+                              console.error("Failed to get download URL:", error)
+                            }
+                          }}
+                        >
                           <Download className="h-4 w-4" />
                         </Button>
                       </div>
