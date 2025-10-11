@@ -285,89 +285,60 @@ function UserDashboard() {
                         </div>
 
                         <div className="mb-4">
-                          <div className="flex items-start">
+                          <div className="flex items-center justify-between mb-2">
                             {stages.map((stage, index) => {
                               const Icon = stage.icon
-                              const isFirstStage = index === 0
                               const isLastStage = index === stages.length - 1
                               
                               return (
-                                <div key={stage.key} className={cn("flex items-center", index === 0 ? "flex-none" : index === stages.length - 1 ? "flex-none" : "flex-1")}>
-                                  {/* First stage: align left */}
-                                  {isFirstStage && (
-                                    <div className="flex flex-col items-start">
-                                      <div
-                                        className={cn(
-                                          "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
-                                          stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
-                                          stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
-                                          !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
-                                          !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
-                                        )}
-                                      >
-                                        <Icon className="h-5 w-5" />
-                                      </div>
-                                      <p className={cn("text-xs mt-2 font-medium", stage.isActive ? "text-foreground" : "text-muted-foreground")}>
-                                        {stage.label}
-                                      </p>
-                                      <div className="mt-2">
+                                <div key={stage.key} className="flex-1 flex items-center">
+                                  <div className="flex flex-col items-center flex-1">
+                                    <div
+                                      className={cn(
+                                        "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
+                                        // Cancelled: grey
+                                        stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
+                                        // Rejected: red
+                                        stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
+                                        // Normal flow: primary or inactive
+                                        !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
+                                        !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
+                                      )}
+                                    >
+                                      <Icon className="h-5 w-5" />
+                                    </div>
+                                    <p
+                                      className={cn(
+                                        "text-xs mt-2 font-medium",
+                                        stage.isActive ? "text-foreground" : "text-muted-foreground",
+                                      )}
+                                    >
+                                      {stage.label}
+                                    </p>
+                                    
+                                    {/* Show dates under respective checkpoints */}
+                                    {index === 0 && (
+                                      <div className="mt-2 text-center">
                                         <p className="text-xs text-muted-foreground">Start Date</p>
                                         <p className="text-xs font-medium">{formatDate(reservation.requestDate || reservation.startDate)}</p>
                                       </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Middle stage: centered */}
-                                  {!isFirstStage && !isLastStage && (
-                                    <div className="flex flex-col items-center flex-1">
-                                      <div
-                                        className={cn(
-                                          "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
-                                          stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
-                                          stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
-                                          !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
-                                          !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
-                                        )}
-                                      >
-                                        <Icon className="h-5 w-5" />
-                                      </div>
-                                      <p className={cn("text-xs mt-2 font-medium", stage.isActive ? "text-foreground" : "text-muted-foreground")}>
-                                        {stage.label}
-                                      </p>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Last stage: align right */}
-                                  {isLastStage && (
-                                    <div className="flex flex-col items-end">
-                                      <div
-                                        className={cn(
-                                          "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
-                                          stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
-                                          stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
-                                          !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
-                                          !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
-                                        )}
-                                      >
-                                        <Icon className="h-5 w-5" />
-                                      </div>
-                                      <p className={cn("text-xs mt-2 font-medium", stage.isActive ? "text-foreground" : "text-muted-foreground")}>
-                                        {stage.label}
-                                      </p>
-                                      <div className="mt-2 text-right">
+                                    )}
+                                    {isLastStage && (
+                                      <div className="mt-2 text-center">
                                         <p className="text-xs text-muted-foreground">Return Date</p>
                                         <p className="text-xs font-medium">{formatDate(reservation.returnDate || reservation.endDate)}</p>
                                       </div>
-                                    </div>
-                                  )}
-                                  
-                                  {/* Connector line */}
+                                    )}
+                                  </div>
                                   {index < stages.length - 1 && (
                                     <div
                                       className={cn(
-                                        "h-0.5 flex-1 mx-4",
+                                        "h-0.5 flex-1 -mx-2",
+                                        // Cancelled: grey bar
                                         stage.isCancelled && stage.isActive && "bg-muted",
+                                        // Rejected: red bar
                                         stage.isRejected && stage.isActive && "bg-destructive",
+                                        // Normal flow: primary or inactive
                                         !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary",
                                         !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-muted-foreground/30",
                                       )}
