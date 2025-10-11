@@ -25,20 +25,27 @@ import {
 import { InfoRow } from "@/components/info-row"
 import { PageHeader } from "@/components/page-header"
 import { ProtectedRoute } from "@/components/protected-route"
-import { ArrowLeft, Edit, Package, Save } from "lucide-react"
-import { useAsset, useUpdateAsset } from "@/hooks/use-assets"
-import { useUser } from "@/hooks/use-users"
+import { ArrowLeft, Edit, Package, Save, UserPlus, UserMinus } from "lucide-react"
+import { useAsset, useUpdateAsset, useAssignAsset, useUnassignAsset } from "@/hooks/use-assets"
+import { useUser, useAllUsers } from "@/hooks/use-users"
+import { toast } from "@/hooks/use-toast"
 
 function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
-  const { data: assetResponse, isLoading } = useAsset(id)
+  const { data: assetResponse, isLoading, refetch } = useAsset(id)
   const asset = assetResponse?.data
   const updateAsset = useUpdateAsset()
+  const assignAsset = useAssignAsset()
+  const unassignAsset = useUnassignAsset()
 
   const { data: assignedUser } = useUser(asset?.assignedToId)
+  const { data: allUsersResponse } = useAllUsers()
+  const allUsers = allUsersResponse?.data || []
 
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showAssignModal, setShowAssignModal] = useState(false)
+  const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [editFormData, setEditFormData] = useState<any>({})
 
   const handleEditClick = () => {
@@ -80,6 +87,30 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
       data: editFormData,
     })
     setShowEditModal(false)
+  }
+
+  const handleAssignAsset = async () => {
+    if (!selectedUserId) {
+      toast({ title: "Error", description: "Please select a user", variant: "destructive" })
+      return
+    }
+    try {
+      await assignAsset.mutateAsync({ id, personId: selectedUserId })
+      setShowAssignModal(false)
+      setSelectedUserId("")
+      refetch()
+    } catch (error) {
+      // Error already handled by mutation
+    }
+  }
+
+  const handleUnassignAsset = async () => {
+    try {
+      await unassignAsset.mutateAsync({ id })
+      refetch()
+    } catch (error) {
+      // Error already handled by mutation
+    }
   }
 
   if (isLoading) {
@@ -212,23 +243,51 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
           )}
 
           {/* Assignment Information */}
-          {asset.assignedToId && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Assignment Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-0">
-                <InfoRow label="Assigned To">
-                  {assignedUser?.data?.name || assignedUser?.data?.email || "Loading..."}
-                </InfoRow>
-                {asset.assignedDate && (
-                  <InfoRow label="Assigned Date">
-                    {new Date(asset.assignedDate).toLocaleDateString()}
-                  </InfoRow>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle>Assignment Information</CardTitle>
+              <div className="flex gap-2">
+                {asset.assignedToId ? (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleUnassignAsset}
+                    disabled={unassignAsset.isPending}
+                  >
+                    <UserMinus className="mr-2 h-4 w-4" />
+                    {unassignAsset.isPending ? "Unassigning..." : "Unassign"}
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowAssignModal(true)}
+                  >
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Assign to User
+                  </Button>
                 )}
-              </CardContent>
-            </Card>
-          )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-0">
+              {asset.assignedToId ? (
+                <>
+                  <InfoRow label="Assigned To">
+                    {assignedUser?.data?.name || assignedUser?.data?.email || "Loading..."}
+                  </InfoRow>
+                  {asset.assignedDate && (
+                    <InfoRow label="Assigned Date">
+                      {new Date(asset.assignedDate).toLocaleDateString()}
+                    </InfoRow>
+                  )}
+                </>
+              ) : (
+                <InfoRow label="Status">
+                  <span className="text-muted-foreground">Not assigned to any user</span>
+                </InfoRow>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Financial Information */}
           <Card>
@@ -253,6 +312,51 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
           </Card>
         </div>
       </main>
+
+      {/* Assign Asset Dialog */}
+      <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Asset to User</DialogTitle>
+            <DialogDescription>
+              Select a user to assign this asset to. The asset will be marked as assigned.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="selectUser">Select User</Label>
+              <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                <SelectTrigger id="selectUser">
+                  <SelectValue placeholder="Choose a user..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {allUsers.map((user: any) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{user.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {user.email} • {user.role}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {allUsers.length === 0 && (
+                <p className="text-sm text-muted-foreground">No users available</p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAssignModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAssignAsset} disabled={!selectedUserId || assignAsset.isPending}>
+              {assignAsset.isPending ? "Assigning..." : "Assign Asset"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>

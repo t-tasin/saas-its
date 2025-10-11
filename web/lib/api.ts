@@ -1,10 +1,10 @@
 import axios from "axios"
 
-// API Base URLs (with /v1 path for backend services)
-const IDENTITY_API = `${process.env.NEXT_PUBLIC_IDENTITY_API || "http://localhost:3000"}/v1`
-const TICKET_API = `${process.env.NEXT_PUBLIC_TICKET_API || "http://localhost:3001"}/v1`
-const ASSET_API = `${process.env.NEXT_PUBLIC_ASSET_API || "http://localhost:3002"}/v1`
-const RESERVATION_API = `${process.env.NEXT_PUBLIC_RESERVATION_API || "http://localhost:3003"}/v1`
+// API Base URLs (env vars already include /v1 path)
+const IDENTITY_API = process.env.NEXT_PUBLIC_IDENTITY_API || "http://localhost:3000/v1"
+const TICKET_API = process.env.NEXT_PUBLIC_TICKET_API || "http://localhost:3001/v1"
+const ASSET_API = process.env.NEXT_PUBLIC_ASSET_API || "http://localhost:3002/v1"
+const RESERVATION_API = process.env.NEXT_PUBLIC_RESERVATION_API || "http://localhost:3003/v1"
 
 // Create axios instance
 const api = axios.create()
@@ -106,11 +106,9 @@ export const reservationApi = {
 
   deny: (id: string, reason: string) => api.post(`${RESERVATION_API}/reservations/${id}/deny`, { reason }),
 
-  activate: (id: string) => api.post(`${RESERVATION_API}/reservations/${id}/activate`),
-
-  return: (id: string, notes?: string) => api.post(`${RESERVATION_API}/reservations/${id}/return`, { notes }),
-
   cancel: (id: string) => api.post(`${RESERVATION_API}/reservations/${id}/cancel`),
+  
+  // Note: pickup and complete are now handled via hooks (useMarkAsPickedUp, useCompleteReservation)
 
   getAvailability: () => api.get(`${RESERVATION_API}/availability`),
 

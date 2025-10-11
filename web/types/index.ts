@@ -138,15 +138,17 @@ export interface ReservationItem {
 }
 
 export interface CreateReservationData {
-  requestDate: string
-  returnDate: string
-  requesterName?: string
-  requesterEmail?: string
-  notes?: string
-  items: Array<{
-    assetTypeId: string
-    quantity: number
-  }>
+  equipmentType: string // Type of equipment (e.g., "LAPTOP", "PROJECTOR")
+  quantity: number // Quantity needed
+  purpose: string // Purpose of reservation
+  requestDate: string // When user wants to pick up
+  returnDate: string // Expected return date
+  requesterName?: string // Optional - will be auto-filled from user
+  requesterEmail?: string // Optional - will be auto-filled from user
+  notes?: string // Additional notes
+  // Legacy fields for backward compatibility
+  startDate?: string // Alias for requestDate
+  endDate?: string // Alias for returnDate
 }
 
 export interface EquipmentAvailability {
