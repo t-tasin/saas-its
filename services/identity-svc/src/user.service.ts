@@ -180,7 +180,8 @@ export class UserService {
 
     const where: any = {
       ...(filters?.role && { role: filters.role as any }),
-      ...(typeof filters?.isActive === 'boolean' && { isActive: filters.isActive }),
+      // Default to showing only active users unless explicitly set to false
+      isActive: typeof filters?.isActive === 'boolean' ? filters.isActive : true,
     };
 
     // Add search filter

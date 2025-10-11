@@ -26,7 +26,17 @@ import { useAllUsers } from "@/hooks/use-users"
 import { identityApi } from "@/lib/api-client"
 import { useToast } from "@/hooks/use-toast"
 import { useQueryClient } from "@tanstack/react-query"
-import { Search, UserCog, Shield, User, Crown } from "lucide-react"
+import { Search, UserCog, Shield, User, Crown, Trash2 } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 function UserManagementContent() {
   const { data: usersResponse, isLoading } = useAllUsers()
@@ -36,6 +46,9 @@ function UserManagementContent() {
 
   const [searchQuery, setSearchQuery] = useState("")
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [userToDelete, setUserToDelete] = useState<any>(null)
 
   // Filter users based on search
   const filteredUsers = allUsers.filter((user: any) => {
@@ -67,6 +80,38 @@ function UserManagementContent() {
       })
     } finally {
       setUpdatingUserId(null)
+    }
+  }
+
+  const handleDeleteClick = (user: any) => {
+    setUserToDelete(user)
+    setShowDeleteDialog(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return
+
+    setDeletingUserId(userToDelete.id)
+    try {
+      await identityApi.delete(`/users/${userToDelete.id}`)
+      
+      toast({
+        title: "Success",
+        description: `User ${userToDelete.name} has been removed`,
+      })
+      
+      // Refresh users list
+      queryClient.invalidateQueries({ queryKey: ["users"] })
+      setShowDeleteDialog(false)
+      setUserToDelete(null)
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || "Failed to remove user",
+        variant: "destructive",
+      })
+    } finally {
+      setDeletingUserId(null)
     }
   }
 
@@ -210,12 +255,13 @@ function UserManagementContent() {
                     <TableHead className="font-semibold">Current Role</TableHead>
                     <TableHead className="font-semibold">Change Role</TableHead>
                     <TableHead className="font-semibold">Joined</TableHead>
+                    <TableHead className="font-semibold text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                         {searchQuery ? "No users found matching your search" : "No users found"}
                       </TableCell>
                     </TableRow>
@@ -260,6 +306,17 @@ function UserManagementContent() {
                         <TableCell className="text-sm text-muted-foreground">
                           {new Date(user.createdAt).toLocaleDateString()}
                         </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteClick(user)}
+                            disabled={deletingUserId === user.id}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))
                   )}
@@ -274,6 +331,29 @@ function UserManagementContent() {
             )}
           </CardContent>
         </Card>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove User</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to remove <strong>{userToDelete?.name}</strong> ({userToDelete?.email})? 
+                This will deactivate their account and they will no longer be able to access the system.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deletingUserId !== null}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                disabled={deletingUserId !== null}
+                className="bg-destructive text-white hover:bg-destructive/90"
+              >
+                {deletingUserId ? "Removing..." : "Remove User"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
     </div>
   )
