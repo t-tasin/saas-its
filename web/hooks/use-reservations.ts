@@ -74,10 +74,20 @@ export function useReservation(id: string) {
   return useQuery({
     queryKey: ["reservation", id],
     queryFn: async () => {
-      const response = await reservationApi.get(`/${id}`)
-      return { data: transformReservation(response.data) }
+      try {
+        const response = await reservationApi.get(`/${id}`)
+        return { data: transformReservation(response.data) }
+      } catch (error: any) {
+        // Handle 404 or DB errors gracefully
+        if (error.status === 404 || error.status === 400) {
+          console.warn(`Reservation ${id} not found or no longer available`)
+          throw new Error("Reservation not found")
+        }
+        throw error
+      }
     },
     enabled: !!id && !loading && isAuthenticated,
+    retry: false, // Don't retry on 404/400 errors
   })
 }
 

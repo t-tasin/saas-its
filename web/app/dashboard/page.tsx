@@ -465,15 +465,15 @@ function AdminDashboard() {
         pending: reservations.filter((r) => r.status === "pending").length,
         approved: reservations.filter((r) => r.status === "approved").length,
         active: reservations.filter((r) => r.status === "active").length,
-        returned: reservations.filter((r) => r.status === "returned").length,
+        returned: reservations.filter((r) => r.status === "returned" || r.status === "completed").length,
       },
     },
     performance: {
       approvalRate: reservations.length > 0 
-        ? Math.round((reservations.filter((r) => r.status === "approved" || r.status === "active" || r.status === "returned").length / reservations.length) * 100)
+        ? Math.round((reservations.filter((r) => r.status === "approved" || r.status === "active" || r.status === "returned" || r.status === "completed").length / reservations.length) * 100)
         : 0,
-      onTimeReturnRate: reservations.filter((r) => r.status === "returned").length > 0
-        ? Math.round((reservations.filter((r) => r.status === "returned").length / reservations.filter((r) => r.status === "returned" || r.status === "active").length) * 100)
+      onTimeReturnRate: reservations.filter((r) => r.status === "returned" || r.status === "completed").length > 0
+        ? Math.round((reservations.filter((r) => r.status === "returned" || r.status === "completed").length / reservations.filter((r) => r.status === "returned" || r.status === "completed" || r.status === "active").length) * 100)
         : 0,
     },
   }

@@ -47,6 +47,7 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [editFormData, setEditFormData] = useState<any>({})
+  const [newStatus, setNewStatus] = useState(asset?.status || "")
 
   const handleEditClick = () => {
     setEditFormData({
@@ -106,10 +107,25 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
 
   const handleUnassignAsset = async () => {
     try {
-      await unassignAsset.mutateAsync({ id })
+      await unassignAsset.mutateAsync(id)
       refetch()
     } catch (error) {
       // Error already handled by mutation
+    }
+  }
+
+  const handleStatusChange = async () => {
+    if (!newStatus || newStatus === asset?.status) return
+    
+    try {
+      await updateAsset.mutateAsync({
+        id,
+        data: { status: newStatus },
+      })
+      // Success message is handled by the mutation hook (toast.success)
+      refetch()
+    } catch (error) {
+      // Error is already handled by the mutation hook
     }
   }
 
@@ -241,6 +257,38 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
               </CardContent>
             </Card>
           )}
+
+          {/* Quick Status Change */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="status">Current Status</Label>
+                <Select value={newStatus} onValueChange={setNewStatus}>
+                  <SelectTrigger>
+                    <SelectValue>
+                      {newStatus ? newStatus.charAt(0).toUpperCase() + newStatus.slice(1) : "Select status"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="available">Available</SelectItem>
+                    <SelectItem value="assigned">Assigned</SelectItem>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    <SelectItem value="retired">Retired</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                onClick={handleStatusChange}
+                disabled={!newStatus || updateAsset.isPending || newStatus === asset?.status}
+                className="w-full"
+              >
+                {updateAsset.isPending ? "Updating..." : "Update Status"}
+              </Button>
+            </CardContent>
+          </Card>
 
           {/* Assignment Information */}
           <Card>
