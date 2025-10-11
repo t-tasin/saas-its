@@ -166,7 +166,7 @@ function DashboardTicketsContent() {
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <Select
-                          value={ticket.assignedToId || ""}
+                          value={ticket.assignedTo || ""}
                           onValueChange={(operatorId) => {
                             if (operatorId) {
                               assignTicket.mutate({ id: ticket.id, operatorId })

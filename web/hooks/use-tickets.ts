@@ -165,7 +165,7 @@ export function useCreateTicket() {
       return ticket
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tickets"] })
+      queryClient.invalidateQueries({ queryKey: ["tickets"], exact: false }) // Match all tickets queries
       toast.success("Ticket created successfully!")
     },
     onError: (error: any) => {
@@ -208,7 +208,7 @@ export function useUpdateTicketStatus() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["ticket", variables.id] })
-      queryClient.invalidateQueries({ queryKey: ["tickets"] })
+      queryClient.invalidateQueries({ queryKey: ["tickets"], exact: false }) // Match all tickets queries
       toast.success("Ticket status updated!")
     },
     onError: (error: any) => {
@@ -226,8 +226,9 @@ export function useAssignTicket() {
       return response.data
     },
     onSuccess: (_, variables) => {
+      // Invalidate all ticket-related queries
       queryClient.invalidateQueries({ queryKey: ["ticket", variables.id] })
-      queryClient.invalidateQueries({ queryKey: ["tickets"] })
+      queryClient.invalidateQueries({ queryKey: ["tickets"], exact: false }) // Match all tickets queries regardless of params
       toast.success("Ticket assigned successfully!")
     },
     onError: (error: any) => {
