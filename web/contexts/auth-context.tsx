@@ -31,7 +31,7 @@ const identityService = {
     return response.data
   },
 
-  register: async (data: { email: string; password: string; name?: string }) => {
+  register: async (data: { email: string; password: string; name: string }) => {
     const response = await identityClient.post("/register", {
       email: data.email,
       password: data.password,
@@ -55,7 +55,7 @@ interface AuthContextType {
   loginWithPassword: (email: string, password: string) => Promise<void>
   // Verify OTP (both flows)
   verifyOTP: (otp: string) => Promise<void>
-  register: (data: { email: string; password: string; name?: string }) => Promise<void>
+  register: (data: { email: string; password: string; name: string }) => Promise<void>
   resendOTP: () => Promise<void>
   logout: () => void
   isAuthenticated: boolean
@@ -316,7 +316,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const register = async (data: { email: string; password: string; name?: string }) => {
+  const register = async (data: { email: string; password: string; name: string }) => {
     try {
       const response = await identityService.register({
         email: data.email,

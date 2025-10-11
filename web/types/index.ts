@@ -2,7 +2,7 @@
 export interface User {
   id: string
   email: string
-  name?: string
+  name: string  // Required: user's full name
   role: "general" | "operator" | "admin"
   createdAt: string
   updatedAt: string
@@ -16,7 +16,7 @@ export interface AuthResponse {
 export interface RegisterData {
   email: string
   password: string
-  name?: string
+  name: string  // Required: user's full name
   role?: "general" | "operator" | "admin"
 }
 
