@@ -82,21 +82,18 @@ export function useAsset(id: string) {
           throw new Error("No auth token available")
         }
 
-        const response = await assetApi.get(`/assets/${id}`)
+        const response = await assetApi.get(`/${id}`)
 
         const asset = response.data
         return {
           data: {
             ...asset,
             status: transformAssetStatus(asset.status),
-            type: transformAssetType(asset.assetType),
-            assetType: {
-              id: asset.assetType.toLowerCase(),
-              name: transformAssetType(asset.assetType),
-            },
+            type: asset.type, // Use type directly, not assetType
           },
         }
       } catch (error: any) {
+        console.error("Failed to load asset:", error)
         toast.error(error.message || "Failed to load asset")
         throw error
       }
@@ -152,7 +149,7 @@ export function useAssignAsset() {
     mutationFn: async ({ id, personId }: { id: string; personId: string }) => {
       try {
         // Backend expects "personId" field
-        const response = await assetApi.post(`/assets/${id}/assign`, {
+        const response = await assetApi.post(`/${id}/assign`, {
           personId: personId,
         })
         toast.success("Asset assigned successfully")
@@ -176,7 +173,7 @@ export function useUnassignAsset() {
     mutationFn: async (id: string) => {
       try {
         // Use the dedicated unassign endpoint
-        const response = await assetApi.post(`/assets/${id}/unassign`, {})
+        const response = await assetApi.post(`/${id}/unassign`, {})
         toast.success("Asset unassigned successfully")
         return response.data
       } catch (error: any) {

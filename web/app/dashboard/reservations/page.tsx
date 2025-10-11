@@ -194,10 +194,11 @@ function DashboardReservationsContent() {
                       <p className="text-2xl font-bold text-green-600">{equipment.available}</p>
                       <p className="text-sm text-muted-foreground">/ {equipment.total} available</p>
                     </div>
-                  <p className="text-xs text-muted-foreground mt-1">Click to view assets</p>
-                </button>
-              ))}
-            </div>
+                    <p className="text-xs text-muted-foreground mt-1">Click to view assets</p>
+                  </button>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>
@@ -225,7 +226,7 @@ function DashboardReservationsContent() {
                   <TableBody>
                     {assetsForType.map((asset) => (
                       <TableRow key={asset.id}>
-                        <TableCell className="font-mono font-medium">{asset.assetTag}</TableCell>
+                        <TableCell className="font-mono font-medium">{asset.assetId || asset.id.slice(0, 8)}</TableCell>
                         <TableCell>
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -236,11 +237,17 @@ function DashboardReservationsContent() {
                                   : "bg-amber-100 text-amber-800"
                             }`}
                           >
-                            {asset.status}
+                            {asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
                           </span>
                         </TableCell>
                         <TableCell>{asset.location || "-"}</TableCell>
-                        <TableCell>{asset.assignedTo?.name || "-"}</TableCell>
+                        <TableCell>
+                          {asset.assignedToId ? (
+                            <span className="text-sm">Assigned</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">Available</span>
+                          )}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
