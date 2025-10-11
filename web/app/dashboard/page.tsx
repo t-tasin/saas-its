@@ -66,20 +66,22 @@ function UserDashboard() {
     (asset: any) => asset.assignedToId === user?.id
   )
 
-  // Calculate progress for tickets (based on status)
-  const getTicketProgress = (status: string) => {
-    switch (status) {
-      case "open":
-        return 25
-      case "in_progress":
-        return 50
-      case "resolved":
-        return 75
-      case "closed":
-        return 100
-      default:
-        return 0
-    }
+  // Get ticket stages for progress bar (similar to reservation)
+  const getTicketStages = (status: string) => {
+    const stages = [
+      { key: "open", label: "Open", icon: Clock },
+      { key: "in_progress", label: "In Progress", icon: Clock },
+      { key: "resolved", label: "Resolved", icon: CheckCircle2 },
+      { key: "closed", label: "Closed", icon: CheckCircle2 },
+    ]
+
+    const currentIndex = stages.findIndex((s) => s.key === status)
+
+    return stages.map((stage, index) => ({
+      ...stage,
+      isActive: index <= currentIndex,
+      isCurrent: index === currentIndex,
+    }))
   }
 
   // Calculate days remaining for reservation
@@ -176,9 +178,9 @@ function UserDashboard() {
               <div className="space-y-4">
                 {assignedAssets.map((asset) => (
                   <div key={asset.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{asset.name}</p>
-                      <p className="text-sm text-muted-foreground">Serial: {asset.serialNumber}</p>
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground mb-1">Serial: {asset.serialNumber || asset.assetId}</p>
+                      <p className="font-medium">{asset.description || asset.type}</p>
                     </div>
                     <Badge variant="secondary">{asset.type}</Badge>
                   </div>
@@ -201,29 +203,54 @@ function UserDashboard() {
               <p className="text-muted-foreground text-sm">No tickets submitted</p>
             ) : (
               <div className="space-y-4">
-                {userTickets.map((ticket) => (
-                  <Link key={ticket.id} href={`/tickets/${ticket.id}`}>
-                    <div className="p-4 border rounded-lg hover:bg-accent transition-colors cursor-pointer">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-medium">{ticket.title}</p>
-                            <StatusBadge status={ticket.status} />
+                {userTickets.map((ticket) => {
+                  const stages = getTicketStages(ticket.status)
+                  return (
+                    <Link key={ticket.id} href={`/tickets/${ticket.id}`}>
+                      <div className="p-4 border rounded-lg hover:bg-accent transition-colors cursor-pointer">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="font-medium">{ticket.title}</p>
+                              <StatusBadge status={ticket.status} />
+                            </div>
+                            <p className="text-sm text-muted-foreground">{ticket.number}</p>
                           </div>
-                          <p className="text-sm text-muted-foreground">{ticket.number}</p>
+                          <p className="text-xs text-muted-foreground">{formatRelativeTime(ticket.createdAt)}</p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{formatRelativeTime(ticket.createdAt)}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Progress</span>
-                          <span className="font-medium">{getTicketProgress(ticket.status)}%</span>
+                        
+                        {/* Progress bar with stages */}
+                        <div className="flex items-center justify-between">
+                          {stages.map((stage, index) => {
+                            const Icon = stage.icon
+                            return (
+                              <div key={stage.key} className="flex-1 flex items-center">
+                                <div className="flex flex-col items-center flex-1">
+                                  <div
+                                    className={cn(
+                                      "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors",
+                                      stage.isActive
+                                        ? "bg-primary border-primary text-primary-foreground"
+                                        : "bg-background border-muted-foreground/30 text-muted-foreground",
+                                    )}
+                                  >
+                                    <Icon className="h-4 w-4" />
+                                  </div>
+                                  <p className={cn("text-xs mt-1.5 font-medium text-center", stage.isActive ? "text-foreground" : "text-muted-foreground")}>
+                                    {stage.label}
+                                  </p>
+                                </div>
+                                {index < stages.length - 1 && (
+                                  <div className={cn("h-0.5 flex-1 -mx-2", stage.isActive ? "bg-primary" : "bg-muted-foreground/30")} />
+                                )}
+                              </div>
+                            )
+                          })}
                         </div>
-                        <Progress value={getTicketProgress(ticket.status)} className="h-2" />
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  )
+                })}
               </div>
             )}
           </CardContent>
@@ -258,60 +285,89 @@ function UserDashboard() {
                         </div>
 
                         <div className="mb-4">
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-start">
                             {stages.map((stage, index) => {
                               const Icon = stage.icon
+                              const isFirstStage = index === 0
                               const isLastStage = index === stages.length - 1
                               
                               return (
-                                <div key={stage.key} className="flex-1 flex items-center">
-                                  <div className="flex flex-col items-center flex-1">
-                                    <div
-                                      className={cn(
-                                        "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
-                                        // Cancelled: grey
-                                        stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
-                                        // Rejected: red
-                                        stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
-                                        // Normal flow: primary or inactive
-                                        !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
-                                        !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
-                                      )}
-                                    >
-                                      <Icon className="h-5 w-5" />
-                                    </div>
-                                    <p
-                                      className={cn(
-                                        "text-xs mt-2 font-medium",
-                                        stage.isActive ? "text-foreground" : "text-muted-foreground",
-                                      )}
-                                    >
-                                      {stage.label}
-                                    </p>
-                                    
-                                    {/* Show dates under respective checkpoints */}
-                                    {index === 0 && (
-                                      <div className="mt-2 text-center">
+                                <div key={stage.key} className={cn("flex items-center", index === 0 ? "flex-none" : index === stages.length - 1 ? "flex-none" : "flex-1")}>
+                                  {/* First stage: align left */}
+                                  {isFirstStage && (
+                                    <div className="flex flex-col items-start">
+                                      <div
+                                        className={cn(
+                                          "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
+                                          stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
+                                          stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
+                                          !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
+                                          !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
+                                        )}
+                                      >
+                                        <Icon className="h-5 w-5" />
+                                      </div>
+                                      <p className={cn("text-xs mt-2 font-medium", stage.isActive ? "text-foreground" : "text-muted-foreground")}>
+                                        {stage.label}
+                                      </p>
+                                      <div className="mt-2">
                                         <p className="text-xs text-muted-foreground">Start Date</p>
                                         <p className="text-xs font-medium">{formatDate(reservation.requestDate || reservation.startDate)}</p>
                                       </div>
-                                    )}
-                                    {isLastStage && (
-                                      <div className="mt-2 text-center">
+                                    </div>
+                                  )}
+                                  
+                                  {/* Middle stage: centered */}
+                                  {!isFirstStage && !isLastStage && (
+                                    <div className="flex flex-col items-center flex-1">
+                                      <div
+                                        className={cn(
+                                          "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
+                                          stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
+                                          stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
+                                          !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
+                                          !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
+                                        )}
+                                      >
+                                        <Icon className="h-5 w-5" />
+                                      </div>
+                                      <p className={cn("text-xs mt-2 font-medium", stage.isActive ? "text-foreground" : "text-muted-foreground")}>
+                                        {stage.label}
+                                      </p>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Last stage: align right */}
+                                  {isLastStage && (
+                                    <div className="flex flex-col items-end">
+                                      <div
+                                        className={cn(
+                                          "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors",
+                                          stage.isCancelled && stage.isActive && "bg-muted border-muted text-muted-foreground",
+                                          stage.isRejected && stage.isActive && "bg-destructive border-destructive text-destructive-foreground",
+                                          !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary border-primary text-primary-foreground",
+                                          !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-background border-muted-foreground/30 text-muted-foreground",
+                                        )}
+                                      >
+                                        <Icon className="h-5 w-5" />
+                                      </div>
+                                      <p className={cn("text-xs mt-2 font-medium", stage.isActive ? "text-foreground" : "text-muted-foreground")}>
+                                        {stage.label}
+                                      </p>
+                                      <div className="mt-2 text-right">
                                         <p className="text-xs text-muted-foreground">Return Date</p>
                                         <p className="text-xs font-medium">{formatDate(reservation.returnDate || reservation.endDate)}</p>
                                       </div>
-                                    )}
-                                  </div>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Connector line */}
                                   {index < stages.length - 1 && (
                                     <div
                                       className={cn(
-                                        "h-0.5 flex-1 -mx-2",
-                                        // Cancelled: grey bar
+                                        "h-0.5 flex-1 mx-4",
                                         stage.isCancelled && stage.isActive && "bg-muted",
-                                        // Rejected: red bar
                                         stage.isRejected && stage.isActive && "bg-destructive",
-                                        // Normal flow: primary or inactive
                                         !stage.isCancelled && !stage.isRejected && stage.isActive && "bg-primary",
                                         !stage.isCancelled && !stage.isRejected && !stage.isActive && "bg-muted-foreground/30",
                                       )}
