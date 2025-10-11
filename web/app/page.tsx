@@ -34,12 +34,12 @@ export default function HomePage() {
       return
     }
     
-    if (!user && (!nlName.trim() || !nlEmail.trim())) {
+    if (!nlName.trim() || !nlEmail.trim()) {
       toast.error("Please provide your name and email")
       return
     }
     
-    if (!user && nlEmail && !/\S+@\S+\.\S+/.test(nlEmail)) {
+    if (nlEmail && !/\S+@\S+\.\S+/.test(nlEmail)) {
       toast.error("Please provide a valid email address")
       return
     }
@@ -57,10 +57,10 @@ export default function HomePage() {
         },
         body: JSON.stringify({
           text: nlText,
-          fallback: !user ? {
+          fallback: {
             name: nlName,
             email: nlEmail,
-          } : undefined,
+          },
         }),
       })
 
@@ -151,32 +151,30 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                {!user && (
-                  <div className="grid md:grid-cols-2 gap-4 pt-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="nl-name">Your Name</Label>
-                      <Input
-                        id="nl-name"
-                        type="text"
-                        placeholder="John Doe"
-                        value={nlName}
-                        onChange={(e) => setNlName(e.target.value)}
-                        disabled={nlLoading || nlSuccess}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="nl-email">Your Email</Label>
-                      <Input
-                        id="nl-email"
-                        type="email"
-                        placeholder="john@example.com"
-                        value={nlEmail}
-                        onChange={(e) => setNlEmail(e.target.value)}
-                        disabled={nlLoading || nlSuccess}
-                      />
-                    </div>
+                <div className="grid md:grid-cols-2 gap-4 pt-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="nl-name">Your Name</Label>
+                    <Input
+                      id="nl-name"
+                      type="text"
+                      placeholder="John Doe"
+                      value={nlName}
+                      onChange={(e) => setNlName(e.target.value)}
+                      disabled={nlLoading || nlSuccess}
+                    />
                   </div>
-                )}
+                  <div className="space-y-2">
+                    <Label htmlFor="nl-email">Your Email</Label>
+                    <Input
+                      id="nl-email"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={nlEmail}
+                      onChange={(e) => setNlEmail(e.target.value)}
+                      disabled={nlLoading || nlSuccess}
+                    />
+                  </div>
+                </div>
 
                 {nlSuccess && (
                   <div className="flex items-center gap-2 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">

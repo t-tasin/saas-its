@@ -231,10 +231,11 @@ export function useUpdateTicketStatus() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["ticket", variables.id] })
       queryClient.invalidateQueries({ queryKey: ["tickets"], exact: false }) // Match all tickets queries
-      toast.success("Ticket status updated!")
+      // Toast notification handled by the component
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to update status")
+      // Error toast handled by the component
+      console.error("Failed to update ticket status:", error)
     },
   })
 }

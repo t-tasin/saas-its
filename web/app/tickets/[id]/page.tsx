@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { PageHeader } from "@/components/page-header"
 import { StatusBadge } from "@/components/status-badge"
@@ -41,6 +41,13 @@ export default function TicketDetailPage() {
   const [commentBody, setCommentBody] = useState("")
   const [authorName, setAuthorName] = useState("")
   const [newStatus, setNewStatus] = useState("")
+
+  // Update newStatus when ticket data loads
+  useEffect(() => {
+    if (ticket?.data?.status) {
+      setNewStatus(ticket.data.status)
+    }
+  }, [ticket?.data?.status])
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -278,10 +285,12 @@ export default function TicketDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="status">Update Status</Label>
+                    <Label htmlFor="status">Current Status</Label>
                     <Select value={newStatus} onValueChange={setNewStatus}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select new status" />
+                        <SelectValue>
+                          {newStatus ? newStatus.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) : "Select status"}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="open">Open</SelectItem>
@@ -293,7 +302,7 @@ export default function TicketDetailPage() {
                   </div>
                   <Button
                     onClick={handleUpdateStatus}
-                    disabled={!newStatus || updateStatus.isPending}
+                    disabled={!newStatus || updateStatus.isPending || newStatus === ticket?.data?.status}
                     className="w-full"
                   >
                     {updateStatus.isPending ? "Updating..." : "Update Status"}
