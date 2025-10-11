@@ -1,0 +1,44 @@
+# Add this to your main docker-compose.yml or use as reference
+
+version: "3.9"
+services:
+  nl-gateway:
+    build: ./services/nl-gateway
+    container_name: nl-gateway
+    environment:
+      # LLM Provider Configuration
+      LLM_PROVIDER: groq
+      GROQ_API_KEY: your_groq_api_key_here
+      GROQ_MODEL: llama-3.1-8b-instruct
+      
+      # Service URLs (adjust based on your setup)
+      # For docker-compose: use service names
+      # For local dev: use localhost:port
+      TICKET_BASE: http://ticket-svc:3000/v1
+      
+      # Service Configuration
+      PORT: 3100
+      CATEGORIES_TTL: 120000
+      LOG_LEVEL: info
+    ports:
+      - "3100:3100"
+    depends_on:
+      - ticket-svc
+    networks:
+      - default
+    restart: unless-stopped
+
+# If your ticket-svc is not in docker-compose yet, here's an example:
+#   ticket-svc:
+#     build: ./services/ticket-svc
+#     container_name: ticket-svc
+#     environment:
+#       DATABASE_URL: postgresql://app:app@postgres:5432/app
+#       PORT: 3000
+#     ports:
+#       - "3002:3000"
+#     depends_on:
+#       - postgres
+#     networks:
+#       - default
+
