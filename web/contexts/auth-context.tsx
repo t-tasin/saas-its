@@ -354,18 +354,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = () => {
-    try {
-      identityService.logout().catch(() => {})
-    } finally {
-      setToken(null)
-      setUser(null)
-      localStorage.removeItem("authToken")
-      localStorage.removeItem("refreshToken")
-      localStorage.removeItem("user")
-      localStorage.removeItem("tenantId")
-      localStorage.removeItem("pendingEmail")
-      localStorage.removeItem("tempToken")
-      localStorage.removeItem("authFlow")
+    // Clear all auth data from localStorage
+    setToken(null)
+    setUser(null)
+    localStorage.removeItem("authToken")
+    localStorage.removeItem("refreshToken")
+    localStorage.removeItem("user")
+    localStorage.removeItem("tenantId")
+    localStorage.removeItem("pendingEmail")
+    localStorage.removeItem("tempToken")
+    localStorage.removeItem("authFlow")
       localStorage.removeItem("mockMode")
       toast.success("Logged out successfully")
       router.push("/")

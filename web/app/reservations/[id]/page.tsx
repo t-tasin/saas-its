@@ -262,6 +262,11 @@ export default function ReservationDetailPage() {
                   </span>
                 </InfoRow>
                 <InfoRow label="Quantity">{reservation.quantity || 1}</InfoRow>
+                {reservation.purpose && (
+                  <InfoRow label="Purpose">
+                    <p className="text-sm">{reservation.purpose}</p>
+                  </InfoRow>
+                )}
                 <InfoRow label="Requester">
                   {reservation.requester?.name ||
                     reservation.requesterName ||

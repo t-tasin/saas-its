@@ -11,6 +11,9 @@ import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/status-badge"
 import { CreateTicketModal } from "@/components/create-ticket-modal"
 import { CreateReservationModal } from "@/components/create-reservation-modal"
+import { useTickets } from "@/hooks/use-tickets"
+import { useReservations } from "@/hooks/use-reservations"
+import { useAssets } from "@/hooks/use-assets"
 import mockData from "@/data/mock-data.json"
 import { Package, Ticket, Calendar, Plus, CheckCircle2, Clock, XCircle } from "lucide-react"
 import { formatDate, formatRelativeTime } from "@/lib/utils"
@@ -22,14 +25,28 @@ function UserDashboard() {
   const [ticketModalOpen, setTicketModalOpen] = useState(false)
   const [reservationModalOpen, setReservationModalOpen] = useState(false)
 
-  // Get user's assigned assets
-  const assignedAssets = mockData.assets.filter((asset) => asset.assignedToId === user?.id)
+  // Fetch real data from backend
+  const { data: ticketsResponse } = useTickets()
+  const { data: reservationsResponse } = useReservations()
+  const { data: assetsResponse } = useAssets()
 
-  // Get user's tickets
-  const userTickets = mockData.tickets.filter((ticket) => ticket.requestedBy === user?.email)
+  // Get user's tickets (filter by requester email or ID)
+  const userTickets = (ticketsResponse?.data || []).filter(
+    (ticket: any) => 
+      ticket.requesterEmail === user?.email || 
+      ticket.requestedBy === user?.email ||
+      ticket.requesterId === user?.id
+  )
 
   // Get user's reservations
-  const userReservations = mockData.reservations.filter((res) => res.requesterId === user?.id)
+  const userReservations = (reservationsResponse?.data || []).filter(
+    (res: any) => res.requesterId === user?.id || res.requesterEmail === user?.email
+  )
+
+  // Get user's assigned assets
+  const assignedAssets = (assetsResponse?.data || []).filter(
+    (asset: any) => asset.assignedToId === user?.id
+  )
 
   // Calculate progress for tickets (based on status)
   const getTicketProgress = (status: string) => {
