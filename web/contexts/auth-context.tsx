@@ -364,10 +364,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("pendingEmail")
     localStorage.removeItem("tempToken")
     localStorage.removeItem("authFlow")
-      localStorage.removeItem("mockMode")
-      toast.success("Logged out successfully")
-      router.push("/")
-    }
+    localStorage.removeItem("mockMode")
+    toast.success("Logged out successfully")
+    router.push("/")
   }
 
   const value = {
