@@ -38,8 +38,8 @@ export class AssetController {
   constructor(private readonly audit: AuditService) {}
 
   @Get()
-  @Roles('operator', 'admin')
-  async list(@Req() _req: Request, @Query() q: ListAssetsQueryDto) {
+  // Allow all authenticated users (general users see only their assets)
+  async list(@Req() req: Request, @Query() q: ListAssetsQueryDto) {
     return withTx(async (tx) => {
       const take = Math.min(Math.max(Number(q.limit || 50), 1), 100);
 
@@ -51,6 +51,12 @@ export class AssetController {
       }
 
       const where: any = {};
+      
+      // General users can only see their own assigned assets
+      const user = (req as any).user;
+      if (user && user.role === 'general') {
+        where.assignedToId = user.sub;
+      }
       
       // Search filter (assetId or description)
       if (q.q) {
@@ -97,8 +103,8 @@ export class AssetController {
   }
 
   @Get(':id')
-  @Roles('operator', 'admin')
-  async getOne(@Param('id', new ParseUUIDPipe()) id: string) {
+  // Allow all authenticated users (general users can only see assets assigned to them)
+  async getOne(@Req() req: Request, @Param('id', new ParseUUIDPipe()) id: string) {
     return withTx(async (tx) => {
       const asset = await tx.asset.findUnique({
         where: { id },
@@ -113,6 +119,12 @@ export class AssetController {
 
       if (!asset) {
         throw new ConflictException('Asset not found');
+      }
+
+      // General users can only view assets assigned to them
+      const user = (req as any).user;
+      if (user && user.role === 'general' && asset.assignedToId !== user.sub) {
+        throw new ConflictException('Access denied');
       }
 
       return asset;
