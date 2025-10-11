@@ -150,10 +150,10 @@ export class AppController {
   }
 
   /**
-   * List all users (admin only) with pagination
+   * List all users (admin and operator) with pagination
    */
   @ApiBearerAuth()
-  @Roles('admin')
+  @Roles('operator', 'admin')
   @Get('/users')
   async listUsers(
     @Query('role') role?: string,
