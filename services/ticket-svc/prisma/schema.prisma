@@ -18,11 +18,15 @@ enum TicketStatus {
   in_progress
   resolved
   closed
+
+  @@schema("ticket")
 }
 
 enum TicketType {
   incident
   request
+
+  @@schema("ticket")
 }
 
 enum TicketPriority {
@@ -30,6 +34,8 @@ enum TicketPriority {
   medium
   high
   urgent
+
+  @@schema("ticket")
 }
 
 model Ticket {
