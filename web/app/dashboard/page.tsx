@@ -472,9 +472,12 @@ function AdminDashboard() {
       approvalRate: reservations.length > 0 
         ? Math.round((reservations.filter((r) => r.status === "approved" || r.status === "active" || r.status === "returned" || r.status === "completed").length / reservations.length) * 100)
         : 0,
-      onTimeReturnRate: reservations.filter((r) => r.status === "returned" || r.status === "completed").length > 0
-        ? Math.round((reservations.filter((r) => r.status === "returned" || r.status === "completed").length / reservations.filter((r) => r.status === "returned" || r.status === "completed" || r.status === "active").length) * 100)
-        : 0,
+      onTimeReturnRate: (() => {
+        const completedReservations = reservations.filter((r) => (r.status === "returned" || r.status === "completed") && r.actualReturnDate && r.returnDate)
+        if (completedReservations.length === 0) return 0
+        const onTimeReturns = completedReservations.filter((r) => new Date(r.actualReturnDate) <= new Date(r.returnDate))
+        return Math.round((onTimeReturns.length / completedReservations.length) * 100)
+      })(),
     },
   }
 
