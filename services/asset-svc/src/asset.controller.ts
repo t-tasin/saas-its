@@ -332,17 +332,33 @@ export class AssetController {
       const updateData: any = {};
       
       // Only update fields that are provided
+      if (dto.assetId !== undefined) updateData.assetId = dto.assetId;
+      if (dto.type !== undefined) updateData.type = dto.type;
       if (dto.description !== undefined) updateData.description = dto.description;
       if (dto.fundingDepartment !== undefined) updateData.fundingDepartment = dto.fundingDepartment;
       if (dto.manufacturer !== undefined) updateData.manufacturer = dto.manufacturer;
       if (dto.model !== undefined) updateData.model = dto.model;
+      if (dto.modelGeneration !== undefined) updateData.modelGeneration = dto.modelGeneration;
       if (dto.serialNumber !== undefined) updateData.serialNumber = dto.serialNumber;
+      if (dto.vendor !== undefined) updateData.vendor = dto.vendor;
       if (dto.memory !== undefined) updateData.memory = dto.memory;
       if (dto.hddSize !== undefined) updateData.hddSize = dto.hddSize;
-      if (dto.location !== undefined) updateData.location = dto.location;
-      if (dto.status !== undefined) updateData.status = dto.status;
+      if (dto.hddType !== undefined) updateData.hddType = dto.hddType;
+      if (dto.cpuGeneration !== undefined) updateData.cpuGeneration = dto.cpuGeneration;
+      if (dto.cpuSpeed !== undefined) updateData.cpuSpeed = dto.cpuSpeed;
+      if (dto.gpuModel !== undefined) updateData.gpuModel = dto.gpuModel;
+      if (dto.videoCard !== undefined) updateData.videoCard = dto.videoCard;
+      if (dto.wiredMac !== undefined) updateData.wiredMac = dto.wiredMac;
+      if (dto.wirelessMac !== undefined) updateData.wirelessMac = dto.wirelessMac;
+      if (dto.output1 !== undefined) updateData.output1 = dto.output1;
+      if (dto.output2 !== undefined) updateData.output2 = dto.output2;
+      if (dto.receivedDate !== undefined) updateData.receivedDate = dto.receivedDate;
       if (dto.cost !== undefined) updateData.cost = dto.cost;
       if (dto.po !== undefined) updateData.po = dto.po;
+      if (dto.disposalDate !== undefined) updateData.disposalDate = dto.disposalDate;
+      if (dto.disposalType !== undefined) updateData.disposalType = dto.disposalType;
+      if (dto.location !== undefined) updateData.location = dto.location;
+      if (dto.status !== undefined) updateData.status = dto.status;
 
       const asset = await tx.asset.update({
         where: { id },

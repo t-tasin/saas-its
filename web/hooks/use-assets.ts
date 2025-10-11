@@ -40,7 +40,7 @@ export function useAssets(params?: any) {
           return { data: [], total: 0 }
         }
 
-        const response = await assetApi.get("/assets", { params })
+        const response = await assetApi.get("/", { params })
         
         // Backend returns { items: [], nextCursor: string }
         const assets = response.data.items || response.data.data || []

@@ -48,7 +48,7 @@ export function useReservations(params?: any) {
       }
 
       try {
-        const response = await reservationApi.get("/reservations", { params })
+        const response = await reservationApi.get("/", { params })
         
         // Backend returns { items: [], nextCursor: string }
         const reservations = response.data.items || response.data.data || []
@@ -74,7 +74,7 @@ export function useReservation(id: string) {
   return useQuery({
     queryKey: ["reservation", id],
     queryFn: async () => {
-      const response = await reservationApi.get(`/reservations/${id}`)
+      const response = await reservationApi.get(`/${id}`)
       return { data: transformReservation(response.data) }
     },
     enabled: !!id && !loading && isAuthenticated,
@@ -102,7 +102,7 @@ export function useCreateReservation() {
         notes: data.notes || undefined,
       }
 
-      const response = await reservationApi.post("/reservations", payload)
+      const response = await reservationApi.post("/", payload)
       return transformReservation(response.data)
     },
     onSuccess: () => {
@@ -186,7 +186,7 @@ export function useEquipmentAvailability() {
     queryKey: ["equipment-availability"],
     queryFn: async () => {
       // This endpoint might not exist in backend, using assets as fallback
-      const response = await reservationApi.get("/reservations", {
+      const response = await reservationApi.get("/", {
         params: { status: "APPROVED" },
       })
       return {
@@ -203,7 +203,7 @@ export function useReservationAnalytics(days = 30) {
   return useQuery({
     queryKey: ["analytics", "reservations", days],
     queryFn: async () => {
-      const response = await reservationApi.get("/reservations")
+      const response = await reservationApi.get("/")
       const reservations = response.data.data || []
 
       return {
@@ -218,5 +218,44 @@ export function useReservationAnalytics(days = 30) {
       }
     },
     enabled: !loading && isAuthenticated,
+  })
+}
+
+export function useMarkAsPickedUp() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      const response = await reservationApi.post(`/${id}/pickup`, {})
+      return response.data
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["reservation", variables.id] })
+      queryClient.invalidateQueries({ queryKey: ["reservations"] })
+      toast.success("Reservation marked as picked up")
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to mark as picked up")
+    },
+  })
+}
+
+export function useCompleteReservation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id, returnNotes }: { id: string; returnNotes?: string }) => {
+      const response = await reservationApi.post(`/${id}/complete`, { returnNotes })
+      return response.data
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["reservation", variables.id] })
+      queryClient.invalidateQueries({ queryKey: ["reservations"] })
+      queryClient.invalidateQueries({ queryKey: ["assets"] }) // Refresh assets to show as available
+      toast.success("Reservation completed and assets returned")
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to complete reservation")
+    },
   })
 }

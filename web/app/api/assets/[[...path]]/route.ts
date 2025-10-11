@@ -6,13 +6,13 @@ const getBackendUrl = () => {
   return url.endsWith("/v1") ? url : `${url}/v1`
 }
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   try {
     const { path: pathArray } = await params
-    const path = pathArray.join("/")
+    const path = pathArray?.join("/") || ""
     const backendUrl = getBackendUrl()
     const searchParams = request.nextUrl.searchParams.toString()
-    const fullUrl = `${backendUrl}/${path}${searchParams ? `?${searchParams}` : ""}`
+    const fullUrl = `${backendUrl}/assets${path ? `/${path}` : ""}${searchParams ? `?${searchParams}` : ""}`
 
     const token = request.headers.get("authorization")
     const tenantId = request.headers.get("x-tenant-id")
@@ -41,12 +41,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   try {
     const { path: pathArray } = await params
-    const path = pathArray.join("/")
+    const path = pathArray?.join("/") || ""
     const backendUrl = getBackendUrl()
-    const fullUrl = `${backendUrl}/${path}`
+    const fullUrl = `${backendUrl}/assets${path ? `/${path}` : ""}`
 
     const body = await request.json()
     const token = request.headers.get("authorization")
@@ -74,12 +74,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   try {
     const { path: pathArray } = await params
-    const path = pathArray.join("/")
+    const path = pathArray?.join("/") || ""
     const backendUrl = getBackendUrl()
-    const fullUrl = `${backendUrl}/${path}`
+    const fullUrl = `${backendUrl}/assets${path ? `/${path}` : ""}`
 
     const body = await request.json()
     const token = request.headers.get("authorization")
@@ -107,12 +107,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   try {
     const { path: pathArray } = await params
-    const path = pathArray.join("/")
+    const path = pathArray?.join("/") || ""
     const backendUrl = getBackendUrl()
-    const fullUrl = `${backendUrl}/${path}`
+    const fullUrl = `${backendUrl}/assets${path ? `/${path}` : ""}`
 
     const body = await request.json()
     const token = request.headers.get("authorization")
@@ -140,12 +140,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   try {
     const { path: pathArray } = await params
-    const path = pathArray.join("/")
+    const path = pathArray?.join("/") || ""
     const backendUrl = getBackendUrl()
-    const fullUrl = `${backendUrl}/${path}`
+    const fullUrl = `${backendUrl}/assets${path ? `/${path}` : ""}`
 
     const token = request.headers.get("authorization")
     const tenantId = request.headers.get("x-tenant-id")

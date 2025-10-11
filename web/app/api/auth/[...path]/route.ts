@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server"
 
 const IDENTITY_API_URL = process.env.NEXT_PUBLIC_IDENTITY_API || "https://saas-itsidentity-svc-production.up.railway.app/v1"
 
-export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join("/")
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArray } = await params
+  const path = pathArray.join("/")
   const searchParams = request.nextUrl.searchParams.toString()
   const url = `${IDENTITY_API_URL}/${path}${searchParams ? `?${searchParams}` : ""}`
 
@@ -34,8 +35,9 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join("/")
+export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArray } = await params
+  const path = pathArray.join("/")
   const url = `${IDENTITY_API_URL}/${path}`
 
   try {
@@ -68,8 +70,9 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join("/")
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArray } = await params
+  const path = pathArray.join("/")
   const url = `${IDENTITY_API_URL}/${path}`
 
   try {
@@ -102,8 +105,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { path: 
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path.join("/")
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArray } = await params
+  const path = pathArray.join("/")
   const url = `${IDENTITY_API_URL}/${path}`
 
   try {
