@@ -101,15 +101,49 @@ export function useAssignableUsers() {
   })
 }
 
+// Get ALL users (general, operator, admin) for asset assignment
+export function useAllUsers() {
+  const { isAuthenticated, loading, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["users", "all"],
+    queryFn: async () => {
+      const authToken = typeof window !== "undefined" ? localStorage.getItem("authToken") : null
+      if (!authToken) {
+        return { data: [] }
+      }
+
+      try {
+        // Fetch all users regardless of role
+        const response = await identityApi.get("/users")
+        
+        // Backend returns { users: [], total: 0, page: 1, limit: 20 }
+        const users = response.data.users || response.data.items || response.data.data || []
+
+        return { data: users }
+      } catch (error) {
+        console.error("Failed to load all users:", error)
+        return { data: [] }
+      }
+    },
+    enabled: !loading && isAuthenticated && !!token,
+    staleTime: 60000, // Cache for 1 minute
+    retry: false,
+  })
+}
+
 // Get a single user by ID
 export function useUser(userId: string | null | undefined) {
   const { isAuthenticated, loading, token } = useAuth()
+
+  // Check if userId is valid UUID (not 'anonymous' or other invalid values)
+  const isValidUserId = userId && userId !== 'anonymous' && userId.length > 10
 
   return useQuery({
     queryKey: ["user", userId],
     queryFn: async () => {
       const authToken = typeof window !== "undefined" ? localStorage.getItem("authToken") : null
-      if (!authToken || !userId) {
+      if (!authToken || !userId || !isValidUserId) {
         return { data: null }
       }
 
@@ -121,7 +155,7 @@ export function useUser(userId: string | null | undefined) {
         return { data: null }
       }
     },
-    enabled: !loading && isAuthenticated && !!token && !!userId,
+    enabled: !loading && isAuthenticated && !!token && !!isValidUserId,
     staleTime: 300000, // Cache for 5 minutes
     retry: false,
   })

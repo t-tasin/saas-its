@@ -182,10 +182,10 @@ export class AppController {
   }
 
   /**
-   * Get user by ID (admin only)
+   * Get user by ID (admin and operator)
    */
   @ApiBearerAuth()
-  @Roles('admin')
+  @Roles('operator', 'admin')
   @Get('/users/:id')
   async getUser(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.findById(id);
