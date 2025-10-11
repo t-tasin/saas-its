@@ -33,7 +33,7 @@ import { Prisma } from '../generated/client';
 
 @ApiTags('assets')
 @ApiBearerAuth()
-@Controller()
+@Controller('/assets')
 export class AssetController {
   constructor(private readonly audit: AuditService) {}
 
