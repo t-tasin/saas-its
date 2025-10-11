@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Headset, AlertCircle, Loader2, CheckCircle2 } from "lucide-react"
+import { Headset, AlertCircle, Loader2, CheckCircle2, XCircle } from "lucide-react"
 
 export default function LoginPage() {
   const [activeTab, setActiveTab] = useState<"user" | "operator" | "admin">("user")
@@ -65,6 +65,18 @@ export default function LoginPage() {
     }
   }
 
+  // Password validation - same as register page
+  const passwordValidations = {
+    minLength: newPassword.length >= 8,
+    hasUpperCase: /[A-Z]/.test(newPassword),
+    hasLowerCase: /[a-z]/.test(newPassword),
+    hasNumber: /[0-9]/.test(newPassword),
+    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword),
+  }
+
+  const isPasswordValid = Object.values(passwordValidations).every(Boolean)
+  const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0
+
   const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -80,13 +92,13 @@ export default function LoginPage() {
       }
     } else {
       // OTP step - reset password
-      if (newPassword !== confirmPassword) {
-        setError("Passwords do not match")
+      if (!isPasswordValid) {
+        setError("Password does not meet all requirements")
         return
       }
 
-      if (newPassword.length < 6) {
-        setError("Password must be at least 6 characters")
+      if (!passwordsMatch) {
+        setError("Passwords do not match")
         return
       }
 
@@ -99,6 +111,7 @@ export default function LoginPage() {
         setResetOtp("")
         setNewPassword("")
         setConfirmPassword("")
+        setError("") // Clear any errors
       } catch (err: any) {
         // Error handled in resetPassword
       } finally {
@@ -334,10 +347,82 @@ export default function LoginPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Enter new password"
-                    minLength={6}
                     required
                   />
-                  <p className="text-xs text-muted-foreground">Minimum 6 characters</p>
+                  {newPassword && (
+                    <div className="space-y-1 text-xs">
+                      <p
+                        className={
+                          passwordValidations.minLength
+                            ? "text-green-600 flex items-center gap-1"
+                            : "text-muted-foreground flex items-center gap-1"
+                        }
+                      >
+                        {passwordValidations.minLength ? (
+                          <CheckCircle2 className="h-3 w-3" />
+                        ) : (
+                          <XCircle className="h-3 w-3" />
+                        )}
+                        At least 8 characters
+                      </p>
+                      <p
+                        className={
+                          passwordValidations.hasUpperCase
+                            ? "text-green-600 flex items-center gap-1"
+                            : "text-muted-foreground flex items-center gap-1"
+                        }
+                      >
+                        {passwordValidations.hasUpperCase ? (
+                          <CheckCircle2 className="h-3 w-3" />
+                        ) : (
+                          <XCircle className="h-3 w-3" />
+                        )}
+                        One uppercase letter
+                      </p>
+                      <p
+                        className={
+                          passwordValidations.hasLowerCase
+                            ? "text-green-600 flex items-center gap-1"
+                            : "text-muted-foreground flex items-center gap-1"
+                        }
+                      >
+                        {passwordValidations.hasLowerCase ? (
+                          <CheckCircle2 className="h-3 w-3" />
+                        ) : (
+                          <XCircle className="h-3 w-3" />
+                        )}
+                        One lowercase letter
+                      </p>
+                      <p
+                        className={
+                          passwordValidations.hasNumber
+                            ? "text-green-600 flex items-center gap-1"
+                            : "text-muted-foreground flex items-center gap-1"
+                        }
+                      >
+                        {passwordValidations.hasNumber ? (
+                          <CheckCircle2 className="h-3 w-3" />
+                        ) : (
+                          <XCircle className="h-3 w-3" />
+                        )}
+                        One number
+                      </p>
+                      <p
+                        className={
+                          passwordValidations.hasSpecialChar
+                            ? "text-green-600 flex items-center gap-1"
+                            : "text-muted-foreground flex items-center gap-1"
+                        }
+                      >
+                        {passwordValidations.hasSpecialChar ? (
+                          <CheckCircle2 className="h-3 w-3" />
+                        ) : (
+                          <XCircle className="h-3 w-3" />
+                        )}
+                        One special character (!@#$%^&*...)
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -350,6 +435,14 @@ export default function LoginPage() {
                     placeholder="Confirm new password"
                     required
                   />
+                  {confirmPassword && (
+                    <p
+                      className={`text-xs flex items-center gap-1 ${passwordsMatch ? "text-green-600" : "text-red-600"}`}
+                    >
+                      {passwordsMatch ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                      {passwordsMatch ? "Passwords match" : "Passwords do not match"}
+                    </p>
+                  )}
                 </div>
               </>
             )}
@@ -370,7 +463,13 @@ export default function LoginPage() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={forgotPasswordLoading}>
+              <Button 
+                type="submit" 
+                disabled={
+                  forgotPasswordLoading || 
+                  (forgotPasswordStep === "otp" && (!isPasswordValid || !passwordsMatch))
+                }
+              >
                 {forgotPasswordLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {forgotPasswordStep === "email" 
                   ? (forgotPasswordLoading ? "Sending..." : "Send OTP")

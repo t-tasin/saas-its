@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/contexts/auth-context"
 import { formatDateTime } from "@/lib/utils"
-import { User, Mail, Shield, Calendar, Key, Loader2 } from "lucide-react"
+import { User, Mail, Shield, Calendar, Key, Loader2, CheckCircle2, XCircle } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 function ProfileContent() {
@@ -22,16 +22,28 @@ function ProfileContent() {
 
   if (!user) return null
 
+  // Password validation - same as register page
+  const passwordValidations = {
+    minLength: newPassword.length >= 8,
+    hasUpperCase: /[A-Z]/.test(newPassword),
+    hasLowerCase: /[a-z]/.test(newPassword),
+    hasNumber: /[0-9]/.test(newPassword),
+    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword),
+  }
+
+  const isPasswordValid = Object.values(passwordValidations).every(Boolean)
+  const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
 
     // Validate passwords
-    if (newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters")
+    if (!isPasswordValid) {
+      toast.error("Password does not meet all requirements")
       return
     }
 
-    if (newPassword !== confirmPassword) {
+    if (!passwordsMatch) {
       toast.error("Passwords do not match")
       return
     }
@@ -132,10 +144,82 @@ function ProfileContent() {
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Enter your new password"
-                      minLength={6}
                       required
                     />
-                    <p className="text-xs text-muted-foreground">Minimum 6 characters</p>
+                    {newPassword && (
+                      <div className="space-y-1 text-xs">
+                        <p
+                          className={
+                            passwordValidations.minLength
+                              ? "text-green-600 flex items-center gap-1"
+                              : "text-muted-foreground flex items-center gap-1"
+                          }
+                        >
+                          {passwordValidations.minLength ? (
+                            <CheckCircle2 className="h-3 w-3" />
+                          ) : (
+                            <XCircle className="h-3 w-3" />
+                          )}
+                          At least 8 characters
+                        </p>
+                        <p
+                          className={
+                            passwordValidations.hasUpperCase
+                              ? "text-green-600 flex items-center gap-1"
+                              : "text-muted-foreground flex items-center gap-1"
+                          }
+                        >
+                          {passwordValidations.hasUpperCase ? (
+                            <CheckCircle2 className="h-3 w-3" />
+                          ) : (
+                            <XCircle className="h-3 w-3" />
+                          )}
+                          One uppercase letter
+                        </p>
+                        <p
+                          className={
+                            passwordValidations.hasLowerCase
+                              ? "text-green-600 flex items-center gap-1"
+                              : "text-muted-foreground flex items-center gap-1"
+                          }
+                        >
+                          {passwordValidations.hasLowerCase ? (
+                            <CheckCircle2 className="h-3 w-3" />
+                          ) : (
+                            <XCircle className="h-3 w-3" />
+                          )}
+                          One lowercase letter
+                        </p>
+                        <p
+                          className={
+                            passwordValidations.hasNumber
+                              ? "text-green-600 flex items-center gap-1"
+                              : "text-muted-foreground flex items-center gap-1"
+                          }
+                        >
+                          {passwordValidations.hasNumber ? (
+                            <CheckCircle2 className="h-3 w-3" />
+                          ) : (
+                            <XCircle className="h-3 w-3" />
+                          )}
+                          One number
+                        </p>
+                        <p
+                          className={
+                            passwordValidations.hasSpecialChar
+                              ? "text-green-600 flex items-center gap-1"
+                              : "text-muted-foreground flex items-center gap-1"
+                          }
+                        >
+                          {passwordValidations.hasSpecialChar ? (
+                            <CheckCircle2 className="h-3 w-3" />
+                          ) : (
+                            <XCircle className="h-3 w-3" />
+                          )}
+                          One special character (!@#$%^&*...)
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -148,10 +232,18 @@ function ProfileContent() {
                       placeholder="Confirm your new password"
                       required
                     />
+                    {confirmPassword && (
+                      <p
+                        className={`text-xs flex items-center gap-1 ${passwordsMatch ? "text-green-600" : "text-red-600"}`}
+                      >
+                        {passwordsMatch ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                        {passwordsMatch ? "Passwords match" : "Passwords do not match"}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex justify-end pt-2">
-                    <Button type="submit" disabled={isChangingPassword}>
+                    <Button type="submit" disabled={isChangingPassword || !isPasswordValid || !passwordsMatch}>
                       {isChangingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       {isChangingPassword ? "Changing..." : "Change Password"}
                     </Button>

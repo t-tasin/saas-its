@@ -120,6 +120,7 @@ export function useCreateReservation() {
         requesterEmail: userEmail,
         requesterName: userName,
         notes: data.notes || undefined,
+        forceRequest: data.forceRequest || false, // Allow special requests when equipment unavailable
       }
 
       console.log("[DEBUG] Creating reservation with payload:", JSON.stringify(payload, null, 2))

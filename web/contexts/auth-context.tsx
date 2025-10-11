@@ -46,17 +46,17 @@ const identityService = {
   },
 
   changePassword: async (data: { currentPassword: string; newPassword: string }) => {
-    const response = await identityClient.post("/change-password", data)
+    const response = await identityClient.post("/auth/change-password", data)
     return response.data
   },
 
   forgotPassword: async (email: string) => {
-    const response = await identityClient.post("/forgot-password", { email })
+    const response = await identityClient.post("/auth/forgot-password", { email })
     return response.data
   },
 
   resetPassword: async (data: { email: string; otp: string; newPassword: string }) => {
-    const response = await identityClient.post("/reset-password", data)
+    const response = await identityClient.post("/auth/reset-password", data)
     return response.data
   },
 }

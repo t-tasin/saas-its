@@ -146,6 +146,7 @@ export interface CreateReservationData {
   requesterName?: string // Optional - will be auto-filled from user
   requesterEmail?: string // Optional - will be auto-filled from user
   notes?: string // Additional notes
+  forceRequest?: boolean // Force request even if equipment unavailable (special request)
   // Legacy fields for backward compatibility
   startDate?: string // Alias for requestDate
   endDate?: string // Alias for returnDate
