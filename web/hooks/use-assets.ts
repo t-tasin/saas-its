@@ -112,13 +112,23 @@ export function useCreateAsset() {
   return useMutation({
     mutationFn: async (data: CreateAssetData) => {
       try {
+        // Backend requires: assetId, type, description, fundingDepartment as mandatory
         const backendData = {
-          serialNumber: data.serialNumber,
-          assetType: data.type?.toUpperCase() || "OTHER",
-          brand: data.brand,
+          assetId: data.assetId || data.serialNumber || `ASSET-${Date.now()}`,
+          type: data.type || "Laptop",
+          description: data.description || `${data.type} - ${data.model || "Unknown Model"}`,
+          fundingDepartment: data.fundingDepartment || "IT Department",
+          // Optional fields
+          manufacturer: data.brand || data.manufacturer,
           model: data.model,
-          purchaseDate: data.purchaseDate,
-          warrantyExpiry: data.warrantyExpiry || undefined,
+          serialNumber: data.serialNumber,
+          receivedDate: data.purchaseDate || data.receivedDate,
+          cost: data.cost,
+          // Additional optional fields
+          memory: data.memory,
+          hddSize: data.hddSize,
+          location: data.location,
+          status: data.status ? transformAssetStatusToBackend(data.status) : undefined,
         }
 
         const response = await assetApi.post("/assets", backendData)
@@ -141,8 +151,9 @@ export function useAssignAsset() {
   return useMutation({
     mutationFn: async ({ id, personId }: { id: string; personId: string }) => {
       try {
+        // Backend expects "personId" field
         const response = await assetApi.post(`/assets/${id}/assign`, {
-          userId: personId,
+          personId: personId,
         })
         toast.success("Asset assigned successfully")
         return response.data
@@ -164,10 +175,8 @@ export function useUnassignAsset() {
   return useMutation({
     mutationFn: async (id: string) => {
       try {
-        const response = await assetApi.patch(`/assets/${id}`, {
-          status: "AVAILABLE",
-          assignedToId: null,
-        })
+        // Use the dedicated unassign endpoint
+        const response = await assetApi.post(`/assets/${id}/unassign`, {})
         toast.success("Asset unassigned successfully")
         return response.data
       } catch (error: any) {

@@ -119,22 +119,20 @@ export function useApproveReservation() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, status, reason }: { id: string; status: "APPROVED" | "REJECTED"; reason?: string }) => {
+    mutationFn: async ({ id, assetIds, notes }: { id: string; assetIds: string[]; notes?: string }) => {
       const response = await reservationApi.post(`/reservations/${id}/approve`, {
-        status,
-        reason,
+        assetIds,
+        notes,
       })
-      return transformReservation(response.data)
+      return transformReservation(response.data.reservation || response.data)
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["reservation", variables.id] })
       queryClient.invalidateQueries({ queryKey: ["reservations"] })
-      toast.success(
-        variables.status === "APPROVED" ? "Reservation approved successfully" : "Reservation rejected successfully",
-      )
+      toast.success("Reservation approved successfully")
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to update reservation")
+      toast.error(error.message || "Failed to approve reservation")
     },
   })
 }
@@ -144,8 +142,7 @@ export function useDenyReservation() {
 
   return useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
-      const response = await reservationApi.post(`/reservations/${id}/approve`, {
-        status: "REJECTED",
+      const response = await reservationApi.post(`/reservations/${id}/deny`, {
         reason,
       })
       return transformReservation(response.data)
@@ -153,10 +150,10 @@ export function useDenyReservation() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["reservation", variables.id] })
       queryClient.invalidateQueries({ queryKey: ["reservations"] })
-      toast.success("Reservation rejected successfully")
+      toast.success("Reservation denied successfully")
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to reject reservation")
+      toast.error(error.message || "Failed to deny reservation")
     },
   })
 }
@@ -165,12 +162,14 @@ export function useCancelReservation() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      const response = await reservationApi.delete(`/reservations/${id}`)
-      return response.data
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
+      const response = await reservationApi.post(`/reservations/${id}/cancel`, {
+        reason: reason || "Cancelled by user",
+      })
+      return transformReservation(response.data.reservation || response.data)
     },
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ["reservation", id] })
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["reservation", variables.id] })
       queryClient.invalidateQueries({ queryKey: ["reservations"] })
       toast.success("Reservation cancelled successfully")
     },
