@@ -33,7 +33,7 @@ export class UserService {
       data: {
         email: dto.email,
         password: hashedPassword,
-        name: dto.name ?? null,
+        name: dto.name,
         role: 'general', // Always general for public registration
       },
     });
@@ -234,7 +234,7 @@ export class UserService {
       data: {
         email: dto.email,
         password: hashedPassword,
-        name: dto.name ?? null,
+        name: dto.name,
         role: dto.role,
       },
     });

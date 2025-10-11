@@ -21,11 +21,11 @@ export class RegisterDto {
   @MaxLength(100)
   password!: string;
 
-  @ApiPropertyOptional({ example: 'John Doe' })
-  @IsOptional()
+  @ApiProperty({ example: 'John Doe' })
   @IsString()
+  @MinLength(1)
   @MaxLength(200)
-  name?: string;
+  name!: string;
 
   @ApiPropertyOptional({ example: 'general', enum: UserRole })
   @IsOptional()
@@ -84,11 +84,11 @@ export class CreateUserDto {
   @MaxLength(100)
   password!: string;
 
-  @ApiPropertyOptional({ example: 'John Operator' })
-  @IsOptional()
+  @ApiProperty({ example: 'John Operator' })
   @IsString()
+  @MinLength(1)
   @MaxLength(200)
-  name?: string;
+  name!: string;
 
   @ApiProperty({ enum: UserRole, default: UserRole.operator })
   @IsEnum(UserRole)
