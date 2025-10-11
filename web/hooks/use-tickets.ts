@@ -61,6 +61,17 @@ export function useTicket(id: string) {
       const response = await ticketApi.get(`/tickets/${id}`)
       const ticket = response.data
 
+      // Transform attachments from backend format to frontend format
+      const transformedAttachments = (ticket.attachments || []).map((att: any) => ({
+        id: att.id,
+        fileName: att.filename,
+        fileSize: att.size || 0,
+        mimeType: att.contentType,
+        fileUrl: att.key, // S3 key - will need download URL endpoint
+        uploadedAt: att.uploadedAt,
+        uploadedBy: att.uploadedBy,
+      }))
+
       // Transform data to match UI expectations
       return {
         data: {
@@ -68,6 +79,7 @@ export function useTicket(id: string) {
           status: transformStatus(ticket.status),
           priority: ticket.priority.toLowerCase(),
           category: { name: ticket.category },
+          attachments: transformedAttachments,
         },
       }
     },

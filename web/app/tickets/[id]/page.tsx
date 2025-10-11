@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/contexts/auth-context"
 import { useTicket, useTicketComments, useAddComment, useUpdateTicketStatus } from "@/hooks/use-tickets"
+import { useUser } from "@/hooks/use-users"
 import { useToast } from "@/hooks/use-toast"
 import { formatDateTime } from "@/lib/utils"
 import { ArrowLeft, MessageSquare, Paperclip, Download } from "lucide-react"
@@ -33,6 +34,9 @@ export default function TicketDetailPage() {
   const { data: comments, isLoading: commentsLoading } = useTicketComments(ticketId)
   const addComment = useAddComment()
   const updateStatus = useUpdateTicketStatus()
+  
+  // Fetch assigned user details if ticket has assignedTo
+  const { data: assignedUser } = useUser(ticket?.data?.assignedTo)
 
   const [commentBody, setCommentBody] = useState("")
   const [authorName, setAuthorName] = useState("")
@@ -143,7 +147,11 @@ export default function TicketDetailPage() {
                 {ticketData.category && <InfoRow label="Category">{ticketData.category.name}</InfoRow>}
                 {ticketData.subcategory && <InfoRow label="Subcategory">{ticketData.subcategory.name}</InfoRow>}
                 {ticketData.requestedBy && <InfoRow label="Requested By">{ticketData.requestedBy}</InfoRow>}
-                {ticketData.assignedTo && <InfoRow label="Assigned To">{ticketData.assignedTo.name}</InfoRow>}
+                {ticketData.assignedTo && (
+                  <InfoRow label="Assigned To">
+                    {assignedUser?.data?.name || assignedUser?.data?.email || "Loading..."}
+                  </InfoRow>
+                )}
                 <InfoRow label="Created">{formatDateTime(ticketData.createdAt)}</InfoRow>
                 <InfoRow label="Last Updated">{formatDateTime(ticketData.updatedAt)}</InfoRow>
                 {ticketData.description && (

@@ -101,3 +101,29 @@ export function useAssignableUsers() {
   })
 }
 
+// Get a single user by ID
+export function useUser(userId: string | null | undefined) {
+  const { isAuthenticated, loading, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["user", userId],
+    queryFn: async () => {
+      const authToken = typeof window !== "undefined" ? localStorage.getItem("authToken") : null
+      if (!authToken || !userId) {
+        return { data: null }
+      }
+
+      try {
+        const response = await identityApi.get(`/users/${userId}`)
+        return { data: response.data }
+      } catch (error) {
+        console.error("Failed to load user:", error)
+        return { data: null }
+      }
+    },
+    enabled: !loading && isAuthenticated && !!token && !!userId,
+    staleTime: 300000, // Cache for 5 minutes
+    retry: false,
+  })
+}
+
