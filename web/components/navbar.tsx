@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Headset, User, LogOut, LayoutDashboard, Ticket, Calendar, Package } from "lucide-react"
+import { Headset, User, LogOut, LayoutDashboard, Ticket, Calendar, Package, Users } from "lucide-react"
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth()
@@ -67,6 +67,14 @@ export function Navbar() {
                         Assets
                       </Button>
                     </Link>
+                    {user?.role === "admin" && (
+                      <Link href="/dashboard/users">
+                        <Button variant="ghost" size="sm">
+                          <Users className="h-4 w-4 mr-2" />
+                          Users
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 )}
 
@@ -101,6 +109,14 @@ export function Navbar() {
                         Profile
                       </Link>
                     </DropdownMenuItem>
+                    {user?.role === "admin" && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/users">
+                          <Users className="h-4 w-4 mr-2" />
+                          User Management
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logout} className="text-destructive">
                       <LogOut className="h-4 w-4 mr-2" />
