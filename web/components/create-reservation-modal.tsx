@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCreateReservation } from "@/hooks/use-reservations"
 import { useAuth } from "@/contexts/auth-context"
-import { useAssets } from "@/hooks/use-assets"
+import { useAssetTypes } from "@/hooks/use-assets"
 import { Loader2, Plus, Minus, CheckCircle2, AlertTriangle } from "lucide-react"
 import { toast } from "react-hot-toast"
 
@@ -33,7 +33,7 @@ interface CreateReservationModalProps {
 export function CreateReservationModal({ open, onOpenChange }: CreateReservationModalProps) {
   const { user } = useAuth()
   const createReservation = useCreateReservation()
-  const { data: assetsResponse } = useAssets()
+  const { data: assetTypesResponse } = useAssetTypes()
   const [formData, setFormData] = useState({
     purpose: "",
     startDate: "",
@@ -46,10 +46,8 @@ export function CreateReservationModal({ open, onOpenChange }: CreateReservation
   const [showInsufficientAssetDialog, setShowInsufficientAssetDialog] = useState(false)
   const [pendingReservationData, setPendingReservationData] = useState<any>(null)
 
-  // Get unique asset types from backend
-  const assetTypes = Array.from(
-    new Set((assetsResponse?.data || []).map((asset: any) => asset.type))
-  ).filter(Boolean)
+  // Get asset types from public endpoint
+  const assetTypes = (assetTypesResponse?.data || []).map((item: any) => item.type).filter(Boolean)
 
   const handleSubmit = async (e: React.FormEvent, forceRequest = false) => {
     e.preventDefault()

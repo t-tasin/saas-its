@@ -23,6 +23,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { withTx } from './with-tenant';
 import { Roles } from './auth/roles.decorator';
+import { Public } from './auth/public.decorator';
 import { AuditService } from './shared/audit.service';
 import {
   CreateAssetDto,
@@ -36,6 +37,31 @@ import { Prisma } from '../generated/client';
 @Controller('/assets')
 export class AssetController {
   constructor(private readonly audit: AuditService) {}
+
+  /**
+   * Public endpoint to get available asset types for reservation form
+   */
+  @Public()
+  @Get('/types')
+  async getAssetTypes() {
+    return withTx(async (tx) => {
+      // Get unique asset types from the database
+      const types = await tx.asset.groupBy({
+        by: ['type'],
+        _count: {
+          type: true,
+        },
+        orderBy: {
+          type: 'asc',
+        },
+      });
+
+      return types.map((t) => ({
+        type: t.type,
+        count: t._count.type,
+      }));
+    });
+  }
 
   @Get()
   // Allow all authenticated users (general users see only their assets)
@@ -299,24 +325,6 @@ export class AssetController {
     });
   }
 
-  @Get('types')
-  @Roles('operator', 'admin')
-  async getAssetTypes(@Req() _req: any) {
-    return withTx(async (tx) => {
-      // Get all asset types with counts
-      const types = await tx.asset.groupBy({
-        by: ['type'],
-        _count: true,
-      });
-
-      return {
-        types: types.map((t) => ({
-          name: t.type,
-          count: t._count,
-        })),
-      };
-    });
-  }
 
   @Get('user/:userId')
   @Roles('operator', 'admin')

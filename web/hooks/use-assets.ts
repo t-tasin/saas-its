@@ -256,14 +256,31 @@ export function useAssetTypes() {
   return useQuery({
     queryKey: ["asset-types"],
     queryFn: async () => {
-      const types = ["LAPTOP", "DESKTOP", "MONITOR", "PHONE", "TABLET", "OTHER"]
-      return {
-        data: types.map((type) => ({
-          id: type.toLowerCase(),
-          name: transformAssetType(type),
-        })),
+      try {
+        // Fetch from public backend endpoint
+        const response = await assetApi.get("/types")
+        const types = response.data || []
+        
+        return {
+          data: types.map((item: any) => ({
+            type: item.type,
+            count: item.count,
+          })),
+        }
+      } catch (error) {
+        console.error("Failed to load asset types:", error)
+        // Fallback to default types if backend fails
+        const types = ["LAPTOP", "DESKTOP", "MONITOR", "PHONE", "TABLET", "OTHER"]
+        return {
+          data: types.map((type) => ({
+            type: type,
+            count: 0,
+          })),
+        }
       }
     },
+    staleTime: 60000, // Cache for 1 minute
+    retry: false,
   })
 }
 
