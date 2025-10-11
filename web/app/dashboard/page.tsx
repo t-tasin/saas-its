@@ -46,6 +46,16 @@ function UserDashboard() {
     }
   )
 
+  // Debug logging for tickets
+  console.log('[Dashboard] Ticket data:', {
+    totalTickets: ticketsResponse?.data?.length || 0,
+    userEmail: user?.email,
+    userId: user?.id,
+    userSub: user?.sub,
+    filteredCount: userTickets.length,
+    sampleTicket: ticketsResponse?.data?.[0],
+  })
+
   // Get user's reservations
   const userReservations = (reservationsResponse?.data || []).filter(
     (res: any) => res.requesterId === user?.id || res.requesterEmail === user?.email
@@ -248,9 +258,11 @@ function UserDashboard() {
                         </div>
 
                         <div className="mb-4">
-                          <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center justify-between">
                             {stages.map((stage, index) => {
                               const Icon = stage.icon
+                              const isLastStage = index === stages.length - 1
+                              
                               return (
                                 <div key={stage.key} className="flex-1 flex items-center">
                                   <div className="flex flex-col items-center flex-1">
@@ -276,6 +288,20 @@ function UserDashboard() {
                                     >
                                       {stage.label}
                                     </p>
+                                    
+                                    {/* Show dates under respective checkpoints */}
+                                    {index === 0 && (
+                                      <div className="mt-2 text-center">
+                                        <p className="text-xs text-muted-foreground">Start Date</p>
+                                        <p className="text-xs font-medium">{formatDate(reservation.requestDate || reservation.startDate)}</p>
+                                      </div>
+                                    )}
+                                    {isLastStage && (
+                                      <div className="mt-2 text-center">
+                                        <p className="text-xs text-muted-foreground">Return Date</p>
+                                        <p className="text-xs font-medium">{formatDate(reservation.returnDate || reservation.endDate)}</p>
+                                      </div>
+                                    )}
                                   </div>
                                   {index < stages.length - 1 && (
                                     <div
@@ -294,17 +320,6 @@ function UserDashboard() {
                                 </div>
                               )
                             })}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-muted-foreground">Start Date</p>
-                            <p className="font-medium">{formatDate(reservation.startDate)}</p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Return Date</p>
-                            <p className="font-medium">{formatDate(reservation.endDate)}</p>
                           </div>
                         </div>
 
