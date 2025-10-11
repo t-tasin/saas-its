@@ -1,13 +1,15 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/client"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = "../generated/client"
+  binaryTargets   = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  schemas           = ["asset"]
 }
 
 enum AssetStatus {
@@ -15,6 +17,8 @@ enum AssetStatus {
   assigned
   maintenance
   retired
+
+  @@schema("asset")
 }
 
 model AssetType {
@@ -25,6 +29,7 @@ model AssetType {
   assets Asset[]
 
   @@map("AssetType")
+  @@schema("asset")
 }
 
 model Asset {
@@ -92,6 +97,7 @@ model Asset {
   @@index([assignedToId])
   @@index([type])
   @@map("Asset")
+  @@schema("asset")
 }
 
 model AssetAssignment {
@@ -106,6 +112,7 @@ model AssetAssignment {
   @@index([assetId, unassignedAt])
   @@index([personId])
   @@map("AssetAssignment")
+  @@schema("asset")
 }
 
 model LifecycleEvent {
@@ -120,6 +127,7 @@ model LifecycleEvent {
 
   @@index([assetId, occurredAt])
   @@map("LifecycleEvent")
+  @@schema("asset")
 }
 
 // Append-only audit log
@@ -134,4 +142,5 @@ model AuditLog {
 
   @@index([entity, entityId, at])
   @@map("AuditLog")
+  @@schema("asset")
 }
