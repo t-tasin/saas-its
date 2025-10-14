@@ -170,6 +170,15 @@ app.post("/nl/tickets/finalize", async (req, res) => {
       parsed.requesterEmail = fallback.email;
     }
 
+    // Sanitize category IDs to ensure they are valid UUIDs or undefined
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (parsed.categoryId && !uuidRegex.test(parsed.categoryId)) {
+      parsed.categoryId = undefined;
+    }
+    if (parsed.subcategoryId && !uuidRegex.test(parsed.subcategoryId)) {
+      parsed.subcategoryId = undefined;
+    }
+
     // Build ticket DTO
     const ticketDto: any = {
       title: parsed.title,
