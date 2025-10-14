@@ -25,9 +25,30 @@ export default function HomePage() {
   const [nlEmail, setNlEmail] = useState("")
   const [nlLoading, setNlLoading] = useState(false)
   const [nlSuccess, setNlSuccess] = useState(false)
+  const [emailError, setEmailError] = useState("")
   const [showAvailabilityPicker, setShowAvailabilityPicker] = useState(false)
   const [correlationId, setCorrelationId] = useState<string | null>(null)
   const [weekAvailabilitySpec, setWeekAvailabilitySpec] = useState<any>(null)
+
+  // Email validation function (RFC 5322 compliant)
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+    return emailRegex.test(email)
+  }
+
+  // Handle email input with validation
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value
+    setNlEmail(email)
+    
+    if (email.trim() === "") {
+      setEmailError("")
+    } else if (!validateEmail(email.trim())) {
+      setEmailError("Please enter a valid email address")
+    } else {
+      setEmailError("")
+    }
+  }
 
   const handleNLSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,12 +64,13 @@ export default function HomePage() {
       return
     }
 
-    if (!nlEmail.trim()) {
+    const trimmedEmail = nlEmail.trim()
+    if (!trimmedEmail) {
       toast.error("Please provide your email")
       return
     }
 
-    if (!/\S+@\S+\.\S+/.test(nlEmail)) {
+    if (!validateEmail(trimmedEmail)) {
       toast.error("Please provide a valid email address")
       return
     }
@@ -68,8 +90,8 @@ export default function HomePage() {
         body: JSON.stringify({
           text: nlText,
           fallback: {
-            name: nlName,
-            email: nlEmail,
+            name: nlName.trim(),
+            email: trimmedEmail,
           },
         }),
       })
@@ -113,8 +135,8 @@ export default function HomePage() {
           correlationId: corrId,
           availability,
           fallback: {
-            name: nlName,
-            email: nlEmail,
+            name: nlName.trim(),
+            email: nlEmail.trim(),
           },
         }),
       })
@@ -141,6 +163,7 @@ export default function HomePage() {
       setNlText("")
       setNlName("")
       setNlEmail("")
+      setEmailError("")
       setShowAvailabilityPicker(false)
       setCorrelationId(null)
       setWeekAvailabilitySpec(null)
@@ -251,10 +274,20 @@ export default function HomePage() {
                       type="email"
                       placeholder="john@example.com"
                       value={nlEmail}
-                      onChange={(e) => setNlEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       disabled={nlLoading || nlSuccess || showAvailabilityPicker}
                       required
+                      className={emailError ? "border-red-500 focus:border-red-500" : ""}
                     />
+                    {emailError && (
+                      <p className="text-sm text-red-600 dark:text-red-400">{emailError}</p>
+                    )}
+                    {nlEmail.trim() && !emailError && (
+                      <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Valid email
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -284,7 +317,7 @@ export default function HomePage() {
                     type="submit"
                     size="lg"
                     className="w-full"
-                    disabled={nlLoading || nlSuccess || !nlText.trim() || !nlName.trim() || !nlEmail.trim()}
+                    disabled={nlLoading || nlSuccess || !nlText.trim() || !nlName.trim() || !nlEmail.trim() || !!emailError}
                   >
                     {nlLoading ? (
                       <>
