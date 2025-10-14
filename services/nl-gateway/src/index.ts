@@ -63,41 +63,39 @@ CRITICAL RULES FOR HARDWARE DETECTION:
 
 Output ONLY valid JSON matching the schema.`;
 
-    let parsed = await parser.parse({ text, categories: cats, schema, systemPrompt });
+    let parsed: any = await parser.parse({ text, categories: cats, schema, systemPrompt });
 
-    // 3) Loosely validate and apply defaults (skip strict email check on 'analyze')
-    // The strict check will happen on 'finalize'
-    const validated = TriageResponseDto.partial().parse(parsed);
-    if (!validated.title) validated.title = autoTitle(text);
-    if (!validated.type) validated.type = ruleType(text);
-    if (!validated.priority) validated.priority = rulePriority(text);
+    // 3) Apply defaults (NO ZOD VALIDATION HERE - we'll do it on finalize)
+    if (!parsed.title) parsed.title = autoTitle(text);
+    if (!parsed.type) parsed.type = ruleType(text);
+    if (!parsed.priority) parsed.priority = rulePriority(text);
 
     // Apply fallback name/email if provided
-    if (!validated.requesterName && fallback?.name) {
-      validated.requesterName = String(fallback.name).slice(0, 120);
+    if (!parsed.requesterName && fallback?.name) {
+      parsed.requesterName = String(fallback.name).slice(0, 120);
     }
-    if (!validated.requesterEmail && fallback?.email) {
-      validated.requesterEmail = fallback.email;
+    if (!parsed.requesterEmail && fallback?.email) {
+      parsed.requesterEmail = fallback.email;
     }
 
     // Clean up category IDs
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (validated.categoryId && (!uuidRegex.test(validated.categoryId) || !categoryEnum.includes(validated.categoryId))) {
-      delete validated.categoryId;
+    if (parsed.categoryId && (!uuidRegex.test(parsed.categoryId) || !categoryEnum.includes(parsed.categoryId))) {
+      delete parsed.categoryId;
     }
-    if (validated.subcategoryId && (!uuidRegex.test(validated.subcategoryId) || !subcategoryEnum.includes(validated.subcategoryId))) {
-      delete validated.subcategoryId;
+    if (parsed.subcategoryId && (!uuidRegex.test(parsed.subcategoryId) || !subcategoryEnum.includes(parsed.subcategoryId))) {
+      delete parsed.subcategoryId;
     }
 
     // 4) Determine if followup is needed
-    const needsFollowup = validated.hardwareVisitRequired === true && 
-                          (!validated.availability || validated.availability.length === 0);
+    const needsFollowup = parsed.hardwareVisitRequired === true && 
+                          (!parsed.availability || parsed.availability.length === 0);
 
     const correlationId = uuidv4();
     
     // Store parsed data for finalize step
     correlationStore.set(correlationId, {
-      parsed: validated,
+      parsed: parsed,
       timestamp: Date.now(),
     });
 
@@ -112,11 +110,11 @@ Output ONLY valid JSON matching the schema.`;
     const response: any = {
       correlationId,
       needsFollowup,
-      parsed: validated,
+      parsed: parsed,
       meta: {
-        issueComponent: validated.issueComponent || 'unknown',
-        hardwareVisitRequired: validated.hardwareVisitRequired || false,
-        availability: validated.availability || [],
+        issueComponent: parsed.issueComponent || 'unknown',
+        hardwareVisitRequired: parsed.hardwareVisitRequired || false,
+        availability: parsed.availability || [],
       },
     };
 
@@ -182,6 +180,15 @@ app.post("/nl/tickets/finalize", async (req, res) => {
     }
     if (!parsed.requesterEmail && fallback?.email) {
       parsed.requesterEmail = fallback.email;
+    }
+
+    // Sanitize category IDs to ensure they are valid UUIDs or undefined
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (parsed.categoryId && !uuidRegex.test(parsed.categoryId)) {
+      parsed.categoryId = undefined;
+    }
+    if (parsed.subcategoryId && !uuidRegex.test(parsed.subcategoryId)) {
+      parsed.subcategoryId = undefined;
     }
 
     // Build ticket DTO
