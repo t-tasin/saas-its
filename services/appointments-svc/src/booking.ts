@@ -116,33 +116,54 @@ router.post('/auto', async (req, res) => {
       });
     }
     
-    // Find available slot
-    console.log("Finding available slot with params:");
+    // Check if the first window is available (respect user's exact selection)
+    console.log("Checking user's selected time slots for availability:");
     console.log("  BUSINESS_START:", BUSINESS_START);
     console.log("  BUSINESS_END:", BUSINESS_END);
     console.log("  Windows:", JSON.stringify(windows, null, 2));
     
-    logger.info({ technicianId, windows: windows.length }, 'Finding available slot');
+    logger.info({ technicianId, windows: windows.length }, 'Checking user selected slots');
     
-    const slot = await findAvailableSlot(
+    // Get busy slots for the first window to check if it's available
+    const { getBusySlots } = await import('./google-calendar.js');
+    const firstWindow = windows[0];
+    const busySlots = await getBusySlots(
       technicianId,
-      windows,
-      durationMinutes,
-      BUSINESS_START,
-      BUSINESS_END
+      firstWindow.start,
+      firstWindow.end
     );
     
-    console.log("Slot search result:", slot);
+    console.log("Busy slots for first window:", busySlots);
     
-    if (!slot) {
-      // No slot available - return 409 with suggested times
-      console.log("ERROR: No available slots found");
+    // Check if the first window overlaps with any busy slots
+    const windowStart = new Date(firstWindow.start);
+    const windowEnd = new Date(firstWindow.end);
+    
+    const hasOverlap = busySlots.some(busy => {
+      const busyStart = new Date(busy.start);
+      const busyEnd = new Date(busy.end);
+      return !(windowEnd <= busyStart || windowStart >= busyEnd);
+    });
+    
+    console.log("Window overlap check:", { hasOverlap, windowStart, windowEnd, busySlots });
+    
+    if (hasOverlap) {
+      // The selected time is not available - return 409
+      console.log("ERROR: Selected time slot is not available");
       return res.status(409).json({
-        error: 'No available slots found in the provided windows',
-        suggestion: 'Please try different time windows or contact support for manual scheduling',
+        error: 'The selected time slot is no longer available',
+        suggestion: 'Please select a different time slot and try again',
         windows,
       });
     }
+    
+    // Use the user's exact selection
+    const slot = {
+      start: firstWindow.start,
+      end: firstWindow.end
+    };
+    
+    console.log("Using user's exact selection:", slot);
     
     console.log("Available slot found:", slot);
     logger.info({ technicianId, slot }, 'Available slot found');

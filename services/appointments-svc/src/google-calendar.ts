@@ -62,6 +62,11 @@ export async function getBusySlots(
       endLocal: new Date(slot.end!).toLocaleString()
     })));
     console.log(`[appointments-svc] Full Google Calendar API response:`, JSON.stringify(response.data, null, 2));
+    
+    // Additional debug: check if we're getting the right calendar
+    console.log(`[appointments-svc] Available calendars in response:`, Object.keys(response.data.calendars || {}));
+    console.log(`[appointments-svc] Requested calendar ID: ${tech.calendarId}`);
+    console.log(`[appointments-svc] Calendar data for ${tech.calendarId}:`, response.data.calendars?.[tech.calendarId]);
     return busy.map((slot: any) => ({
       start: slot.start!,
       end: slot.end!,

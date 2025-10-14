@@ -73,6 +73,9 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
       // Block if slot is before the next available 30-minute slot
       const isPast = slotHour < nextSlotHour || (slotHour === nextSlotHour && slotMinute < nextSlotMinute)
       
+      console.log(`[isSlotInPast] Comparing slot ${slotHour}:${slotMinute.toString().padStart(2, '0')} with next available ${nextSlotHour}:${nextSlotMinute.toString().padStart(2, '0')}`)
+      console.log(`[isSlotInPast] isPast calculation: ${slotHour} < ${nextSlotHour} = ${slotHour < nextSlotHour}, ${slotHour} === ${nextSlotHour} && ${slotMinute} < ${nextSlotMinute} = ${slotHour === nextSlotHour && slotMinute < nextSlotMinute}`)
+      
       if (isPast) {
         console.log(`[isSlotInPast] Slot ${time} on ${date} is in the past. Blocking.`)
         console.log(`[isSlotInPast] Slot: ${slotHour}:${slotMinute.toString().padStart(2, '0')}, Next available: ${nextSlotHour}:${nextSlotMinute.toString().padStart(2, '0')}`)

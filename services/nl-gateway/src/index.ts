@@ -171,6 +171,9 @@ Output ONLY valid JSON matching the schema.`;
         endLocal: new Date(slot.end).toLocaleString()
       })));
       
+      // Additional debug: log the raw response from appointments-svc
+      console.log(`[nl-gateway] Raw busy slots response:`, JSON.stringify(busySlots, null, 2));
+      
       // Generate next 5 working days (excluding weekends)
       let workingDaysAdded = 0;
       let dayOffset = 0; // Start from today
@@ -206,6 +209,8 @@ Output ONLY valid JSON matching the schema.`;
                 
                 if (overlaps) {
                   console.log(`[nl-gateway] Slot ${slotStart.toISOString()} overlaps with busy slot ${busy.start} - ${busy.end}`);
+                  console.log(`[nl-gateway]   Slot: ${slotStart.toISOString()} - ${slotEnd.toISOString()}`);
+                  console.log(`[nl-gateway]   Busy: ${busyStart.toISOString()} - ${busyEnd.toISOString()}`);
                 }
                 
                 return overlaps;
