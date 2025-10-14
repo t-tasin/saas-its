@@ -42,18 +42,33 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
   // Helper function to check if a slot is in the past
   const isSlotInPast = (date: string, time: string): boolean => {
     const now = new Date()
-    const slotDateTime = new Date(`${date}T${time}:00`)
     
     // If it's today, check if the slot is in the past
     const today = now.toISOString().split('T')[0]
     if (date === today) {
-      // Round up to the next 30-minute slot to be safe
       const currentHour = now.getHours()
       const currentMinute = now.getMinutes()
-      const nextSlotMinute = currentMinute < 30 ? 30 : 60
-      const nextSlotHour = currentMinute < 30 ? currentHour : currentHour + 1
+      
+      // Calculate the next available 30-minute slot
+      let nextSlotHour = currentHour
+      let nextSlotMinute = 0
+      
+      if (currentMinute < 30) {
+        nextSlotMinute = 30
+      } else {
+        nextSlotHour = currentHour + 1
+        nextSlotMinute = 0
+      }
       
       const [slotHour, slotMinute] = time.split(':').map(Number)
+      
+      // Debug logging
+      console.log(`Checking slot ${time} on ${date}:`, {
+        currentTime: `${currentHour}:${currentMinute.toString().padStart(2, '0')}`,
+        nextAvailableSlot: `${nextSlotHour}:${nextSlotMinute.toString().padStart(2, '0')}`,
+        slotTime: `${slotHour}:${slotMinute.toString().padStart(2, '0')}`,
+        isPast: slotHour < nextSlotHour || (slotHour === nextSlotHour && slotMinute < nextSlotMinute)
+      })
       
       // Block if slot is before the next available 30-minute slot
       if (slotHour < nextSlotHour || (slotHour === nextSlotHour && slotMinute < nextSlotMinute)) {
