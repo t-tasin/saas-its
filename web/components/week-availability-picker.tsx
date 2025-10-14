@@ -42,9 +42,14 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
   // Helper function to check if a slot is in the past
   const isSlotInPast = (date: string, time: string): boolean => {
     const now = new Date()
+    console.log(`[isSlotInPast] Current time (local): ${now.toLocaleString()}`)
+    console.log(`[isSlotInPast] Current time (ISO): ${now.toISOString()}`)
     
     // If it's today, check if the slot is in the past
     const today = now.toISOString().split('T')[0]
+    console.log(`[isSlotInPast] Today's date (ISO): ${today}`)
+    console.log(`[isSlotInPast] Slot date: ${date}, Slot time: ${time}`)
+
     if (date === today) {
       const currentHour = now.getHours()
       const currentMinute = now.getMinutes()
@@ -60,22 +65,17 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
         nextSlotMinute = 0
       }
       
+      console.log(`[isSlotInPast] Calculated next available slot: ${nextSlotHour.toString().padStart(2, '0')}:${nextSlotMinute.toString().padStart(2, '0')}`)
+
       const [slotHour, slotMinute] = time.split(':').map(Number)
-      
-      // Debug logging
-      console.log(`Checking slot ${time} on ${date}:`, {
-        currentTime: `${currentHour}:${currentMinute.toString().padStart(2, '0')}`,
-        nextAvailableSlot: `${nextSlotHour}:${nextSlotMinute.toString().padStart(2, '0')}`,
-        slotTime: `${slotHour}:${slotMinute.toString().padStart(2, '0')}`,
-        isPast: slotHour < nextSlotHour || (slotHour === nextSlotHour && slotMinute < nextSlotMinute)
-      })
       
       // Block if slot is before the next available 30-minute slot
       if (slotHour < nextSlotHour || (slotHour === nextSlotHour && slotMinute < nextSlotMinute)) {
+        console.log(`[isSlotInPast] Slot ${time} on ${date} is in the past. Blocking.`)
         return true
       }
     }
-    
+    console.log(`[isSlotInPast] Slot ${time} on ${date} is NOT in the past.`)
     return false
   }
 
@@ -245,7 +245,10 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
                           isPastSlot && "bg-gray-200 text-gray-500",
                           !isPastSlot && !isPreFilteredAvailable && "bg-gray-100"
                         )}
-                        onClick={() => isAvailable && toggleSlot(day.date, time)}
+                        onClick={() => {
+                          console.log(`[Slot Click] Slot: ${slotKey}, isAvailable: ${isAvailable}, isPastSlot: ${isPastSlot}, isPreFilteredAvailable: ${isPreFilteredAvailable}`);
+                          isAvailable && toggleSlot(day.date, time);
+                        }}
                         disabled={!isAvailable}
                       >
                         <Clock className="h-3 w-3 mr-1" />

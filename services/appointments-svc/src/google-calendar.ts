@@ -52,6 +52,9 @@ export async function getBusySlots(
     
     const busy = response.data.calendars?.[tech.calendarId]?.busy || [];
     console.log(`Found ${busy.length} busy slots for technician ${technicianId}:`, busy);
+    console.log(`Request parameters: timeMin=${timeMin}, timeMax=${timeMax}`);
+    console.log(`Calendar ID: ${tech.calendarId}`);
+    console.log(`Full response:`, JSON.stringify(response.data, null, 2));
     return busy.map((slot: any) => ({
       start: slot.start!,
       end: slot.end!,

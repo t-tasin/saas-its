@@ -19,7 +19,10 @@ async function getTechnicianBusyTimes(technicianId: string, timeMin: string, tim
   }
   
   try {
-    const response = await httpJson(`${APPT_BASE}/appointments/debug/busy/${technicianId}?timeMin=${timeMin}&timeMax=${timeMax}`);
+    const url = `${APPT_BASE}/appointments/debug/busy/${technicianId}?timeMin=${timeMin}&timeMax=${timeMax}`;
+    console.log(`[nl-gateway] Calling appointments-svc debug endpoint: ${url}`);
+    const response = await httpJson(url);
+    console.log(`[nl-gateway] Received response:`, JSON.stringify(response, null, 2));
     return response.busySlots || [];
   } catch (error) {
     console.error('Failed to fetch busy times:', error);
