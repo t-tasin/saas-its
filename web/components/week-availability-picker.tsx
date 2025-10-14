@@ -219,7 +219,7 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
             return (
               <div key={day.date} className="space-y-2">
                 <div className="font-semibold text-sm">
-                  {day.label}, {new Date(day.date).toLocaleDateString()}
+                  {day.label}, {new Date(day.date + 'T00:00:00').toLocaleDateString()}
                   {availableSlotsCount === 0 && (
                     <span className="text-red-500 text-xs ml-2">(No available slots)</span>
                   )}
