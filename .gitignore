@@ -8,15 +8,15 @@ build/
 *.tsbuildinfo
 
 # Environment variables (contains secrets - DO NOT COMMIT)
-.env
-.env.*
-.env.local
-.env.*.local
-!.env.example
+# .env
+# .env.*
+# .env.local
+# .env.*.local
+# !.env.example
 
 # Railway Environment Files (contains secrets - DO NOT COMMIT)
-.railway.env.example
-railway-env-*.txt
+# .railway.env.example
+# railway-env-*.txt
 
 # Editor
 .vscode/

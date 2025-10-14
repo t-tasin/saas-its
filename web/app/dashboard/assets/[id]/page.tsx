@@ -25,10 +25,12 @@ import {
 import { InfoRow } from "@/components/info-row"
 import { PageHeader } from "@/components/page-header"
 import { ProtectedRoute } from "@/components/protected-route"
-import { ArrowLeft, Edit, Package, Save, UserPlus, UserMinus } from "lucide-react"
+import { ArrowLeft, Edit, Package, Save, UserPlus, UserMinus, Ticket } from "lucide-react"
 import { useAsset, useUpdateAsset, useAssignAsset, useUnassignAsset } from "@/hooks/use-assets"
 import { useUser, useAllUsers } from "@/hooks/use-users"
 import { toast } from "@/hooks/use-toast"
+import { assetApi } from "@/lib/api-client"
+import { TicketCard } from "@/components/ticket-card"
 
 function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -48,6 +50,9 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [editFormData, setEditFormData] = useState<any>({})
   const [newStatus, setNewStatus] = useState(asset?.status || "")
+  const [showTickets, setShowTickets] = useState(false)
+  const [assetTickets, setAssetTickets] = useState<any[]>([])
+  const [loadingTickets, setLoadingTickets] = useState(false)
 
   const handleEditClick = () => {
     setEditFormData({
@@ -126,6 +131,28 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
       refetch()
     } catch (error) {
       // Error is already handled by the mutation hook
+    }
+  }
+
+  const handleViewTickets = async () => {
+    if (showTickets) {
+      setShowTickets(false)
+      return
+    }
+
+    setLoadingTickets(true)
+    try {
+      const response = await assetApi.get(`/assets/${id}/tickets`)
+      setAssetTickets(response.data.items || [])
+      setShowTickets(true)
+    } catch (error) {
+      toast({ 
+        title: "Error", 
+        description: "Failed to load tickets for this asset",
+        variant: "destructive" 
+      })
+    } finally {
+      setLoadingTickets(false)
     }
   }
 
@@ -357,6 +384,41 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
               )}
               {asset.disposalType && <InfoRow label="Disposal Type">{asset.disposalType}</InfoRow>}
             </CardContent>
+          </Card>
+
+          {/* Associated Tickets */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Ticket className="h-5 w-5" />
+                  Associated Tickets
+                </CardTitle>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={handleViewTickets}
+                  disabled={loadingTickets}
+                >
+                  {loadingTickets ? "Loading..." : showTickets ? "Hide Tickets" : "View All Tickets"}
+                </Button>
+              </div>
+            </CardHeader>
+            {showTickets && (
+              <CardContent>
+                {assetTickets.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No tickets associated with this asset
+                  </p>
+                ) : (
+                  <div className="grid gap-4">
+                    {assetTickets.map((ticket: any) => (
+                      <TicketCard key={ticket.id} ticket={ticket} />
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            )}
           </Card>
         </div>
       </main>

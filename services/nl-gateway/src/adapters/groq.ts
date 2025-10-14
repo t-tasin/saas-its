@@ -6,14 +6,17 @@ const model = process.env.GROQ_MODEL ?? "llama-3.1-8b-instruct";
 const key = process.env.GROQ_API_KEY!;
 
 export async function parseWithGroq(input: TicketParserInput) {
+  // Use custom system prompt if provided, otherwise use default
+  const systemContent = input.systemPrompt || [
+    "You convert helpdesk free-text into JSON that strictly matches the provided JSON schema.",
+    "Only output valid JSON. No explanations. Use enum values exactly as provided.",
+    "If unsure about a field, omit it.",
+    "Create a short, specific title (≤120 chars).",
+    "Map urgency words to priority; failure words to type=incident; requests/provisioning to type=request."
+  ].join(" ");
+
   const messages = [
-    { role: "system", content: [
-      "You convert helpdesk free-text into JSON that strictly matches the provided JSON schema.",
-      "Only output valid JSON. No explanations. Use enum values exactly as provided.",
-      "If unsure about a field, omit it.",
-      "Create a short, specific title (≤120 chars).",
-      "Map urgency words to priority; failure words to type=incident; requests/provisioning to type=request."
-    ].join(" ") },
+    { role: "system", content: systemContent },
     { role: "user", content: JSON.stringify({
       text: input.text,
       categories: input.categories,

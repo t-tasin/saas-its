@@ -21,7 +21,10 @@ import { useTicket, useTicketComments, useAddComment, useUpdateTicketStatus } fr
 import { useUser } from "@/hooks/use-users"
 import { useToast } from "@/hooks/use-toast"
 import { formatDateTime } from "@/lib/utils"
-import { ArrowLeft, MessageSquare, Paperclip, Download } from "lucide-react"
+import { ArrowLeft, MessageSquare, Paperclip, Download, UserPlus, Package } from "lucide-react"
+import Link from "next/link"
+import { ticketApi } from "@/lib/api-client"
+import { TechnicianBadge } from "@/components/technician-badge"
 
 export default function TicketDetailPage() {
   const params = useParams()
@@ -41,6 +44,8 @@ export default function TicketDetailPage() {
   const [commentBody, setCommentBody] = useState("")
   const [authorName, setAuthorName] = useState("")
   const [newStatus, setNewStatus] = useState("")
+  const [showAddTechModal, setShowAddTechModal] = useState(false)
+  const [newTechId, setNewTechId] = useState("")
 
   // Update newStatus when ticket data loads
   useEffect(() => {
@@ -93,6 +98,34 @@ export default function TicketDetailPage() {
       toast({
         title: "Error",
         description: "Failed to update status. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleAddTechnician = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newTechId) return
+
+    try {
+      await ticketApi.post(`/tickets/${ticketId}/assign-technician`, {
+        technicianId: newTechId,
+      })
+
+      toast({
+        title: "Success",
+        description: "Technician assigned successfully.",
+      })
+
+      setShowAddTechModal(false)
+      setNewTechId("")
+      
+      // Refresh ticket data
+      window.location.reload()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to assign technician. Please try again.",
         variant: "destructive",
       })
     }
@@ -169,6 +202,83 @@ export default function TicketDetailPage() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Assigned Technicians */}
+            {(ticketData.assignedTechnicians?.length > 0 || isOperator) && (
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Assigned Technicians</CardTitle>
+                    {isOperator && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => setShowAddTechModal(!showAddTechModal)}
+                      >
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Add Technician
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {ticketData.assignedTechnicians?.map((techId: string) => (
+                    <TechnicianBadge key={techId} userId={techId} />
+                  ))}
+                  
+                  {ticketData.assignedTechnicians?.length === 0 && !showAddTechModal && (
+                    <p className="text-sm text-muted-foreground">No additional technicians assigned</p>
+                  )}
+
+                  {showAddTechModal && isOperator && (
+                    <form onSubmit={handleAddTechnician} className="space-y-3 pt-3 border-t">
+                      <div className="space-y-2">
+                        <Label htmlFor="techId">Technician User ID</Label>
+                        <Input
+                          id="techId"
+                          value={newTechId}
+                          onChange={(e) => setNewTechId(e.target.value)}
+                          placeholder="Enter technician user ID"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button type="submit" size="sm">Assign</Button>
+                        <Button 
+                          type="button" 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setShowAddTechModal(false)
+                            setNewTechId("")
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </form>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Associated Asset */}
+            {ticketData.assetId && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="h-5 w-5" />
+                    Associated Asset
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Link href={`/dashboard/assets/${ticketData.assetId}`}>
+                    <Button variant="outline" className="w-full">
+                      View Asset Details →
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
 
             {ticketData.attachments && ticketData.attachments.length > 0 && (
               <Card>

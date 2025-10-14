@@ -426,4 +426,31 @@ export class AssetController {
       };
     });
   }
+
+  /**
+   * NEW: Get all tickets associated with this asset
+   * Proxies to ticket-svc filtering by assetId
+   */
+  @Get(':id/tickets')
+  async getAssetTickets(@Param('id', new ParseUUIDPipe()) id: string) {
+    return withTx(async (tx) => {
+      // Verify asset exists
+      await tx.asset.findUniqueOrThrow({ where: { id } });
+      
+      // Proxy to ticket-svc
+      const TICKET_BASE = process.env.TICKET_BASE || 'http://ticket-svc:3000/v1';
+      const url = `${TICKET_BASE}/tickets?assetId=${id}&limit=100`;
+      
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`ticket-svc returned ${response.status}`);
+        }
+        return await response.json();
+      } catch (error: any) {
+        // Fallback: return empty list if ticket-svc is unavailable
+        return { items: [], nextCursor: null };
+      }
+    });
+  }
 }

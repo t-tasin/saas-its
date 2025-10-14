@@ -1,0 +1,68 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated/client"
+  binaryTargets   = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  schemas           = ["appointment"]
+}
+
+// 3 technicians: tech_hardware, tech_general_1, tech_general_2
+model Technician {
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  name               String
+  specialty          String   // "hardware" or "general"
+  googleRefreshToken String
+  calendarId         String   @default("primary")
+  timezone           String   @default("America/New_York")
+  createdAt          DateTime @default(now())
+  
+  appointments       Appointment[]
+  
+  @@map("Technician")
+  @@schema("appointment")
+}
+
+model Appointment {
+  id             String   @id @default(uuid())
+  technicianId   String
+  ticketId       String   // Reference to ticket in ticket-svc
+  requesterName  String
+  requesterEmail String
+  start          DateTime
+  end            DateTime
+  summary        String
+  description    String?
+  location       String   @default("IT Desk")
+  timezone       String   @default("America/New_York")
+  googleEventId  String?  // Event ID from Google Calendar
+  createdAt      DateTime @default(now())
+  
+  technician     Technician @relation(fields: [technicianId], references: [id])
+  
+  @@index([technicianId, start])
+  @@index([ticketId])
+  @@map("Appointment")
+  @@schema("appointment")
+}
+
+model AuditLog {
+  id       String   @id @default(uuid())
+  entity   String
+  entityId String
+  action   String
+  actorId  String?
+  at       DateTime @default(now())
+  metadata Json?
+  
+  @@index([entity, entityId, at])
+  @@map("AuditLog")
+  @@schema("appointment")
+}
+

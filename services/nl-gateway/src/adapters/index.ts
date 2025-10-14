@@ -5,6 +5,7 @@ export interface TicketParserInput {
   text: string;
   categories: any[];
   schema: any;
+  systemPrompt?: string;
 }
 
 export interface TicketParser {

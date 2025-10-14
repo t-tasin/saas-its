@@ -43,6 +43,10 @@ export class CreateTicketDto {
   @ApiPropertyOptional({ description: 'SubCategory UUID' })
   @IsOptional() @IsUUID()
   subcategoryId?: string;
+
+  @ApiPropertyOptional({ description: 'Asset UUID to associate with this ticket' })
+  @IsOptional() @IsUUID()
+  assetId?: string;
 }
 
 export class PatchStatusDto {
@@ -77,4 +81,16 @@ export class ListQueryDto {
 
   @ApiPropertyOptional() @IsOptional() @Type(() => Number) @IsInt() @Min(1)
   limit?: number;
+
+  @ApiPropertyOptional({ description: 'Filter by assignee: "me" for current user, or specific userId' })
+  @IsOptional() @IsString()
+  assignedTo?: string;
+
+  @ApiPropertyOptional({ description: 'Filter by asset ID' })
+  @IsOptional() @IsUUID()
+  assetId?: string;
+
+  @ApiPropertyOptional({ description: 'Include closed tickets (default: false)' })
+  @IsOptional()
+  includeClosed?: boolean;
 }

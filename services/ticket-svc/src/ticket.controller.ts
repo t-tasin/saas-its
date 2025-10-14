@@ -52,13 +52,46 @@ export class TicketController {
         where.requestedByUser = user.sub;
       }
       
-      if (q.status) where.status = q.status;
+      // Filter by status (exclude closed by default unless includeClosed is true)
+      if (q.status) {
+        where.status = q.status;
+      } else if (!q.includeClosed) {
+        // Default: exclude closed tickets
+        where.status = { not: 'closed' };
+      }
+      
       if (q.type) where.type = q.type;
+      
+      // Filter by assigned technician
+      if (q.assignedTo && user) {
+        if (q.assignedTo === 'me') {
+          // Show tickets assigned to current user (either single or multi-tech)
+          where.OR = [
+            { assignedTo: user.sub },
+            { assignedTechnicians: { array_contains: user.sub } },
+          ];
+        } else {
+          // Specific user ID
+          where.OR = [
+            { assignedTo: q.assignedTo },
+            { assignedTechnicians: { array_contains: q.assignedTo } },
+          ];
+        }
+      }
+      
+      // Filter by asset
+      if (q.assetId) {
+        where.assetId = q.assetId;
+      }
+      
       if (q.q) {
-        where.OR = [
-          { title: { contains: q.q, mode: 'insensitive' } },
-          { description: { contains: q.q, mode: 'insensitive' } },
-        ];
+        where.AND = where.AND || [];
+        where.AND.push({
+          OR: [
+            { title: { contains: q.q, mode: 'insensitive' } },
+            { description: { contains: q.q, mode: 'insensitive' } },
+          ],
+        });
       }
 
       const items = await tx.ticket.findMany({
@@ -93,9 +126,9 @@ export class TicketController {
       const number = await this.num.next(tx);
       const user = req.user; // May be undefined for unauthenticated requests
 
-      // Determine requester info from user or dto
-      const requesterEmail = user?.email || (dto as any).email || null;
-      const requesterName = user?.name || (dto as any).name || null;
+      // FIX: Determine requester info from user or dto (use correct DTO fields)
+      const requesterEmail = user?.email || dto.requesterEmail || null;
+      const requesterName = user?.name || dto.requesterName || null;
 
       const ticket = await tx.ticket.create({
         data: {
@@ -110,6 +143,8 @@ export class TicketController {
           requesterEmail,
           categoryId: dto.categoryId ?? null,
           subcategoryId: dto.subcategoryId ?? null,
+          assetId: dto.assetId ?? null, // NEW: Associate asset
+          assignedTechnicians: [], // NEW: Initialize empty array
         },
       });
 
@@ -218,6 +253,78 @@ export class TicketController {
       return {
         success: true,
         message: 'Ticket assigned successfully',
+      };
+    });
+  }
+
+  @Post(':id/assign-technician')
+  @Roles('operator', 'admin') // Only operators and admins can assign additional technicians
+  async assignAdditionalTechnician(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() body: { technicianId: string },
+  ) {
+    return withTx(async (tx) => {
+      const ticket = await tx.ticket.findUniqueOrThrow({ where: { id } });
+      const techs = (ticket.assignedTechnicians as string[]) || [];
+      
+      // Add technician if not already assigned
+      if (!techs.includes(body.technicianId)) {
+        techs.push(body.technicianId);
+        
+        await tx.ticket.update({
+          where: { id },
+          data: { assignedTechnicians: techs },
+        });
+        
+        await this.audit.log(tx, {
+          entity: 'ticket',
+          entityId: id,
+          action: 'assign-technician',
+          actorId: req.user?.sub,
+          metadata: { technicianId: body.technicianId },
+        });
+      }
+      
+      return {
+        success: true,
+        message: 'Technician assigned successfully',
+        assignedTechnicians: techs,
+      };
+    });
+  }
+
+  @Delete(':id/assign-technician/:technicianId')
+  @Roles('operator', 'admin') // Only operators and admins can remove technicians
+  async removeAssignedTechnician(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Param('technicianId') technicianId: string,
+  ) {
+    return withTx(async (tx) => {
+      const ticket = await tx.ticket.findUniqueOrThrow({ where: { id } });
+      let techs = (ticket.assignedTechnicians as string[]) || [];
+      
+      // Remove technician
+      techs = techs.filter(t => t !== technicianId);
+      
+      await tx.ticket.update({
+        where: { id },
+        data: { assignedTechnicians: techs },
+      });
+      
+      await this.audit.log(tx, {
+        entity: 'ticket',
+        entityId: id,
+        action: 'remove-technician',
+        actorId: req.user?.sub,
+        metadata: { technicianId },
+      });
+      
+      return {
+        success: true,
+        message: 'Technician removed successfully',
+        assignedTechnicians: techs,
       };
     });
   }

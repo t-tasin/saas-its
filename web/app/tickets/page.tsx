@@ -9,17 +9,24 @@ import { LoadingSpinner } from "@/components/loading-spinner"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import { useTickets } from "@/hooks/use-tickets"
+import { useAuth } from "@/contexts/auth-context"
 import { Plus, Search, Ticket } from "lucide-react"
 
 export default function TicketsPage() {
+  const { user, isOperator } = useAuth()
   const [status, setStatus] = useState<string>("all")
   const [priority, setPriority] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState("")
+  const [showClosed, setShowClosed] = useState(false)
+  const [assignedFilter, setAssignedFilter] = useState<string>("all") // "all" | "me"
 
   const params: any = { limit: 50 }
   if (status !== "all") params.status = status
   if (priority !== "all") params.priority = priority
+  if (!showClosed) params.includeClosed = false
+  if (assignedFilter === "me" && user) params.assignedTo = "me"
 
   const { data: tickets, isLoading, error } = useTickets(params)
 
@@ -46,40 +53,67 @@ export default function TicketsPage() {
         />
 
         {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by ticket number or title..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+        <div className="space-y-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by ticket number or title..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={priority} onValueChange={setPriority}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Priority</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
+            {isOperator && (
+              <Select value={assignedFilter} onValueChange={setAssignedFilter}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectValue placeholder="Assigned To" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Tickets</SelectItem>
+                  <SelectItem value="me">My Tickets</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="resolved">Resolved</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={priority} onValueChange={setPriority}>
-            <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="Priority" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Priority</SelectItem>
-              <SelectItem value="low">Low</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="high">High</SelectItem>
-              <SelectItem value="urgent">Urgent</SelectItem>
-            </SelectContent>
-          </Select>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="show-closed" 
+              checked={showClosed} 
+              onCheckedChange={(checked) => setShowClosed(checked as boolean)}
+            />
+            <label
+              htmlFor="show-closed"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Show closed tickets
+            </label>
+          </div>
         </div>
 
         {/* Tickets Grid */}
