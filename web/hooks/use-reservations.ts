@@ -160,7 +160,9 @@ export function useCreateReservation() {
         const backendError = error.response?.data?.error?.message || 
                             error.response?.data?.message || 
                             error.response?.data?.error
-        if (backendError) {
+        const lower = (Array.isArray(backendError) ? backendError.join(', ') : String(backendError || '')).toLowerCase()
+        const isInsufficient = lower.includes('insufficient') || lower.includes('not available') || lower.includes('no available')
+        if (!isInsufficient && backendError) {
           const errorMsg = Array.isArray(backendError) ? backendError.join(', ') : backendError
           toast.error(errorMsg)
         }
@@ -172,7 +174,12 @@ export function useCreateReservation() {
       toast.success("Reservation created successfully")
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to create reservation")
+      const backendError = error?.response?.data?.error?.message || error?.response?.data?.message || error?.message
+      const lower = String(Array.isArray(backendError) ? backendError.join(', ') : backendError || '').toLowerCase()
+      const isInsufficient = lower.includes('insufficient') || lower.includes('not available') || lower.includes('no available')
+      if (!isInsufficient) {
+        toast.error(backendError || "Failed to create reservation")
+      }
     },
   })
 }
