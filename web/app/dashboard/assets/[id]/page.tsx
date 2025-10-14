@@ -143,9 +143,13 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
     setLoadingTickets(true)
     try {
       const response = await assetApi.get(`/${id}/tickets`)
+      console.log('Asset tickets API response:', response.data)
+      console.log('Items array:', response.data.items)
+      console.log('Items length:', response.data.items?.length || 0)
       setAssetTickets(response.data.items || [])
       setShowTickets(true)
     } catch (error) {
+      console.error('Failed to load asset tickets:', error)
       toast({ 
         title: "Error", 
         description: "Failed to load tickets for this asset",

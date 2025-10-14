@@ -23,7 +23,7 @@ export function useTickets(params?: any) {
       const authToken = typeof window !== "undefined" ? localStorage.getItem("authToken") : null
       if (!authToken) {
         console.log('[useTickets] No auth token found')
-        return { data: [], total: 0 }
+        return { data: [], total: 0, nextCursor: undefined }
       }
 
       try {
@@ -31,16 +31,9 @@ export function useTickets(params?: any) {
         const response = await ticketApi.get("/tickets", { params })
         const data = response.data
         
-        console.log('[useTickets] API Response:', {
-          status: response.status,
-          dataKeys: Object.keys(data),
-          items: data.items?.length,
-          data: data.data?.length,
-          fullResponse: data,
-        })
-
-        // Backend returns { items: [], nextCursor: string }
+        // Backend returns either { items: [], nextCursor } or { data: [] }
         const tickets = data.items || data.data || []
+        const nextCursor = data.nextCursor
         
         // Transform data to match UI expectations
         const transformedData = tickets.map((ticket: any) => ({
@@ -50,8 +43,7 @@ export function useTickets(params?: any) {
           category: { name: ticket.category || ticket.type || 'other' },
         }))
 
-        console.log('[useTickets] Transformed tickets:', transformedData.length)
-        return { data: transformedData, total: tickets.length }
+        return { data: transformedData, total: tickets.length, nextCursor }
       } catch (error: any) {
         console.error('[useTickets] Error fetching tickets:', error.message, error.response?.data)
         throw error

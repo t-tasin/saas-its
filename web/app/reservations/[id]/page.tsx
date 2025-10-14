@@ -279,6 +279,26 @@ export default function ReservationDetailPage() {
                 {reservation.actualReturnDate && (
                   <InfoRow label="Actual Return Date">{formatDate(reservation.actualReturnDate)}</InfoRow>
                 )}
+                {reservation.assignedAssetIds && (
+                  <InfoRow label="Assigned Assets">
+                    <div className="space-y-1">
+                      {reservation.assignedAssetIds.split(',').map((assetId: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-700/10">
+                            {assetId.trim()}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/dashboard/assets/${assetId.trim()}`)}
+                          >
+                            View Asset
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </InfoRow>
+                )}
                 {reservation.notes && (
                   <div className="pt-4 border-t">
                     <h4 className="font-medium text-sm mb-2">Notes</h4>

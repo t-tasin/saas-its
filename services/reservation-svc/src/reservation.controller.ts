@@ -116,6 +116,11 @@ export class ReservationController {
       
       if (q.status) where.status = q.status;
       if (q.requesterId) where.requesterId = q.requesterId;
+      
+      // Exclude certain statuses if specified
+      if (q.excludeStatuses && Array.isArray(q.excludeStatuses)) {
+        where.status = { notIn: q.excludeStatuses };
+      }
 
       const items = await tx.reservation.findMany({
         where,
@@ -212,19 +217,29 @@ export class ReservationController {
       const ASSET_SERVICE_URL = process.env.ASSET_SERVICE_URL || 'https://asset-svc-production.up.railway.app/v1';
       const authToken = req.headers.authorization;
 
+      // Use requester email to find user ID, or use email directly if supported
+      const assigneeIdentifier = reservation.requesterEmail || reservation.requesterId;
+      
       for (const assetId of dto.assetIds) {
         try {
+          // Try to assign by email first, then by user ID
+          const assignPayload = reservation.requesterEmail 
+            ? { email: reservation.requesterEmail, name: reservation.requesterName }
+            : { userId: reservation.requesterId };
+
           const response = await fetch(`${ASSET_SERVICE_URL}/assets/${assetId}/assign`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': authToken || '',
             },
-            body: JSON.stringify({ userId: reservation.requesterId })
+            body: JSON.stringify(assignPayload)
           });
 
           if (!response.ok) {
             console.error(`Failed to assign asset ${assetId}:`, await response.text());
+          } else {
+            console.log(`Successfully assigned asset ${assetId} to ${assigneeIdentifier}`);
           }
         } catch (error) {
           console.error(`Error assigning asset ${assetId}:`, error);

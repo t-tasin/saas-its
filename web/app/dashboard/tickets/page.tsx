@@ -9,21 +9,40 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Plus, Search, Ticket, ArrowUpDown, Loader2, UserPlus } from "lucide-react"
 import { formatRelativeTime } from "@/lib/utils"
 import { PriorityBadge } from "@/components/priority-badge"
 import { CreateTicketModal } from "@/components/create-ticket-modal"
 import { useTickets, useAssignTicket } from "@/hooks/use-tickets"
 import { useAssignableUsers } from "@/hooks/use-users"
+import { useAuth } from "@/contexts/auth-context"
 
 function DashboardTicketsContent() {
+  const { user } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
   const [showTicketModal, setShowTicketModal] = useState(false)
+  const [status, setStatus] = useState<string>("all")
+  const [priority, setPriority] = useState<string>("all")
+  const [showClosed, setShowClosed] = useState(false)
+  const [assignedFilter, setAssignedFilter] = useState<string>("all") // "all" | "me"
+  const [cursor, setCursor] = useState<string | undefined>(undefined)
+  const [cursorStack, setCursorStack] = useState<string[]>([])
+  const [pageSize] = useState<number>(15)
+  
+  // Build query params
+  const params: any = { limit: pageSize }
+  if (status !== "all") params.status = status
+  if (priority !== "all") params.priority = priority
+  if (showClosed) params.includeClosed = true
+  if (assignedFilter === "me" && user) params.assignedTo = "me"
+  if (cursor) params.cursor = cursor
   
   // Fetch tickets from backend
-  const { data: ticketsResponse, isLoading, error } = useTickets()
+  const { data: ticketsResponse, isLoading, error } = useTickets(params)
   const tickets = ticketsResponse?.data || []
+  const nextCursor = (ticketsResponse as any)?.nextCursor
   
   // Fetch assignable users
   const { data: usersResponse } = useAssignableUsers()
@@ -78,6 +97,59 @@ function DashboardTicketsContent() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="space-y-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={priority} onValueChange={setPriority}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Priority</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={assignedFilter} onValueChange={setAssignedFilter}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Assigned To" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Tickets</SelectItem>
+                <SelectItem value="me">My Tickets</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="show-closed" 
+              checked={showClosed} 
+              onCheckedChange={(checked) => setShowClosed(checked as boolean)}
+            />
+            <label
+              htmlFor="show-closed"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Show closed tickets
+            </label>
           </div>
         </div>
 
@@ -196,6 +268,37 @@ function DashboardTicketsContent() {
                   ))}
                 </TableBody>
               </Table>
+            </div>
+            <div className="flex items-center justify-between p-4 border-t bg-muted/30">
+              <div className="text-sm text-muted-foreground">Rows per page: {pageSize}</div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={cursorStack.length === 0 || isLoading}
+                  onClick={() => {
+                    const stack = [...cursorStack]
+                    const prev = stack.pop()
+                    setCursorStack(stack)
+                    setCursor(prev)
+                  }}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!nextCursor || isLoading}
+                  onClick={() => {
+                    if (nextCursor) {
+                      setCursorStack((s) => [...s, cursor || ""]) // store current cursor
+                      setCursor(nextCursor)
+                    }
+                  }}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
           </div>
         )}

@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Plus, Search, Calendar, Package, Loader2 } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import { PageHeader } from "@/components/page-header"
@@ -23,9 +25,19 @@ function DashboardReservationsContent() {
   const [selectedAssetType, setSelectedAssetType] = useState<string | null>(null)
   const [showAssetModal, setShowAssetModal] = useState(false)
   const [showReservationModal, setShowReservationModal] = useState(false)
+  const [status, setStatus] = useState<string>("all")
+  const [showCompleted, setShowCompleted] = useState(false)
+
+  // Build query params
+  const params: any = { limit: 50 }
+  if (status !== "all") params.status = status
+  if (!showCompleted) {
+    // Exclude completed/returned/denied reservations by default
+    params.excludeStatuses = ["completed", "returned", "denied"]
+  }
 
   // Fetch real data from backend
-  const { data: reservationsResponse, isLoading: reservationsLoading } = useReservations()
+  const { data: reservationsResponse, isLoading: reservationsLoading } = useReservations(params)
   const { data: assetsResponse, isLoading: assetsLoading } = useAssets()
 
   const reservations = reservationsResponse?.data || []
@@ -94,6 +106,41 @@ function DashboardReservationsContent() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="space-y-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="denied">Denied</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="returned">Returned</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="show-completed" 
+              checked={showCompleted} 
+              onCheckedChange={(checked) => setShowCompleted(checked as boolean)}
+            />
+            <label
+              htmlFor="show-completed"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Show completed/returned/denied reservations
+            </label>
           </div>
         </div>
 

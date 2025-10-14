@@ -226,11 +226,27 @@ export class AssetController {
         throw new ConflictException('Asset already assigned');
       }
 
+      // Determine the assignee ID - prefer userId, fallback to email
+      let assigneeId = dto.userId;
+      let assigneeName = dto.name;
+      let assigneeEmail = dto.email;
+
+      // If no userId provided but email is provided, use email as the ID
+      if (!assigneeId && dto.email) {
+        assigneeId = dto.email; // Use email as the identifier
+      }
+
+      if (!assigneeId) {
+        throw new BadRequestException('Either userId or email must be provided');
+      }
+
       // Create assignment record (for history)
       const assignment = await tx.assetAssignment.create({
         data: {
           assetId: id,
-          personId: dto.userId,
+          personId: assigneeId,
+          personName: assigneeName,
+          personEmail: assigneeEmail,
         },
       });
 
@@ -239,7 +255,9 @@ export class AssetController {
         where: { id },
         data: {
           status: 'assigned',
-          assignedToId: dto.userId,
+          assignedToId: assigneeId,
+          assignedToName: assigneeName,
+          assignedToEmail: assigneeEmail,
           assignedDate: new Date(),
         },
       });

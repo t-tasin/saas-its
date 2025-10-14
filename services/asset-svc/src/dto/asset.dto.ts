@@ -142,9 +142,20 @@ export class UpdateAssetDto {
 }
 
 export class AssignDto {
-  @ApiProperty({ description: 'User ID to assign the asset to' })
-  @IsString() // Changed from @IsUUID to support any string user ID
-  userId!: string;
+  @ApiPropertyOptional({ description: 'User ID to assign the asset to' })
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
+  @ApiPropertyOptional({ description: 'Email of user to assign the asset to' })
+  @IsOptional()
+  @IsString()
+  email?: string;
+
+  @ApiPropertyOptional({ description: 'Name of user to assign the asset to' })
+  @IsOptional()
+  @IsString()
+  name?: string;
 }
 
 export class ListAssetsQueryDto {
