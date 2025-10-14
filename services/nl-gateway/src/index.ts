@@ -208,9 +208,51 @@ Output ONLY valid JSON matching the schema.`;
           const availableSlots = [];
           for (let hour = 9; hour < 17; hour++) {
             for (let minute = 0; minute < 60; minute += 30) {
-              const slotStart = new Date(date);
-              slotStart.setHours(hour, minute, 0, 0);
+              // Create slot times that represent the user's local time
+              // We need to convert to UTC for comparison with Google Calendar busy times
+              
+              // Create a date-time string in the user's local timezone
+              // For example: "2025-10-15 10:00" in America/New_York
+              const slotTimeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+              
+              // Convert this local time to UTC
+              // We'll create a UTC date that represents this local time
+              // For America/New_York (EDT, UTC-4): 10:00 AM local = 14:00 UTC
+              // For America/New_York (EST, UTC-5): 10:00 AM local = 15:00 UTC
+              
+              // Use Intl to get the offset
+              const localDateTimeStr = `${dateStr}T${slotTimeStr}:00`;
+              
+              // Get the UTC offset in hours for this date in the user's timezone
+              // EDT is -4, EST is -5
+              const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone: APPT_TZ,
+                timeZoneName: 'shortOffset'
+              });
+              
+              const testDate = new Date(`${dateStr}T${slotTimeStr}:00`);
+              const parts = formatter.formatToParts(testDate);
+              const offsetPart = parts.find(p => p.type === 'timeZoneName');
+              const offsetStr = offsetPart?.value || 'GMT';
+              
+              // Parse offset (e.g., "GMT-4" or "GMT-5")
+              const offsetMatch = offsetStr.match(/GMT([+-]\d+)/);
+              const offsetHours = offsetMatch ? parseInt(offsetMatch[1]) : 0;
+              
+              // Create the UTC time by subtracting the offset
+              const slotStart = new Date(`${localDateTimeStr}Z`);
+              slotStart.setHours(slotStart.getHours() - offsetHours);
+              
               const slotEnd = new Date(slotStart.getTime() + 30 * 60 * 1000);
+              
+              // Debug: log the conversion
+              if (hour === 10 && minute === 0) {
+                console.log(`[nl-gateway] Timezone conversion for ${dateStr} ${slotTimeStr}:`);
+                console.log(`  Offset string: ${offsetStr}`);
+                console.log(`  Offset hours: ${offsetHours}`);
+                console.log(`  Local time: ${localDateTimeStr}`);
+                console.log(`  UTC time: ${slotStart.toISOString()}`);
+              }
               
               // Check if this is today and if the slot is in the past
               const isToday = dateStr === today.toISOString().split('T')[0];
@@ -219,8 +261,6 @@ Output ONLY valid JSON matching the schema.`;
               // Since we're generating slots in UTC but need to compare with user's local time,
               // we should let the frontend handle past slot detection instead of doing it here
               const isPastSlot = false; // Let frontend handle past slot detection
-              
-              console.log(`[nl-gateway] Slot ${slotStart.toISOString()} - isToday: ${isToday}, isPastSlot: ${isPastSlot}, slotStart <= today: ${slotStart <= today}`);
               
               // Check if this slot overlaps with any busy time
               const isBusy = busySlots.some((busy: { start: string; end: string }) => {
