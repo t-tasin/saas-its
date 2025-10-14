@@ -197,7 +197,11 @@ Output ONLY valid JSON matching the schema.`;
               
               // Check if this is today and if the slot is in the past
               const isToday = dateStr === today.toISOString().split('T')[0];
-              const isPastSlot = isToday && slotStart <= today;
+              
+              // For past slot detection, we need to consider the user's timezone
+              // Since we're generating slots in UTC but need to compare with user's local time,
+              // we should let the frontend handle past slot detection instead of doing it here
+              const isPastSlot = false; // Let frontend handle past slot detection
               
               console.log(`[nl-gateway] Slot ${slotStart.toISOString()} - isToday: ${isToday}, isPastSlot: ${isPastSlot}, slotStart <= today: ${slotStart <= today}`);
               
