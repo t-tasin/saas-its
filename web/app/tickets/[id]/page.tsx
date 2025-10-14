@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/contexts/auth-context"
 import { useTicket, useTicketComments, useAddComment, useUpdateTicketStatus } from "@/hooks/use-tickets"
 import { useUser } from "@/hooks/use-users"
+import { useAssets } from "@/hooks/use-assets"
 import { useToast } from "@/hooks/use-toast"
 import { formatDateTime } from "@/lib/utils"
 import { ArrowLeft, MessageSquare, Paperclip, Download, UserPlus, Package } from "lucide-react"
@@ -35,6 +36,8 @@ export default function TicketDetailPage() {
   const ticketId = params.id as string
   const { data: ticket, isLoading: ticketLoading } = useTicket(ticketId)
   const { data: comments, isLoading: commentsLoading } = useTicketComments(ticketId)
+  const { data: assetsData } = useAssets({ limit: 100 })
+  const assets = assetsData?.data || []
   const addComment = useAddComment()
   const updateStatus = useUpdateTicketStatus()
   
@@ -46,6 +49,8 @@ export default function TicketDetailPage() {
   const [newStatus, setNewStatus] = useState("")
   const [showAddTechModal, setShowAddTechModal] = useState(false)
   const [newTechId, setNewTechId] = useState("")
+  const [selectedAssetId, setSelectedAssetId] = useState("")
+  const [isUpdatingAsset, setIsUpdatingAsset] = useState(false)
 
   // Update newStatus when ticket data loads
   useEffect(() => {
@@ -53,6 +58,13 @@ export default function TicketDetailPage() {
       setNewStatus(ticket.data.status)
     }
   }, [ticket?.data?.status])
+
+  // Initialize selected asset when ticket data loads
+  useEffect(() => {
+    if (ticket?.data?.assetId) {
+      setSelectedAssetId(ticket.data.assetId)
+    }
+  }, [ticket?.data?.assetId])
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -128,6 +140,58 @@ export default function TicketDetailPage() {
         description: "Failed to assign technician. Please try again.",
         variant: "destructive",
       })
+    }
+  }
+
+  const handleUpdateAsset = async () => {
+    if (!selectedAssetId || selectedAssetId === "none") {
+      // Remove asset association
+      setIsUpdatingAsset(true)
+      try {
+        await ticketApi.patch(`/tickets/${ticketId}`, {
+          assetId: null,
+        })
+
+        toast({
+          title: "Success",
+          description: "Asset association removed.",
+        })
+
+        // Refresh ticket data
+        window.location.reload()
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to remove asset. Please try again.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsUpdatingAsset(false)
+      }
+      return
+    }
+
+    setIsUpdatingAsset(true)
+    try {
+      await ticketApi.patch(`/tickets/${ticketId}`, {
+        assetId: selectedAssetId,
+      })
+
+      toast({
+        title: "Success",
+        description: "Asset association updated successfully.",
+      })
+
+      // Refresh ticket data
+      window.location.reload()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update asset. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsUpdatingAsset(false)
     }
   }
 
@@ -262,23 +326,63 @@ export default function TicketDetailPage() {
             )}
 
             {/* Associated Asset */}
-            {ticketData.assetId && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Package className="h-5 w-5" />
-                    Associated Asset
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5" />
+                  Associated Asset
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {isOperator && (
+                  <div className="space-y-2">
+                    <Label htmlFor="asset-select">Select Asset</Label>
+                    <Select 
+                      value={selectedAssetId} 
+                      onValueChange={setSelectedAssetId}
+                    >
+                      <SelectTrigger id="asset-select">
+                        <SelectValue placeholder="Select an asset (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No asset</SelectItem>
+                        {assets.map((asset: any) => (
+                          <SelectItem key={asset.id} value={asset.id}>
+                            {asset.name} ({asset.type}) - {asset.serialNumber || asset.id.slice(0, 8)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedAssetId && selectedAssetId !== "none" && selectedAssetId !== ticketData.assetId && (
+                      <Button 
+                        onClick={handleUpdateAsset}
+                        disabled={isUpdatingAsset}
+                        className="w-full"
+                      >
+                        {isUpdatingAsset ? "Updating..." : "Update Asset"}
+                      </Button>
+                    )}
+                    {selectedAssetId === "none" && ticketData.assetId && (
+                      <Button 
+                        onClick={handleUpdateAsset}
+                        disabled={isUpdatingAsset}
+                        variant="destructive"
+                        className="w-full"
+                      >
+                        {isUpdatingAsset ? "Removing..." : "Remove Asset Association"}
+                      </Button>
+                    )}
+                  </div>
+                )}
+                {ticketData.assetId && (
                   <Link href={`/dashboard/assets/${ticketData.assetId}`}>
                     <Button variant="outline" className="w-full">
                       View Asset Details →
                     </Button>
                   </Link>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </CardContent>
+            </Card>
 
             {ticketData.attachments && ticketData.attachments.length > 0 && (
               <Card>

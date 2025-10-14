@@ -38,6 +38,21 @@ export default function HomePage() {
       return
     }
 
+    if (!nlName.trim()) {
+      toast.error("Please provide your name")
+      return
+    }
+
+    if (!nlEmail.trim()) {
+      toast.error("Please provide your email")
+      return
+    }
+
+    if (!/\S+@\S+\.\S+/.test(nlEmail)) {
+      toast.error("Please provide a valid email address")
+      return
+    }
+
     setNlLoading(true)
     setNlSuccess(false)
 
@@ -216,7 +231,32 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                {/* Name and Email fields removed - no longer required */}
+                <div className="grid md:grid-cols-2 gap-4 pt-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="nl-name">Your Name *</Label>
+                    <Input
+                      id="nl-name"
+                      type="text"
+                      placeholder="John Doe"
+                      value={nlName}
+                      onChange={(e) => setNlName(e.target.value)}
+                      disabled={nlLoading || nlSuccess || showAvailabilityPicker}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="nl-email">Your Email *</Label>
+                    <Input
+                      id="nl-email"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={nlEmail}
+                      onChange={(e) => setNlEmail(e.target.value)}
+                      disabled={nlLoading || nlSuccess || showAvailabilityPicker}
+                      required
+                    />
+                  </div>
+                </div>
 
                 {/* Show availability picker if hardware issue detected */}
                 {showAvailabilityPicker && weekAvailabilitySpec && (
@@ -244,7 +284,7 @@ export default function HomePage() {
                     type="submit"
                     size="lg"
                     className="w-full"
-                    disabled={nlLoading || nlSuccess}
+                    disabled={nlLoading || nlSuccess || !nlText.trim() || !nlName.trim() || !nlEmail.trim()}
                   >
                     {nlLoading ? (
                       <>

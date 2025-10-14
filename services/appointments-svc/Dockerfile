@@ -53,6 +53,10 @@ EXPOSE 3400
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3400/healthz', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Start the application
-CMD ["node", "--enable-source-maps", "/app/dist/index.js"]
+# Create startup script that runs migrations then starts the app
+RUN echo '#!/bin/sh\nset -e\necho "Running Prisma migrations..."\nnpx prisma db push --accept-data-loss --skip-generate\necho "Migrations complete. Starting application..."\nexec node --enable-source-maps /app/dist/index.js' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Start the service with migrations
+CMD ["/bin/sh", "/app/start.sh"]
 
