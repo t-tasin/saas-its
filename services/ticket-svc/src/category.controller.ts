@@ -34,6 +34,16 @@ export class CategoryController {
       });
     } catch (error: any) {
       console.error('Failed to fetch categories:', error);
+      
+      // Check if it's a schema/database issue
+      if (error?.code === 'P2025' || error?.message?.includes('P2025')) {
+        console.log('Database schema issue detected (P2025), returning empty categories');
+      } else if (error?.code === 'P1001' || error?.message?.includes('P1001')) {
+        console.log('Database connection issue detected (P1001), returning empty categories');
+      } else {
+        console.log('Unknown database error:', error?.code, error?.message);
+      }
+      
       // Return empty array if database is not available or schema issues
       return [];
     }
