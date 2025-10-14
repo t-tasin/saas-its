@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCreateTicket } from "@/hooks/use-tickets"
+import { useAssets } from "@/hooks/use-assets"
 import { useAuth } from "@/contexts/auth-context"
-import { Loader2, Upload, X, FileIcon, CheckCircle2 } from "lucide-react"
+import { Loader2, Upload, X, FileIcon, CheckCircle2, Package } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 interface CreateTicketModalProps {
@@ -20,10 +22,14 @@ interface CreateTicketModalProps {
 export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps) {
   const { user } = useAuth()
   const createTicket = useCreateTicket()
+  const { data: assetsData } = useAssets({ limit: 100 })
+  const assets = assetsData?.data || []
+  
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     email: user?.email || "",
+    assetId: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -105,6 +111,7 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
         requestedBy: formData.email,
         status: "open",
         priority: "medium",
+        assetId: formData.assetId || undefined, // NEW: Include asset ID
         attachments: selectedFiles, // Pass files to mutation
       })
 
@@ -112,7 +119,7 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
       // Toast is shown by the mutation hook
 
       setTimeout(() => {
-        setFormData({ title: "", description: "", email: user?.email || "" })
+        setFormData({ title: "", description: "", email: user?.email || "", assetId: "" })
         setSelectedFiles([])
         setIsSuccess(false)
         onOpenChange(false)
@@ -172,6 +179,32 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
               placeholder="your.email@example.com"
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="asset" className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              Associated Asset (Optional)
+            </Label>
+            <Select 
+              value={formData.assetId} 
+              onValueChange={(value) => setFormData({ ...formData, assetId: value })}
+            >
+              <SelectTrigger id="asset">
+                <SelectValue placeholder="Select an asset (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No asset</SelectItem>
+                {assets.map((asset: any) => (
+                  <SelectItem key={asset.id} value={asset.id}>
+                    {asset.name} ({asset.type}) - {asset.serialNumber || asset.id.slice(0, 8)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              If this issue is related to a specific device or equipment
+            </p>
           </div>
 
           <div className="space-y-2">

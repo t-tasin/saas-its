@@ -1,18 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Calendar, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface TimeSlot {
-  date: string
-  time: string
-  datetime: string
-  selected: boolean
+  start: string
+  end: string
 }
 
-interface WeekDay {
+interface DaySpec {
   label: string
   date: string
   startOfDay: string
@@ -22,183 +21,190 @@ interface WeekDay {
 interface WeekAvailabilitySpec {
   timezone: string
   granularityMinutes: number
-  days: WeekDay[]
+  days: DaySpec[]
 }
 
 interface WeekAvailabilityPickerProps {
   spec: WeekAvailabilitySpec
-  onSubmit: (windows: { start: string; end: string }[]) => void
+  onSubmit: (windows: TimeSlot[]) => void
   onCancel?: () => void
 }
 
 export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailabilityPickerProps) {
-  const [slots, setSlots] = useState<TimeSlot[]>(() => {
-    // Generate all time slots
-    const allSlots: TimeSlot[] = []
-    
-    spec.days.forEach((day) => {
-      const [startHour, startMin] = day.startOfDay.split(':').map(Number)
-      const [endHour, endMin] = day.endOfDay.split(':').map(Number)
-      
-      let currentTime = startHour * 60 + startMin // minutes from midnight
-      const endTime = endHour * 60 + endMin
-      
-      while (currentTime < endTime) {
-        const hours = Math.floor(currentTime / 60)
-        const minutes = currentTime % 60
-        const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
-        
-        allSlots.push({
-          date: day.date,
-          time: timeStr,
-          datetime: `${day.date}T${timeStr}:00`,
-          selected: false,
-        })
-        
-        currentTime += spec.granularityMinutes
-      }
-    })
-    
-    return allSlots
-  })
+  const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set())
 
-  const toggleSlot = (index: number) => {
-    setSlots(prev => {
-      const newSlots = [...prev]
-      newSlots[index].selected = !newSlots[index].selected
-      return newSlots
-    })
+  const generateTimeSlots = (startOfDay: string, endOfDay: string, granularity: number) => {
+    const slots: string[] = []
+    const [startHour, startMin] = startOfDay.split(":").map(Number)
+    const [endHour, endMin] = endOfDay.split(":").map(Number)
+    
+    let currentMin = startHour * 60 + startMin
+    const endMinutes = endHour * 60 + endMin
+    
+    while (currentMin < endMinutes) {
+      const hour = Math.floor(currentMin / 60)
+      const min = currentMin % 60
+      const timeStr = `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}`
+      slots.push(timeStr)
+      currentMin += granularity
+    }
+    
+    return slots
   }
 
-  const selectRange = (startIndex: number, endIndex: number) => {
-    setSlots(prev => {
-      const newSlots = [...prev]
-      for (let i = startIndex; i <= endIndex; i++) {
-        if (newSlots[i].date === newSlots[startIndex].date) {
-          newSlots[i].selected = true
-        }
-      }
-      return newSlots
-    })
+  const toggleSlot = (date: string, time: string) => {
+    const slotKey = `${date}T${time}`
+    const newSelected = new Set(selectedSlots)
+    
+    if (newSelected.has(slotKey)) {
+      newSelected.delete(slotKey)
+    } else {
+      newSelected.add(slotKey)
+    }
+    
+    setSelectedSlots(newSelected)
   }
 
   const handleSubmit = () => {
-    // Group selected slots into contiguous windows
-    const windows: { start: string; end: string }[] = []
-    let windowStart: string | null = null
-    let lastDatetime: string | null = null
-
-    slots.forEach((slot, index) => {
-      if (slot.selected) {
-        if (!windowStart) {
-          // Start new window
-          windowStart = slot.datetime
-        }
-        lastDatetime = slot.datetime
+    // Convert selected slots to time windows
+    const windows: TimeSlot[] = []
+    const sortedSlots = Array.from(selectedSlots).sort()
+    
+    if (sortedSlots.length === 0) return
+    
+    // Group consecutive slots into windows
+    let windowStart = sortedSlots[0]
+    let windowEnd = sortedSlots[0]
+    
+    for (let i = 1; i < sortedSlots.length; i++) {
+      const current = sortedSlots[i]
+      const prev = sortedSlots[i - 1]
+      
+      // Check if slots are consecutive (same day and time is granularity minutes apart)
+      const prevDate = prev.split("T")[0]
+      const currentDate = current.split("T")[0]
+      const prevTime = prev.split("T")[1]
+      const currentTime = current.split("T")[1]
+      
+      const prevMinutes = parseInt(prevTime.split(":")[0]) * 60 + parseInt(prevTime.split(":")[1])
+      const currentMinutes = parseInt(currentTime.split(":")[0]) * 60 + parseInt(currentTime.split(":")[1])
+      
+      if (prevDate === currentDate && currentMinutes - prevMinutes === spec.granularityMinutes) {
+        // Consecutive slot
+        windowEnd = current
+      } else {
+        // New window
+        const endTime = windowEnd.split("T")[1]
+        const [endHour, endMin] = endTime.split(":").map(Number)
+        const endMinutes = endHour * 60 + endMin + spec.granularityMinutes
+        const finalEndTime = `${Math.floor(endMinutes / 60).toString().padStart(2, "0")}:${(endMinutes % 60).toString().padStart(2, "0")}`
         
-        // Check if next slot continues the window
-        const nextSlot = slots[index + 1]
-        const isLastSlot = index === slots.length - 1
-        const nextSlotBreaks = nextSlot && (!nextSlot.selected || nextSlot.date !== slot.date)
+        windows.push({
+          start: `${windowStart}:00${getTimezoneOffset(spec.timezone)}`,
+          end: `${windowStart.split("T")[0]}T${finalEndTime}:00${getTimezoneOffset(spec.timezone)}`,
+        })
         
-        if (isLastSlot || nextSlotBreaks) {
-          // Close current window
-          if (windowStart) {
-            // Calculate end time (add granularity to last slot)
-            const endTime = new Date(lastDatetime!)
-            endTime.setMinutes(endTime.getMinutes() + spec.granularityMinutes)
-            
-            windows.push({
-              start: new Date(windowStart).toISOString(),
-              end: endTime.toISOString(),
-            })
-            
-            windowStart = null
-            lastDatetime = null
-          }
-        }
+        windowStart = current
+        windowEnd = current
       }
-    })
-
-    if (windows.length === 0) {
-      alert('Please select at least one time slot')
-      return
     }
-
+    
+    // Add final window
+    const endTime = windowEnd.split("T")[1]
+    const [endHour, endMin] = endTime.split(":").map(Number)
+    const endMinutes = endHour * 60 + endMin + spec.granularityMinutes
+    const finalEndTime = `${Math.floor(endMinutes / 60).toString().padStart(2, "0")}:${(endMinutes % 60).toString().padStart(2, "0")}`
+    
+    windows.push({
+      start: `${windowStart}:00${getTimezoneOffset(spec.timezone)}`,
+      end: `${windowStart.split("T")[0]}T${finalEndTime}:00${getTimezoneOffset(spec.timezone)}`,
+    })
+    
     onSubmit(windows)
   }
 
-  const selectedCount = slots.filter(s => s.selected).length
-
-  // Group slots by day
-  const slotsByDay: { [date: string]: TimeSlot[] } = {}
-  slots.forEach(slot => {
-    if (!slotsByDay[slot.date]) {
-      slotsByDay[slot.date] = []
+  const getTimezoneOffset = (tz: string) => {
+    // Simple timezone offset mapping (expand as needed)
+    const offsets: Record<string, string> = {
+      "America/New_York": "-04:00",
+      "America/Chicago": "-05:00",
+      "America/Denver": "-06:00",
+      "America/Los_Angeles": "-07:00",
+      "UTC": "+00:00",
     }
-    slotsByDay[slot.date].push(slot)
-  })
+    return offsets[tz] || "-04:00"
+  }
 
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-lg font-semibold">Select Your Availability</h3>
-          <p className="text-sm text-muted-foreground">
-            Click time slots when you're available for a 30-minute appointment.
-            You can click and drag to select multiple slots.
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Selected: {selectedCount} time slot{selectedCount !== 1 ? 's' : ''}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-5 gap-4">
-          {spec.days.map((day) => (
-            <div key={day.date} className="space-y-2">
-              <div className="text-center font-medium text-sm">
-                <div>{day.label}</div>
-                <div className="text-xs text-muted-foreground">
-                  {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Calendar className="h-5 w-5" />
+          Select Your Availability
+        </CardTitle>
+        <CardDescription>
+          Click on time slots when you're available for a 30-minute hardware appointment.
+          Select at least 2-3 windows to give us flexibility.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid gap-4">
+          {spec.days.map((day) => {
+            const timeSlots = generateTimeSlots(day.startOfDay, day.endOfDay, spec.granularityMinutes)
+            
+            return (
+              <div key={day.date} className="space-y-2">
+                <div className="font-semibold text-sm">
+                  {day.label}, {new Date(day.date).toLocaleDateString()}
+                </div>
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                  {timeSlots.map((time) => {
+                    const slotKey = `${day.date}T${time}`
+                    const isSelected = selectedSlots.has(slotKey)
+                    
+                    return (
+                      <Button
+                        key={slotKey}
+                        type="button"
+                        variant={isSelected ? "default" : "outline"}
+                        size="sm"
+                        className={cn(
+                          "text-xs h-8 px-2",
+                          isSelected && "bg-primary text-primary-foreground"
+                        )}
+                        onClick={() => toggleSlot(day.date, time)}
+                      >
+                        <Clock className="h-3 w-3 mr-1" />
+                        {time}
+                      </Button>
+                    )
+                  })}
                 </div>
               </div>
-
-              <div className="space-y-1">
-                {slotsByDay[day.date]?.map((slot, index) => {
-                  const globalIndex = slots.findIndex(s => s.datetime === slot.datetime)
-                  return (
-                    <button
-                      key={slot.datetime}
-                      type="button"
-                      onClick={() => toggleSlot(globalIndex)}
-                      className={cn(
-                        "w-full px-2 py-1 text-xs rounded transition-colors",
-                        slot.selected
-                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                          : "bg-muted hover:bg-muted/80"
-                      )}
-                    >
-                      {slot.time}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
-
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          {onCancel && (
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
+        
+        <div className="flex items-center justify-between pt-4 border-t">
+          <p className="text-sm text-muted-foreground">
+            {selectedSlots.size} slot{selectedSlots.size !== 1 ? "s" : ""} selected
+          </p>
+          <div className="flex gap-2">
+            {onCancel && (
+              <Button type="button" variant="outline" onClick={onCancel}>
+                Cancel
+              </Button>
+            )}
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={selectedSlots.size === 0}
+            >
+              Submit Availability
             </Button>
-          )}
-          <Button type="button" onClick={handleSubmit} disabled={selectedCount === 0}>
-            Continue with {selectedCount} slot{selectedCount !== 1 ? 's' : ''}
-          </Button>
+          </div>
         </div>
-      </div>
+      </CardContent>
     </Card>
   )
 }
-

@@ -151,6 +151,7 @@ export function useCreateTicket() {
         // Only include categoryId if it's a valid UUID, otherwise omit
         ...(data.categoryId && { categoryId: data.categoryId }),
         ...(data.subcategoryId && { subcategoryId: data.subcategoryId }),
+        ...(data.assetId && data.assetId !== "none" && { assetId: data.assetId }), // NEW: Include assetId if provided
       }
 
       const response = await ticketApi.post("/tickets", backendData)

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Ticket, Calendar, Package, Headset, ArrowRight, Sparkles, Loader2, CheckCircle2 } from "lucide-react"
 import { CreateTicketModal } from "@/components/create-ticket-modal"
 import { CreateReservationModal } from "@/components/create-reservation-modal"
+import { WeekAvailabilityPicker } from "@/components/week-availability-picker"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "react-hot-toast"
 
@@ -24,6 +25,9 @@ export default function HomePage() {
   const [nlEmail, setNlEmail] = useState("")
   const [nlLoading, setNlLoading] = useState(false)
   const [nlSuccess, setNlSuccess] = useState(false)
+  const [showAvailabilityPicker, setShowAvailabilityPicker] = useState(false)
+  const [correlationId, setCorrelationId] = useState<string | null>(null)
+  const [weekAvailabilitySpec, setWeekAvailabilitySpec] = useState<any>(null)
 
   const handleNLSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,16 +37,6 @@ export default function HomePage() {
       toast.error("Please describe your issue")
       return
     }
-    
-    if (!nlName.trim() || !nlEmail.trim()) {
-      toast.error("Please provide your name and email")
-      return
-    }
-    
-    if (nlEmail && !/\S+@\S+\.\S+/.test(nlEmail)) {
-      toast.error("Please provide a valid email address")
-      return
-    }
 
     setNlLoading(true)
     setNlSuccess(false)
@@ -50,7 +44,8 @@ export default function HomePage() {
     try {
       const nlGatewayUrl = process.env.NEXT_PUBLIC_NL_GATEWAY_API || "https://nl-gateway-production.up.railway.app"
       
-      const response = await fetch(`${nlGatewayUrl}/nl/tickets`, {
+      // Step 1: Analyze the ticket
+      const response = await fetch(`${nlGatewayUrl}/nl/tickets/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,28 +60,98 @@ export default function HomePage() {
       })
 
       if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: "Failed to analyze ticket" }))
+        throw new Error(error.error || error.message || "Failed to analyze ticket")
+      }
+
+      const analyzeResult = await response.json()
+      
+      // Check if we need to ask for availability
+      if (analyzeResult.needsFollowup && analyzeResult.followupKind === "availability_week") {
+        // Hardware issue - show availability picker
+        setCorrelationId(analyzeResult.correlationId)
+        setWeekAvailabilitySpec(analyzeResult.weekAvailabilitySpec)
+        setShowAvailabilityPicker(true)
+        setNlLoading(false)
+        toast.success(analyzeResult.followupQuestion || "Please select your availability for the appointment")
+      } else {
+        // Non-hardware issue or has availability - finalize immediately
+        await finalizeTicket(analyzeResult.correlationId, [])
+      }
+    } catch (error: any) {
+      console.error("Failed to create ticket:", error)
+      toast.error(error.message || "Failed to create ticket. Please try again.")
+      setNlLoading(false)
+    }
+  }
+
+  const finalizeTicket = async (corrId: string, availability: any[]) => {
+    try {
+      const nlGatewayUrl = process.env.NEXT_PUBLIC_NL_GATEWAY_API || "https://nl-gateway-production.up.railway.app"
+      
+      const response = await fetch(`${nlGatewayUrl}/nl/tickets/finalize`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          correlationId: corrId,
+          availability,
+          fallback: {
+            name: nlName,
+            email: nlEmail,
+          },
+        }),
+      })
+
+      if (!response.ok) {
         const error = await response.json().catch(() => ({ error: "Failed to create ticket" }))
         throw new Error(error.error || error.message || "Failed to create ticket")
       }
 
-      const ticket = await response.json()
+      const result = await response.json()
       
       setNlSuccess(true)
-      toast.success(`Ticket created successfully! Ticket #${ticket.ticketNumber || ticket.id}`)
+      
+      if (result.appointment) {
+        toast.success(
+          `Ticket created! Appointment scheduled for ${new Date(result.appointment.start).toLocaleString()}`,
+          { duration: 6000 }
+        )
+      } else {
+        toast.success(`Ticket created successfully! Ticket #${result.ticket.number || result.ticket.id}`)
+      }
       
       // Reset form
       setNlText("")
       setNlName("")
       setNlEmail("")
+      setShowAvailabilityPicker(false)
+      setCorrelationId(null)
+      setWeekAvailabilitySpec(null)
       
       // Reset success message after 5 seconds
       setTimeout(() => setNlSuccess(false), 5000)
     } catch (error: any) {
-      console.error("Failed to create ticket:", error)
-      toast.error(error.message || "Failed to create ticket. Please try again.")
+      console.error("Failed to finalize ticket:", error)
+      toast.error(error.message || "Failed to finalize ticket. Please try again.")
     } finally {
       setNlLoading(false)
     }
+  }
+
+  const handleAvailabilitySubmit = async (windows: any[]) => {
+    if (!correlationId) return
+    
+    setNlLoading(true)
+    await finalizeTicket(correlationId, windows)
+  }
+
+  const handleAvailabilityCancel = () => {
+    setShowAvailabilityPicker(false)
+    setCorrelationId(null)
+    setWeekAvailabilitySpec(null)
+    setNlLoading(false)
   }
 
   return (
@@ -151,30 +216,18 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4 pt-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="nl-name">Your Name</Label>
-                    <Input
-                      id="nl-name"
-                      type="text"
-                      placeholder="John Doe"
-                      value={nlName}
-                      onChange={(e) => setNlName(e.target.value)}
-                      disabled={nlLoading || nlSuccess}
+                {/* Name and Email fields removed - no longer required */}
+
+                {/* Show availability picker if hardware issue detected */}
+                {showAvailabilityPicker && weekAvailabilitySpec && (
+                  <div className="mt-4">
+                    <WeekAvailabilityPicker
+                      spec={weekAvailabilitySpec}
+                      onSubmit={handleAvailabilitySubmit}
+                      onCancel={handleAvailabilityCancel}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nl-email">Your Email</Label>
-                    <Input
-                      id="nl-email"
-                      type="email"
-                      placeholder="john@example.com"
-                      value={nlEmail}
-                      onChange={(e) => setNlEmail(e.target.value)}
-                      disabled={nlLoading || nlSuccess}
-                    />
-                  </div>
-                </div>
+                )}
 
                 {nlSuccess && (
                   <div className="flex items-center gap-2 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
@@ -185,29 +238,32 @@ export default function HomePage() {
                   </div>
                 )}
 
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full"
-                  disabled={nlLoading || nlSuccess}
-                >
-                  {nlLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Creating Ticket...
-                    </>
-                  ) : nlSuccess ? (
-                    <>
-                      <CheckCircle2 className="mr-2 h-5 w-5" />
-                      Ticket Created!
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 h-5 w-5" />
-                      Create Ticket with AI
-                    </>
-                  )}
-                </Button>
+                {/* Only show submit button if not showing availability picker */}
+                {!showAvailabilityPicker && (
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    disabled={nlLoading || nlSuccess}
+                  >
+                    {nlLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Analyzing...
+                      </>
+                    ) : nlSuccess ? (
+                      <>
+                        <CheckCircle2 className="mr-2 h-5 w-5" />
+                        Ticket Created!
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-5 w-5" />
+                        Create Ticket with AI
+                      </>
+                    )}
+                  </Button>
+                )}
 
                 <p className="text-center text-xs text-muted-foreground">
                   Or use the{" "}
