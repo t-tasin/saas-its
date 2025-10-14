@@ -171,7 +171,7 @@ Output ONLY valid JSON matching the schema.`;
             const slotEnd = new Date(slotStart.getTime() + 30 * 60 * 1000);
             
             // Check if this slot overlaps with any busy time
-            const isBusy = busySlots.some(busy => {
+            const isBusy = busySlots.some((busy: { start: string; end: string }) => {
               const busyStart = new Date(busy.start);
               const busyEnd = new Date(busy.end);
               return !(slotEnd <= busyStart || slotStart >= busyEnd);
