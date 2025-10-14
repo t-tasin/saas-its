@@ -13,10 +13,12 @@ build/
 .env.local
 .env.*.local
 !.env.example
+!.env.template
 
 # Railway Environment Files (contains secrets - DO NOT COMMIT)
 .railway.env.example
 railway-env-*.txt
+!railway.env.template
 
 # Editor
 .vscode/
