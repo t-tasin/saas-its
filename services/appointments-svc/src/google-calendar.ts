@@ -175,6 +175,8 @@ export async function createCalendarEvent(
   });
   
   try {
+    console.log("Creating Google Calendar event with attendees:", appointment.attendees);
+    
     const event = await calendar.events.insert({
       calendarId: tech.calendarId,
       requestBody: {
@@ -198,6 +200,11 @@ export async function createCalendarEvent(
           ],
         },
       },
+    });
+    
+    console.log("Google Calendar event created:", {
+      eventId: event.data.id,
+      attendees: event.data.attendees?.map(a => ({ email: a.email, responseStatus: a.responseStatus }))
     });
     
     logger.info({ technicianId, eventId: event.data.id }, 'Calendar event created');

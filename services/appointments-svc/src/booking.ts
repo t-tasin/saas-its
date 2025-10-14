@@ -123,7 +123,9 @@ router.post('/auto', async (req, res) => {
     console.log("  summary:", summary);
     console.log("  start:", slot.start);
     console.log("  end:", slot.end);
-    console.log("  attendees:", [requester.email]);
+    console.log("  requester object:", requester);
+    console.log("  requester.email:", requester.email);
+    console.log("  attendees array:", [requester.email]);
     
     const { eventId, htmlLink } = await createCalendarEvent(technicianId, {
       summary,
