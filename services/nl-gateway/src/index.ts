@@ -143,19 +143,21 @@ Output ONLY valid JSON matching the schema.`;
       const days = [];
       
       // Calculate time range for busy time check (next 5 business days)
+      // Start from tomorrow to avoid today's past slots
       const timeMin = new Date(today);
       timeMin.setDate(today.getDate() + 1);
       timeMin.setHours(0, 0, 0, 0);
       
+      // End 7 days from today to cover 5 business days
       const timeMax = new Date(today);
-      timeMax.setDate(today.getDate() + 6);
+      timeMax.setDate(today.getDate() + 7);
       timeMax.setHours(23, 59, 59, 999);
       
-      // Fetch technician busy times
+      // Fetch technician busy times for the entire range
       const HARDWARE_TECH_ID = process.env.HARDWARE_TECH_ID || 'tech_hardware';
       const busySlots = await getTechnicianBusyTimes(HARDWARE_TECH_ID, timeMin.toISOString(), timeMax.toISOString());
       
-      console.log(`Found ${busySlots.length} busy slots for technician ${HARDWARE_TECH_ID}`);
+      console.log(`Found ${busySlots.length} busy slots for technician ${HARDWARE_TECH_ID} in range ${timeMin.toISOString()} to ${timeMax.toISOString()}`);
       
       // Generate next 5 working days (excluding weekends)
       let workingDaysAdded = 0;

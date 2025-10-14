@@ -39,6 +39,31 @@ interface WeekAvailabilityPickerProps {
 export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailabilityPickerProps) {
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set())
 
+  // Helper function to check if a slot is in the past
+  const isSlotInPast = (date: string, time: string): boolean => {
+    const now = new Date()
+    const slotDateTime = new Date(`${date}T${time}:00`)
+    
+    // If it's today, check if the slot is in the past
+    const today = now.toISOString().split('T')[0]
+    if (date === today) {
+      // Round up to the next 30-minute slot to be safe
+      const currentHour = now.getHours()
+      const currentMinute = now.getMinutes()
+      const nextSlotMinute = currentMinute < 30 ? 30 : 60
+      const nextSlotHour = currentMinute < 30 ? currentHour : currentHour + 1
+      
+      const [slotHour, slotMinute] = time.split(':').map(Number)
+      
+      // Block if slot is before the next available 30-minute slot
+      if (slotHour < nextSlotHour || (slotHour === nextSlotHour && slotMinute < nextSlotMinute)) {
+        return true
+      }
+    }
+    
+    return false
+  }
+
   const generateTimeSlots = (startOfDay: string, endOfDay: string, granularity: number) => {
     const slots: string[] = []
     const [startHour, startMin] = startOfDay.split(":").map(Number)
@@ -161,10 +186,21 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
               ? day.slots.map(slot => slot.time)
               : generateTimeSlots(day.startOfDay, day.endOfDay, spec.granularityMinutes)
             
+            // Count available slots for this day
+            const availableSlotsCount = timeSlots.filter(time => {
+              const slotInfo = day.slots?.find(s => s.time === time)
+              const isPreFilteredAvailable = slotInfo ? slotInfo.available : true
+              const isPastSlot = isSlotInPast(day.date, time)
+              return isPreFilteredAvailable && !isPastSlot
+            }).length
+
             return (
               <div key={day.date} className="space-y-2">
                 <div className="font-semibold text-sm">
                   {day.label}, {new Date(day.date).toLocaleDateString()}
+                  {availableSlotsCount === 0 && (
+                    <span className="text-red-500 text-xs ml-2">(No available slots)</span>
+                  )}
                 </div>
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
                   {timeSlots.map((time) => {
@@ -173,7 +209,13 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
                     
                     // Check if this slot is available (if we have pre-filtered data)
                     const slotInfo = day.slots?.find(s => s.time === time)
-                    const isAvailable = slotInfo ? slotInfo.available : true
+                    const isPreFilteredAvailable = slotInfo ? slotInfo.available : true
+                    
+                    // Check if slot is in the past
+                    const isPastSlot = isSlotInPast(day.date, time)
+                    
+                    // Slot is available only if it's not in the past AND pre-filtered as available
+                    const isAvailable = isPreFilteredAvailable && !isPastSlot
                     
                     return (
                       <Button
@@ -184,7 +226,9 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
                         className={cn(
                           "text-xs h-8 px-2",
                           isSelected && "bg-primary text-primary-foreground",
-                          !isAvailable && "opacity-50 cursor-not-allowed bg-gray-100"
+                          !isAvailable && "opacity-50 cursor-not-allowed",
+                          isPastSlot && "bg-gray-200 text-gray-500",
+                          !isPastSlot && !isPreFilteredAvailable && "bg-gray-100"
                         )}
                         onClick={() => isAvailable && toggleSlot(day.date, time)}
                         disabled={!isAvailable}

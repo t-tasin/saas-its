@@ -282,20 +282,25 @@ export default function ReservationDetailPage() {
                 {reservation.assignedAssetIds && (
                   <InfoRow label="Assigned Assets">
                     <div className="space-y-1">
-                      {reservation.assignedAssetIds.split(',').map((assetId: string, index: number) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-700/10">
-                            {assetId.trim()}
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => router.push(`/dashboard/assets/${assetId.trim()}`)}
-                          >
-                            View Asset
-                          </Button>
-                        </div>
-                      ))}
+                      {reservation.assignedAssetIds.split(',').map((assetId: string, index: number) => {
+                        const trimmedId = assetId.trim()
+                        const asset = allAssets.find((a: any) => a.id === trimmedId)
+                        const label = asset?.assetId || trimmedId
+                        return (
+                          <div key={index} className="flex items-center gap-2">
+                            <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-sm font-medium text-green-700 ring-1 ring-inset ring-green-700/10">
+                              {label}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => router.push(`/dashboard/assets/${trimmedId}`)}
+                            >
+                              View Asset
+                            </Button>
+                          </div>
+                        )
+                      })}
                     </div>
                   </InfoRow>
                 )}

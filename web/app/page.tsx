@@ -143,6 +143,12 @@ export default function HomePage() {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: "Failed to create ticket" }))
+        
+        // Handle specific error cases
+        if (response.status === 409 && error.error?.includes("No available slots")) {
+          throw new Error("The selected time slots are no longer available. Please select different time slots and try again.")
+        }
+        
         throw new Error(error.error || error.message || "Failed to create ticket")
       }
 
