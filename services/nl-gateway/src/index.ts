@@ -146,25 +146,34 @@ Output ONLY valid JSON matching the schema.`;
       const days = [];
       
       // Calculate time range for busy time check (next 5 business days)
-      // Start from tomorrow to avoid today's past slots
+      // Start from today to include today's busy slots (but we'll filter past slots in the frontend)
       const timeMin = new Date(today);
-      timeMin.setDate(today.getDate() + 1);
       timeMin.setHours(0, 0, 0, 0);
       
-      // End 7 days from today to cover 5 business days
+      // End 10 days from today to ensure we cover 5 business days
       const timeMax = new Date(today);
-      timeMax.setDate(today.getDate() + 7);
+      timeMax.setDate(today.getDate() + 10);
       timeMax.setHours(23, 59, 59, 999);
       
       // Fetch technician busy times for the entire range
       const HARDWARE_TECH_ID = process.env.HARDWARE_TECH_ID || 'tech_hardware';
+      console.log(`[nl-gateway] Fetching busy times for technician ${HARDWARE_TECH_ID}`);
+      console.log(`[nl-gateway] Time range: ${timeMin.toISOString()} to ${timeMax.toISOString()}`);
+      console.log(`[nl-gateway] Time range (local): ${timeMin.toLocaleString()} to ${timeMax.toLocaleString()}`);
+      
       const busySlots = await getTechnicianBusyTimes(HARDWARE_TECH_ID, timeMin.toISOString(), timeMax.toISOString());
       
-      console.log(`Found ${busySlots.length} busy slots for technician ${HARDWARE_TECH_ID} in range ${timeMin.toISOString()} to ${timeMax.toISOString()}`);
+      console.log(`[nl-gateway] Found ${busySlots.length} busy slots for technician ${HARDWARE_TECH_ID}`);
+      console.log(`[nl-gateway] Busy slots details:`, busySlots.map(slot => ({
+        start: slot.start,
+        end: slot.end,
+        startLocal: new Date(slot.start).toLocaleString(),
+        endLocal: new Date(slot.end).toLocaleString()
+      })));
       
       // Generate next 5 working days (excluding weekends)
       let workingDaysAdded = 0;
-      let dayOffset = 1;
+      let dayOffset = 0; // Start from today
       
       while (workingDaysAdded < 5) {
         const date = new Date(today);
@@ -187,11 +196,19 @@ Output ONLY valid JSON matching the schema.`;
               const isToday = dateStr === today.toISOString().split('T')[0];
               const isPastSlot = isToday && slotStart <= today;
               
+              console.log(`[nl-gateway] Slot ${slotStart.toISOString()} - isToday: ${isToday}, isPastSlot: ${isPastSlot}, slotStart <= today: ${slotStart <= today}`);
+              
               // Check if this slot overlaps with any busy time
               const isBusy = busySlots.some((busy: { start: string; end: string }) => {
                 const busyStart = new Date(busy.start);
                 const busyEnd = new Date(busy.end);
-                return !(slotEnd <= busyStart || slotStart >= busyEnd);
+                const overlaps = !(slotEnd <= busyStart || slotStart >= busyEnd);
+                
+                if (overlaps) {
+                  console.log(`[nl-gateway] Slot ${slotStart.toISOString()} overlaps with busy slot ${busy.start} - ${busy.end}`);
+                }
+                
+                return overlaps;
               });
               
               const isAvailable = !isPastSlot && !isBusy;

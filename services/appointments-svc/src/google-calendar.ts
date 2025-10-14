@@ -51,10 +51,17 @@ export async function getBusySlots(
     });
     
     const busy = response.data.calendars?.[tech.calendarId]?.busy || [];
-    console.log(`Found ${busy.length} busy slots for technician ${technicianId}:`, busy);
-    console.log(`Request parameters: timeMin=${timeMin}, timeMax=${timeMax}`);
-    console.log(`Calendar ID: ${tech.calendarId}`);
-    console.log(`Full response:`, JSON.stringify(response.data, null, 2));
+    console.log(`[appointments-svc] Found ${busy.length} busy slots for technician ${technicianId}`);
+    console.log(`[appointments-svc] Request parameters: timeMin=${timeMin}, timeMax=${timeMax}`);
+    console.log(`[appointments-svc] Calendar ID: ${tech.calendarId}`);
+    console.log(`[appointments-svc] Technician timezone: ${tech.timezone}`);
+    console.log(`[appointments-svc] Busy slots:`, busy.map(slot => ({
+      start: slot.start,
+      end: slot.end,
+      startLocal: new Date(slot.start!).toLocaleString(),
+      endLocal: new Date(slot.end!).toLocaleString()
+    })));
+    console.log(`[appointments-svc] Full Google Calendar API response:`, JSON.stringify(response.data, null, 2));
     return busy.map((slot: any) => ({
       start: slot.start!,
       end: slot.end!,
