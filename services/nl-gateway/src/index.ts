@@ -174,11 +174,11 @@ app.post("/nl/tickets/finalize", async (req, res) => {
       parsed.availability = availability;
     }
 
-    // Apply fallback if needed
-    if (!parsed.requesterName && fallback?.name) {
+    // ALWAYS prefer user-provided fallback over AI guesses
+    if (fallback?.name) {
       parsed.requesterName = String(fallback.name).slice(0, 120);
     }
-    if (!parsed.requesterEmail && fallback?.email) {
+    if (fallback?.email) {
       parsed.requesterEmail = fallback.email;
     }
 
