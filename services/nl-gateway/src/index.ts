@@ -65,8 +65,9 @@ Output ONLY valid JSON matching the schema.`;
 
     let parsed = await parser.parse({ text, categories: cats, schema, systemPrompt });
 
-    // 3) Validate and apply defaults
-    const validated = TriageResponseDto.parse(parsed);
+    // 3) Loosely validate and apply defaults (skip strict email check on 'analyze')
+    // The strict check will happen on 'finalize'
+    const validated = TriageResponseDto.partial().parse(parsed);
     if (!validated.title) validated.title = autoTitle(text);
     if (!validated.type) validated.type = ruleType(text);
     if (!validated.priority) validated.priority = rulePriority(text);
