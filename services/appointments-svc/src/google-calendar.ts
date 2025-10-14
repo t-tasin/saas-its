@@ -71,6 +71,11 @@ export async function findAvailableSlot(
   businessStart: string, // HH:mm
   businessEnd: string    // HH:mm
 ): Promise<TimeWindow | null> {
+  // Get technician's timezone for proper hour comparison
+  const tech = await prisma.technician.findUniqueOrThrow({
+    where: { id: technicianId },
+  });
+  
   for (const window of windows) {
     const windowStart = new Date(window.start);
     const windowEnd = new Date(window.end);
@@ -82,6 +87,8 @@ export async function findAvailableSlot(
       window.end
     );
     
+    logger.info({ technicianId, window, busySlots: busySlots.length }, 'Searching for available slot');
+    
     // Scan window in durationMinutes increments
     let current = new Date(windowStart);
     const slotDuration = durationMinutes * 60 * 1000; // ms
@@ -89,9 +96,19 @@ export async function findAvailableSlot(
     while (current.getTime() + slotDuration <= windowEnd.getTime()) {
       const slotEnd = new Date(current.getTime() + slotDuration);
       
-      // Check if within business hours
-      const timeStr = current.toTimeString().substring(0, 5); // HH:mm
-      if (timeStr < businessStart || timeStr >= businessEnd) {
+      // Check if within business hours using timezone-aware time extraction
+      // Extract hour and minute from the ISO string directly (already in correct timezone)
+      const isoStr = current.toISOString();
+      const timeMatch = window.start.match(/T(\d{2}:\d{2})/);
+      const currentTime = current.toLocaleTimeString('en-US', {
+        timeZone: tech.timezone,
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      
+      if (currentTime < businessStart || currentTime >= businessEnd) {
+        logger.debug({ currentTime, businessStart, businessEnd }, 'Slot outside business hours');
         current = new Date(current.getTime() + 30 * 60 * 1000); // Skip 30 min
         continue;
       }
@@ -108,6 +125,7 @@ export async function findAvailableSlot(
       
       if (!isOverlap) {
         // Found available slot!
+        logger.info({ start: current.toISOString(), end: slotEnd.toISOString() }, 'Available slot found');
         return {
           start: current.toISOString(),
           end: slotEnd.toISOString(),
@@ -119,6 +137,7 @@ export async function findAvailableSlot(
     }
   }
   
+  logger.warn({ technicianId, windows: windows.length }, 'No available slots found');
   return null; // No available slot found
 }
 
