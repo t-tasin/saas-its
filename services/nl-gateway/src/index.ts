@@ -187,6 +187,9 @@ Output ONLY valid JSON matching the schema.`;
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
           const dateStr = date.toISOString().split('T')[0];
           
+          // Create a date in the user's timezone for proper weekday display
+          const userDate = new Date(dateStr + 'T00:00:00');
+          
           // Generate available time slots for this day (30-min intervals from 9 AM to 5 PM)
           const availableSlots = [];
           for (let hour = 9; hour < 17; hour++) {
@@ -230,7 +233,7 @@ Output ONLY valid JSON matching the schema.`;
           }
           
           days.push({
-            label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+            label: userDate.toLocaleDateString('en-US', { weekday: 'short' }),
             date: dateStr,
             startOfDay: '09:00',
             endOfDay: '17:00',
