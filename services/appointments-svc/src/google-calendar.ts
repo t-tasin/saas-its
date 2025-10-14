@@ -107,11 +107,18 @@ export async function findAvailableSlot(
         minute: '2-digit',
       });
       
+      console.log(`Checking slot: ${current.toISOString()} -> ${slotEnd.toISOString()}`);
+      console.log(`  Time in ${tech.timezone}: ${currentTime}`);
+      console.log(`  Business hours: ${businessStart} - ${businessEnd}`);
+      
       if (currentTime < businessStart || currentTime >= businessEnd) {
+        console.log(`  ❌ OUTSIDE business hours`);
         logger.debug({ currentTime, businessStart, businessEnd }, 'Slot outside business hours');
         current = new Date(current.getTime() + 30 * 60 * 1000); // Skip 30 min
         continue;
       }
+      
+      console.log(`  ✅ Within business hours`);
       
       // Check if slot overlaps with any busy slot
       const isOverlap = busySlots.some(busy => {
@@ -120,17 +127,24 @@ export async function findAvailableSlot(
         const slotStart = current.getTime();
         const slotEndTime = slotEnd.getTime();
         
-        return !(slotEndTime <= busyStart || slotStart >= busyEnd);
+        const overlaps = !(slotEndTime <= busyStart || slotStart >= busyEnd);
+        if (overlaps) {
+          console.log(`  ⚠️  Overlaps with busy slot: ${busy.start} - ${busy.end}`);
+        }
+        return overlaps;
       });
       
       if (!isOverlap) {
         // Found available slot!
+        console.log(`  ✅✅ SLOT AVAILABLE! Returning this slot.`);
         logger.info({ start: current.toISOString(), end: slotEnd.toISOString() }, 'Available slot found');
         return {
           start: current.toISOString(),
           end: slotEnd.toISOString(),
         };
       }
+      
+      console.log(`  ❌ Slot overlaps with existing event, trying next...`);
       
       // Move to next slot
       current = new Date(current.getTime() + 30 * 60 * 1000); // 30-min increments

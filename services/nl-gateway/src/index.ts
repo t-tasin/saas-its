@@ -206,31 +206,57 @@ app.post("/nl/tickets/finalize", async (req, res) => {
 
     // Book appointment if hardware visit required
     let appointment = null;
+    
+    // DEBUG: Log all the conditions
+    console.log("=== APPOINTMENT BOOKING DEBUG ===");
+    console.log("hardwareVisitRequired:", parsed.hardwareVisitRequired);
+    console.log("availability:", parsed.availability);
+    console.log("availability.length:", parsed.availability?.length);
+    console.log("APPT_BASE:", APPT_BASE);
+    console.log("HARDWARE_TECH_ID:", HARDWARE_TECH_ID);
+    console.log("APPT_DURATION:", APPT_DURATION);
+    console.log("APPT_TZ:", APPT_TZ);
+    console.log("APPT_LOCATION:", APPT_LOCATION);
+    
     if (parsed.hardwareVisitRequired && parsed.availability && parsed.availability.length > 0 && APPT_BASE) {
+      const bookingPayload = {
+        technicianId: HARDWARE_TECH_ID,
+        windows: parsed.availability,
+        durationMinutes: APPT_DURATION,
+        requester: {
+          name: parsed.requesterName || 'Unknown',
+          email: parsed.requesterEmail || 'unknown@example.com',
+        },
+        summary: `Hardware visit: ${parsed.title}`,
+        description: `Ticket #${ticket.number}\n\n${parsed.description || ''}`,
+        location: APPT_LOCATION,
+        timezone: APPT_TZ,
+        ticketId: ticket.id,
+      };
+      
+      console.log("Booking payload:", JSON.stringify(bookingPayload, null, 2));
+      
       try {
-        appointment = await httpJson(`${APPT_BASE}/appointments/auto`, {
+        const apptUrl = `${APPT_BASE}/appointments/auto`;
+        console.log("Calling appointments API at:", apptUrl);
+        
+        appointment = await httpJson(apptUrl, {
           method: "POST",
-          body: {
-            technicianId: HARDWARE_TECH_ID,
-            windows: parsed.availability,
-            durationMinutes: APPT_DURATION,
-            requester: {
-              name: parsed.requesterName || 'Unknown',
-              email: parsed.requesterEmail || 'unknown@example.com',
-            },
-            summary: `Hardware visit: ${parsed.title}`,
-            description: `Ticket #${ticket.number}\n\n${parsed.description || ''}`,
-            location: APPT_LOCATION,
-            timezone: APPT_TZ,
-            ticketId: ticket.id,
-          },
+          body: bookingPayload,
         });
         
+        console.log("Appointment booked successfully:", appointment);
         log.info({ appointmentId: appointment.id, ticketId: ticket.id }, "Appointment booked");
       } catch (apptError: any) {
-        log.error({ error: apptError }, "Failed to book appointment, but ticket was created");
+        console.error("Appointment booking failed:", apptError);
+        log.error({ error: apptError, message: apptError.message, stack: apptError.stack }, "Failed to book appointment, but ticket was created");
         // Don't fail the whole request - ticket was created
       }
+    } else {
+      console.log("Skipping appointment booking - conditions not met");
+      if (!parsed.hardwareVisitRequired) console.log("  - Not a hardware issue");
+      if (!parsed.availability || parsed.availability.length === 0) console.log("  - No availability provided");
+      if (!APPT_BASE) console.log("  - APPT_BASE not configured");
     }
 
     // Clean up correlation data

@@ -22,6 +22,9 @@ const DEFAULT_TZ = process.env.DEFAULT_TZ || 'America/New_York';
  */
 router.post('/auto', async (req, res) => {
   try {
+    console.log("=== APPOINTMENTS-SVC: /auto CALLED ===");
+    console.log("Request body:", JSON.stringify(req.body, null, 2));
+    
     const {
       technicianId,
       windows,
@@ -34,29 +37,49 @@ router.post('/auto', async (req, res) => {
       ticketId,
     } = req.body;
     
+    console.log("Parsed values:");
+    console.log("  technicianId:", technicianId);
+    console.log("  windows:", windows);
+    console.log("  durationMinutes:", durationMinutes);
+    console.log("  requester:", requester);
+    console.log("  summary:", summary);
+    
     // Validate required fields
     if (!technicianId || !windows || !requester || !summary) {
+      console.log("Validation failed: Missing required fields");
       return res.status(400).json({ 
         error: 'Missing required fields: technicianId, windows, requester, summary' 
       });
     }
     
     if (!requester.name || !requester.email) {
+      console.log("Validation failed: Missing requester.name or requester.email");
       return res.status(400).json({ 
         error: 'requester.name and requester.email are required' 
       });
     }
     
     // Find technician
+    console.log("Looking for technician:", technicianId);
     const technician = await prisma.technician.findUnique({
       where: { id: technicianId },
     });
     
     if (!technician) {
+      console.log("ERROR: Technician not found");
       return res.status(404).json({ error: 'Technician not found' });
     }
     
+    console.log("Technician found:", {
+      id: technician.id,
+      name: technician.name,
+      email: technician.email,
+      hasRefreshToken: !!technician.googleRefreshToken,
+      tokenIsPlaceholder: technician.googleRefreshToken === 'PLACEHOLDER'
+    });
+    
     if (!technician.googleRefreshToken || technician.googleRefreshToken === 'PLACEHOLDER') {
+      console.log("ERROR: Technician calendar not connected");
       return res.status(503).json({ 
         error: 'Technician calendar not connected. Please complete OAuth setup first.',
         technicianId,
@@ -65,6 +88,11 @@ router.post('/auto', async (req, res) => {
     }
     
     // Find available slot
+    console.log("Finding available slot with params:");
+    console.log("  BUSINESS_START:", BUSINESS_START);
+    console.log("  BUSINESS_END:", BUSINESS_END);
+    console.log("  Windows:", JSON.stringify(windows, null, 2));
+    
     logger.info({ technicianId, windows: windows.length }, 'Finding available slot');
     
     const slot = await findAvailableSlot(
@@ -75,8 +103,11 @@ router.post('/auto', async (req, res) => {
       BUSINESS_END
     );
     
+    console.log("Slot search result:", slot);
+    
     if (!slot) {
       // No slot available - return 409 with suggested times
+      console.log("ERROR: No available slots found");
       return res.status(409).json({
         error: 'No available slots found in the provided windows',
         suggestion: 'Please try different time windows or contact support for manual scheduling',
@@ -84,9 +115,16 @@ router.post('/auto', async (req, res) => {
       });
     }
     
+    console.log("Available slot found:", slot);
     logger.info({ technicianId, slot }, 'Available slot found');
     
     // Create Google Calendar event
+    console.log("Creating Google Calendar event with:");
+    console.log("  summary:", summary);
+    console.log("  start:", slot.start);
+    console.log("  end:", slot.end);
+    console.log("  attendees:", [requester.email]);
+    
     const { eventId, htmlLink } = await createCalendarEvent(technicianId, {
       summary,
       description,
@@ -96,7 +134,10 @@ router.post('/auto', async (req, res) => {
       attendees: [requester.email],
     });
     
+    console.log("Google Calendar event created:", { eventId, htmlLink });
+    
     // Save appointment to database
+    console.log("Saving appointment to database...");
     const appointment = await prisma.appointment.create({
       data: {
         technicianId,
@@ -116,10 +157,18 @@ router.post('/auto', async (req, res) => {
       },
     });
     
+    console.log("Appointment saved to database:", {
+      id: appointment.id,
+      technicianId: appointment.technicianId,
+      requesterEmail: appointment.requesterEmail,
+      start: appointment.start,
+      end: appointment.end
+    });
+    
     logger.info({ appointmentId: appointment.id, eventId }, 'Appointment booked successfully');
     
     // Return appointment details
-    return res.status(201).json({
+    const responsePayload = {
       id: appointment.id,
       start: appointment.start.toISOString(),
       end: appointment.end.toISOString(),
@@ -132,8 +181,12 @@ router.post('/auto', async (req, res) => {
       },
       location: appointment.location,
       timezone: appointment.timezone,
-    });
+    };
+    
+    console.log("Returning appointment response:", responsePayload);
+    return res.status(201).json(responsePayload);
   } catch (error: any) {
+    console.error("BOOKING ERROR:", error);
     logger.error({ error }, 'Booking error');
     return res.status(500).json({ 
       error: error.message || 'Failed to book appointment' 
