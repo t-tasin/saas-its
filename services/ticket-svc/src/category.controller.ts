@@ -21,16 +21,22 @@ export class CategoryController {
   @Public()
   @Get('categories')
   async listCategories() {
-    return withTx(async (tx) => {
-      return tx.category.findMany({
-        include: {
-          subcategories: {
-            orderBy: { name: 'asc' },
+    try {
+      return withTx(async (tx) => {
+        return tx.category.findMany({
+          include: {
+            subcategories: {
+              orderBy: { name: 'asc' },
+            },
           },
-        },
-        orderBy: { name: 'asc' },
+          orderBy: { name: 'asc' },
+        });
       });
-    });
+    } catch (error: any) {
+      console.error('Failed to fetch categories:', error);
+      // Return empty array if database is not available or schema issues
+      return [];
+    }
   }
 
   /**
