@@ -161,7 +161,7 @@ export function useCreateReservation() {
                             error.response?.data?.message || 
                             error.response?.data?.error
         const lower = (Array.isArray(backendError) ? backendError.join(', ') : String(backendError || '')).toLowerCase()
-        const isInsufficient = lower.includes('insufficient') || lower.includes('not available') || lower.includes('no available')
+        const isInsufficient = lower.includes('insufficient') || lower.includes('not available') || lower.includes('no available') || lower.includes('equipment available for requested dates')
         if (!isInsufficient && backendError) {
           const errorMsg = Array.isArray(backendError) ? backendError.join(', ') : backendError
           toast.error(errorMsg)
@@ -176,7 +176,7 @@ export function useCreateReservation() {
     onError: (error: any) => {
       const backendError = error?.response?.data?.error?.message || error?.response?.data?.message || error?.message
       const lower = String(Array.isArray(backendError) ? backendError.join(', ') : backendError || '').toLowerCase()
-      const isInsufficient = lower.includes('insufficient') || lower.includes('not available') || lower.includes('no available')
+      const isInsufficient = lower.includes('insufficient') || lower.includes('not available') || lower.includes('no available') || lower.includes('equipment available for requested dates')
       if (!isInsufficient) {
         toast.error(backendError || "Failed to create reservation")
       }
