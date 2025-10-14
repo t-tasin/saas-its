@@ -164,7 +164,7 @@ Output ONLY valid JSON matching the schema.`;
       const busySlots = await getTechnicianBusyTimes(HARDWARE_TECH_ID, timeMin.toISOString(), timeMax.toISOString());
       
       console.log(`[nl-gateway] Found ${busySlots.length} busy slots for technician ${HARDWARE_TECH_ID}`);
-      console.log(`[nl-gateway] Busy slots details:`, busySlots.map(slot => ({
+      console.log(`[nl-gateway] Busy slots details:`, busySlots.map((slot: { start: string; end: string }) => ({
         start: slot.start,
         end: slot.end,
         startLocal: new Date(slot.start).toLocaleString(),
