@@ -13,6 +13,7 @@ import { Roles } from './auth/roles.decorator';
 import {
   CreateTicketDto,
   PatchStatusDto,
+  UpdateTicketDto,
   ListQueryDto,
   CreateCommentDto,
 } from './dto/ticket.dto';
@@ -175,6 +176,40 @@ export class TicketController {
         },
       }),
     );
+  }
+
+  @Patch(':id')
+  @Roles('operator', 'admin') // Only operators and admins can update tickets
+  async update(
+    @Req() req: any,
+    @Param('id') id: string,
+    @Body() dto: UpdateTicketDto,
+  ) {
+    return withTx(async (tx) => {
+      const user = req.user;
+      
+      // Build update data object
+      const updateData: any = {};
+      if (dto.assetId !== undefined) updateData.assetId = dto.assetId;
+      if (dto.title) updateData.title = dto.title;
+      if (dto.description !== undefined) updateData.description = dto.description;
+      if (dto.priority) updateData.priority = dto.priority;
+
+      const ticket = await tx.ticket.update({
+        where: { id },
+        data: updateData,
+      });
+
+      await this.audit.log(tx, {
+        entity: 'ticket',
+        entityId: id,
+        action: 'update',
+        actorId: user?.sub,
+        metadata: dto,
+      });
+
+      return ticket;
+    });
   }
 
   @Patch(':id/status')

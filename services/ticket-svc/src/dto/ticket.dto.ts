@@ -54,6 +54,24 @@ export class PatchStatusDto {
   status!: TicketStatus;
 }
 
+export class UpdateTicketDto {
+  @ApiPropertyOptional({ description: 'Asset UUID to associate with this ticket (null to remove)' })
+  @IsOptional() @IsUUID()
+  assetId?: string | null;
+
+  @ApiPropertyOptional({ description: 'Ticket title' })
+  @IsOptional() @IsString() @Length(3, 120)
+  title?: string;
+
+  @ApiPropertyOptional({ description: 'Ticket description' })
+  @IsOptional() @IsString() @MaxLength(2000)
+  description?: string;
+
+  @ApiPropertyOptional({ enum: TicketPriority })
+  @IsOptional() @IsEnum(TicketPriority)
+  priority?: TicketPriority;
+}
+
 export class CreateCommentDto {
   @ApiPropertyOptional({ description: 'Name for unauthenticated comments' })
   @IsOptional() @IsString() @MaxLength(100)
