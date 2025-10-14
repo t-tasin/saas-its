@@ -184,10 +184,10 @@ app.post("/nl/tickets/finalize", async (req, res) => {
 
     // Sanitize category IDs to ensure they are valid UUIDs or undefined
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (parsed.categoryId && !uuidRegex.test(parsed.categoryId)) {
+    if (typeof parsed.categoryId !== 'string' || !uuidRegex.test(parsed.categoryId)) {
       parsed.categoryId = undefined;
     }
-    if (parsed.subcategoryId && !uuidRegex.test(parsed.subcategoryId)) {
+    if (typeof parsed.subcategoryId !== 'string' || !uuidRegex.test(parsed.subcategoryId)) {
       parsed.subcategoryId = undefined;
     }
 
@@ -199,8 +199,8 @@ app.post("/nl/tickets/finalize", async (req, res) => {
       priority: parsed.priority,
       requesterName: parsed.requesterName,
       requesterEmail: parsed.requesterEmail,
-      categoryId: parsed.categoryId,
-      subcategoryId: parsed.subcategoryId,
+      ...(parsed.categoryId ? { categoryId: parsed.categoryId } : {}),
+      ...(parsed.subcategoryId ? { subcategoryId: parsed.subcategoryId } : {}),
       assetId: assetId || undefined,
     };
 
