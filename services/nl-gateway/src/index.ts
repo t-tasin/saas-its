@@ -63,46 +63,60 @@ CRITICAL RULES FOR HARDWARE DETECTION:
 
 Output ONLY valid JSON matching the schema.`;
 
-    let parsed: any = await parser.parse({ text, categories: cats, schema, systemPrompt });
+    let parsed = await parser.parse({ text, categories: cats, schema, systemPrompt });
 
-    // 3) Apply defaults (NO ZOD VALIDATION HERE - we'll do it on finalize)
-    if (!parsed.title) parsed.title = autoTitle(text);
-    if (!parsed.type) parsed.type = ruleType(text);
-    if (!parsed.priority) parsed.priority = rulePriority(text);
+    // 3) Loosely validate and apply defaults (skip strict email check on 'analyze')
+    // The strict check will happen on 'finalize'
+    const validated = TriageResponseDto.partial().parse(parsed);
+    if (!validated.title) validated.title = autoTitle(text);
+    if (!validated.type) validated.type = ruleType(text);
+    if (!validated.priority) validated.priority = rulePriority(text);
 
     // Apply fallback name/email if provided
-    if (!parsed.requesterName && fallback?.name) {
-      parsed.requesterName = String(fallback.name).slice(0, 120);
+    if (!validated.requesterName && fallback?.name) {
+      validated.requesterName = String(fallback.name).slice(0, 120);
     }
-    if (!parsed.requesterEmail && fallback?.email) {
-      parsed.requesterEmail = fallback.email;
+    if (!validated.requesterEmail && fallback?.email) {
+      validated.requesterEmail = fallback.email;
     }
 
     // Clean up category IDs
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (parsed.categoryId && (!uuidRegex.test(parsed.categoryId) || !categoryEnum.includes(parsed.categoryId))) {
-      delete parsed.categoryId;
+    if (validated.categoryId && (!uuidRegex.test(validated.categoryId) || !categoryEnum.includes(validated.categoryId))) {
+      delete validated.categoryId;
     }
-    if (parsed.subcategoryId && (!uuidRegex.test(parsed.subcategoryId) || !subcategoryEnum.includes(parsed.subcategoryId))) {
-      delete parsed.subcategoryId;
+    if (validated.subcategoryId && (!uuidRegex.test(validated.subcategoryId) || !subcategoryEnum.includes(validated.subcategoryId))) {
+      delete validated.subcategoryId;
     }
 
     // 4) Determine if followup is needed
-    const needsFollowup = parsed.hardwareVisitRequired === true && 
-                          (!parsed.availability || parsed.availability.length === 0);
+    const needsFollowup = validated.hardwareVisitRequired === true && 
+                          (!validated.availability || validated.availability.length === 0);
 
-    // 5) Store parsed data for finalize step
     const correlationId = uuidv4();
-    correlationStore.set(correlationId, { parsed, text });
+    
+    // Store parsed data for finalize step
+    correlationStore.set(correlationId, {
+      parsed: validated,
+      timestamp: Date.now(),
+    });
 
-    // 6) Build and send response
+    // Clean up old correlations (> 1 hour)
+    for (const [key, value] of correlationStore.entries()) {
+      if (Date.now() - value.timestamp > 3600000) {
+        correlationStore.delete(key);
+      }
+    }
+
+    // 5) Build response
     const response: any = {
       correlationId,
       needsFollowup,
-      parsed: {
-        title: parsed.title,
-        priority: parsed.priority,
-        issueComponent: parsed.issueComponent,
+      parsed: validated,
+      meta: {
+        issueComponent: validated.issueComponent || 'unknown',
+        hardwareVisitRequired: validated.hardwareVisitRequired || false,
+        availability: validated.availability || [],
       },
     };
 
