@@ -10,8 +10,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm ci --only=production && \
+# Install dependencies (use npm install for monorepo compatibility)
+RUN npm install --omit=dev && \
     npm cache clean --force
 
 # Copy prisma schema
