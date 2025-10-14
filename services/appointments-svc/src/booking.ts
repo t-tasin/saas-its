@@ -10,6 +10,35 @@ import { generateICS } from './ics-generator.js';
 
 const router = Router();
 
+/**
+ * GET /appointments/debug/busy/:technicianId
+ * Debug endpoint to check busy times for a technician
+ */
+router.get('/debug/busy/:technicianId', async (req, res) => {
+  try {
+    const { technicianId } = req.params;
+    const { timeMin, timeMax } = req.query;
+    
+    if (!timeMin || !timeMax) {
+      return res.status(400).json({ error: 'timeMin and timeMax query parameters are required' });
+    }
+    
+    const { getBusySlots } = await import('./google-calendar.js');
+    const busySlots = await getBusySlots(technicianId, timeMin as string, timeMax as string);
+    
+    res.json({
+      technicianId,
+      timeMin,
+      timeMax,
+      busySlots,
+      count: busySlots.length
+    });
+  } catch (error: any) {
+    console.error('Debug busy slots error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 const APPT_DURATION = Number(process.env.APPT_DURATION || 30);
 const BUSINESS_START = process.env.BUSINESS_START || '09:00';
 const BUSINESS_END = process.env.BUSINESS_END || '17:00';
