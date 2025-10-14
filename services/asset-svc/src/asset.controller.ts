@@ -439,7 +439,7 @@ export class AssetController {
       
       // Proxy to ticket-svc
       const TICKET_BASE = process.env.TICKET_BASE || 'http://ticket-svc:3000/v1';
-      const url = `${TICKET_BASE}/tickets?assetId=${id}&limit=100`;
+      const url = `${TICKET_BASE}/tickets?assetId=${id}&limit=100&includeClosed=true`;
       
       try {
         const response = await fetch(url);
