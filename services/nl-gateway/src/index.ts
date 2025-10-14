@@ -157,47 +157,59 @@ Output ONLY valid JSON matching the schema.`;
       
       console.log(`Found ${busySlots.length} busy slots for technician ${HARDWARE_TECH_ID}`);
       
-      for (let i = 1; i <= 5; i++) {
+      // Generate next 5 working days (excluding weekends)
+      let workingDaysAdded = 0;
+      let dayOffset = 1;
+      
+      while (workingDaysAdded < 5) {
         const date = new Date(today);
-        date.setDate(today.getDate() + i);
-        const dateStr = date.toISOString().split('T')[0];
+        date.setDate(today.getDate() + dayOffset);
+        const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
         
-        // Generate available time slots for this day (30-min intervals from 9 AM to 5 PM)
-        const availableSlots = [];
-        for (let hour = 9; hour < 17; hour++) {
-          for (let minute = 0; minute < 60; minute += 30) {
-            const slotStart = new Date(date);
-            slotStart.setHours(hour, minute, 0, 0);
-            const slotEnd = new Date(slotStart.getTime() + 30 * 60 * 1000);
-            
-            // Check if this slot overlaps with any busy time
-            const isBusy = busySlots.some((busy: { start: string; end: string }) => {
-              const busyStart = new Date(busy.start);
-              const busyEnd = new Date(busy.end);
-              return !(slotEnd <= busyStart || slotStart >= busyEnd);
-            });
-            
-            if (!isBusy) {
-              availableSlots.push({
-                time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
-                available: true
+        // Skip weekends (Saturday = 6, Sunday = 0)
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          const dateStr = date.toISOString().split('T')[0];
+          
+          // Generate available time slots for this day (30-min intervals from 9 AM to 5 PM)
+          const availableSlots = [];
+          for (let hour = 9; hour < 17; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+              const slotStart = new Date(date);
+              slotStart.setHours(hour, minute, 0, 0);
+              const slotEnd = new Date(slotStart.getTime() + 30 * 60 * 1000);
+              
+              // Check if this is today and if the slot is in the past
+              const isToday = dateStr === today.toISOString().split('T')[0];
+              const isPastSlot = isToday && slotStart <= today;
+              
+              // Check if this slot overlaps with any busy time
+              const isBusy = busySlots.some((busy: { start: string; end: string }) => {
+                const busyStart = new Date(busy.start);
+                const busyEnd = new Date(busy.end);
+                return !(slotEnd <= busyStart || slotStart >= busyEnd);
               });
-            } else {
+              
+              const isAvailable = !isPastSlot && !isBusy;
+              
               availableSlots.push({
                 time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
-                available: false
+                available: isAvailable
               });
             }
           }
+          
+          days.push({
+            label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+            date: dateStr,
+            startOfDay: '09:00',
+            endOfDay: '17:00',
+            slots: availableSlots
+          });
+          
+          workingDaysAdded++;
         }
         
-        days.push({
-          label: date.toLocaleDateString('en-US', { weekday: 'short' }),
-          date: dateStr,
-          startOfDay: '09:00',
-          endOfDay: '17:00',
-          slots: availableSlots
-        });
+        dayOffset++;
       }
 
       response.followupKind = 'availability_week';
