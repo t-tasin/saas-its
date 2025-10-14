@@ -142,7 +142,7 @@ function AssetDetailContent({ params }: { params: Promise<{ id: string }> }) {
 
     setLoadingTickets(true)
     try {
-      const response = await assetApi.get(`/assets/${id}/tickets`)
+      const response = await assetApi.get(`/${id}/tickets`)
       setAssetTickets(response.data.items || [])
       setShowTickets(true)
     } catch (error) {
