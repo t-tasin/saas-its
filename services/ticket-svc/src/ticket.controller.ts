@@ -4,7 +4,7 @@
  * Purpose: Tickets API (v1) with list/get/create/status/comments
  */
 import {
-  Controller, Get, Post, Patch, Param, Body, Query, Req,
+  Controller, Get, Post, Patch, Delete, Param, Body, Query, Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { withTx } from './with-tenant';
