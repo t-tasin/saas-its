@@ -142,7 +142,15 @@ Output ONLY valid JSON matching the schema.`;
 
     if (needsFollowup) {
       // Generate week availability spec with technician busy times filtered out
-      const today = new Date();
+      // Use the timezone from environment variable
+      const APPT_TZ = process.env.APPT_TZ || 'America/New_York';
+      
+      // Get current time in the user's timezone
+      const now = new Date();
+      const todayStr = now.toLocaleString('en-US', { timeZone: APPT_TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+      const [month, day, year] = todayStr.split('/');
+      const today = new Date(`${year}-${month}-${day}T00:00:00`);
+      
       const days = [];
       
       // Calculate time range for busy time check (next 5 business days)
@@ -158,6 +166,9 @@ Output ONLY valid JSON matching the schema.`;
       // Fetch technician busy times for the entire range
       const HARDWARE_TECH_ID = process.env.HARDWARE_TECH_ID || 'tech_hardware';
       console.log(`[nl-gateway] Fetching busy times for technician ${HARDWARE_TECH_ID}`);
+      console.log(`[nl-gateway] User timezone: ${APPT_TZ}`);
+      console.log(`[nl-gateway] Current time (user TZ): ${todayStr}`);
+      console.log(`[nl-gateway] Today date object: ${today.toISOString()}`);
       console.log(`[nl-gateway] Time range: ${timeMin.toISOString()} to ${timeMax.toISOString()}`);
       console.log(`[nl-gateway] Time range (local): ${timeMin.toLocaleString()} to ${timeMax.toLocaleString()}`);
       
@@ -185,10 +196,13 @@ Output ONLY valid JSON matching the schema.`;
         
         // Skip weekends (Saturday = 6, Sunday = 0)
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          const dateStr = date.toISOString().split('T')[0];
+          // Get the date string in YYYY-MM-DD format for this day
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const dateStr = `${year}-${month}-${day}`;
           
-          // Create a date in the user's timezone for proper weekday display
-          const userDate = new Date(dateStr + 'T00:00:00');
+          console.log(`[nl-gateway] Generating day ${workingDaysAdded + 1}: ${dateStr}, weekday: ${date.toLocaleDateString('en-US', { weekday: 'short' })}`);
           
           // Generate available time slots for this day (30-min intervals from 9 AM to 5 PM)
           const availableSlots = [];
@@ -233,7 +247,7 @@ Output ONLY valid JSON matching the schema.`;
           }
           
           days.push({
-            label: userDate.toLocaleDateString('en-US', { weekday: 'short' }),
+            label: date.toLocaleDateString('en-US', { weekday: 'short' }),
             date: dateStr,
             startOfDay: '09:00',
             endOfDay: '17:00',
