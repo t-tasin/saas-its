@@ -118,8 +118,13 @@ export class ReservationController {
       if (q.requesterId) where.requesterId = q.requesterId;
       
       // Exclude certain statuses if specified
-      if (q.excludeStatuses && Array.isArray(q.excludeStatuses)) {
-        where.status = { notIn: q.excludeStatuses };
+      if (q.excludeStatuses) {
+        const list = Array.isArray(q.excludeStatuses)
+          ? q.excludeStatuses
+          : String(q.excludeStatuses).split(',');
+        if (list.length > 0) {
+          where.status = { notIn: list.map((s) => s.toLowerCase()) };
+        }
       }
 
       const items = await tx.reservation.findMany({

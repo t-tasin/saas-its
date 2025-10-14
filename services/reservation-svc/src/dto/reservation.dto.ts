@@ -107,11 +107,9 @@ export class ListReservationsQueryDto {
   @IsUUID()
   requesterId?: string;
 
-  @ApiPropertyOptional({ description: 'Array of statuses to exclude from results' })
+  @ApiPropertyOptional({ description: 'Statuses to exclude (string or array)', type: [String] })
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  excludeStatuses?: string[];
+  excludeStatuses?: string | string[];
 
   @ApiPropertyOptional()
   @IsOptional()
