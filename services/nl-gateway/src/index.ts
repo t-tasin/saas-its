@@ -8,6 +8,25 @@ import { makeParser } from "./adapters/index.js";
 import { autoTitle, rulePriority, ruleType } from "./lib/rules.js";
 import { httpJson } from "./lib/http.js";
 
+/**
+ * Fetch busy times for a technician from appointments service
+ */
+async function getTechnicianBusyTimes(technicianId: string, timeMin: string, timeMax: string) {
+  const APPT_BASE = process.env.APPT_BASE;
+  if (!APPT_BASE) {
+    console.log('APPT_BASE not configured, skipping busy time check');
+    return [];
+  }
+  
+  try {
+    const response = await httpJson(`${APPT_BASE}/appointments/debug/busy/${technicianId}?timeMin=${timeMin}&timeMax=${timeMax}`);
+    return response.busySlots || [];
+  } catch (error) {
+    console.error('Failed to fetch busy times:', error);
+    return []; // Return empty array on error to not block the flow
+  }
+}
+
 const PORT = Number(process.env.PORT ?? 3100);
 const TICKET_BASE = process.env.TICKET_BASE!;
 const APPT_BASE = process.env.APPT_BASE || '';
@@ -119,17 +138,65 @@ Output ONLY valid JSON matching the schema.`;
     };
 
     if (needsFollowup) {
-      // Generate week availability spec
+      // Generate week availability spec with technician busy times filtered out
       const today = new Date();
       const days = [];
+      
+      // Calculate time range for busy time check (next 5 business days)
+      const timeMin = new Date(today);
+      timeMin.setDate(today.getDate() + 1);
+      timeMin.setHours(0, 0, 0, 0);
+      
+      const timeMax = new Date(today);
+      timeMax.setDate(today.getDate() + 6);
+      timeMax.setHours(23, 59, 59, 999);
+      
+      // Fetch technician busy times
+      const HARDWARE_TECH_ID = process.env.HARDWARE_TECH_ID || 'tech_hardware';
+      const busySlots = await getTechnicianBusyTimes(HARDWARE_TECH_ID, timeMin.toISOString(), timeMax.toISOString());
+      
+      console.log(`Found ${busySlots.length} busy slots for technician ${HARDWARE_TECH_ID}`);
+      
       for (let i = 1; i <= 5; i++) {
         const date = new Date(today);
         date.setDate(today.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        // Generate available time slots for this day (30-min intervals from 9 AM to 5 PM)
+        const availableSlots = [];
+        for (let hour = 9; hour < 17; hour++) {
+          for (let minute = 0; minute < 60; minute += 30) {
+            const slotStart = new Date(date);
+            slotStart.setHours(hour, minute, 0, 0);
+            const slotEnd = new Date(slotStart.getTime() + 30 * 60 * 1000);
+            
+            // Check if this slot overlaps with any busy time
+            const isBusy = busySlots.some(busy => {
+              const busyStart = new Date(busy.start);
+              const busyEnd = new Date(busy.end);
+              return !(slotEnd <= busyStart || slotStart >= busyEnd);
+            });
+            
+            if (!isBusy) {
+              availableSlots.push({
+                time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+                available: true
+              });
+            } else {
+              availableSlots.push({
+                time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+                available: false
+              });
+            }
+          }
+        }
+        
         days.push({
           label: date.toLocaleDateString('en-US', { weekday: 'short' }),
-          date: date.toISOString().split('T')[0],
+          date: dateStr,
           startOfDay: '09:00',
           endOfDay: '17:00',
+          slots: availableSlots
         });
       }
 

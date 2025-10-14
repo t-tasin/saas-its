@@ -11,11 +11,17 @@ interface TimeSlot {
   end: string
 }
 
+interface TimeSlotInfo {
+  time: string
+  available: boolean
+}
+
 interface DaySpec {
   label: string
   date: string
   startOfDay: string
   endOfDay: string
+  slots?: TimeSlotInfo[] // New field for pre-filtered slots
 }
 
 interface WeekAvailabilitySpec {
@@ -150,7 +156,10 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
       <CardContent className="space-y-4">
         <div className="grid gap-4">
           {spec.days.map((day) => {
-            const timeSlots = generateTimeSlots(day.startOfDay, day.endOfDay, spec.granularityMinutes)
+            // Use pre-filtered slots if available, otherwise generate them
+            const timeSlots = day.slots 
+              ? day.slots.map(slot => slot.time)
+              : generateTimeSlots(day.startOfDay, day.endOfDay, spec.granularityMinutes)
             
             return (
               <div key={day.date} className="space-y-2">
@@ -162,6 +171,10 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
                     const slotKey = `${day.date}T${time}`
                     const isSelected = selectedSlots.has(slotKey)
                     
+                    // Check if this slot is available (if we have pre-filtered data)
+                    const slotInfo = day.slots?.find(s => s.time === time)
+                    const isAvailable = slotInfo ? slotInfo.available : true
+                    
                     return (
                       <Button
                         key={slotKey}
@@ -170,9 +183,11 @@ export function WeekAvailabilityPicker({ spec, onSubmit, onCancel }: WeekAvailab
                         size="sm"
                         className={cn(
                           "text-xs h-8 px-2",
-                          isSelected && "bg-primary text-primary-foreground"
+                          isSelected && "bg-primary text-primary-foreground",
+                          !isAvailable && "opacity-50 cursor-not-allowed bg-gray-100"
                         )}
-                        onClick={() => toggleSlot(day.date, time)}
+                        onClick={() => isAvailable && toggleSlot(day.date, time)}
+                        disabled={!isAvailable}
                       >
                         <Clock className="h-3 w-3 mr-1" />
                         {time}
