@@ -51,6 +51,7 @@ export async function getBusySlots(
     });
     
     const busy = response.data.calendars?.[tech.calendarId]?.busy || [];
+    console.log(`Found ${busy.length} busy slots for technician ${technicianId}:`, busy);
     return busy.map((slot: any) => ({
       start: slot.start!,
       end: slot.end!,
@@ -130,6 +131,8 @@ export async function findAvailableSlot(
         const overlaps = !(slotEndTime <= busyStart || slotStart >= busyEnd);
         if (overlaps) {
           console.log(`  ⚠️  Overlaps with busy slot: ${busy.start} - ${busy.end}`);
+          console.log(`      Slot: ${current.toISOString()} - ${slotEnd.toISOString()}`);
+          console.log(`      Busy: ${new Date(busyStart).toISOString()} - ${new Date(busyEnd).toISOString()}`);
         }
         return overlaps;
       });
