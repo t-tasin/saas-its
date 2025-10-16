@@ -15,6 +15,7 @@ import { RolesGuard } from './auth/roles.guard';
 import { AssetController } from './asset.controller';
 import { AnalyticsController } from './analytics.controller';
 import { HealthController } from './health.controller';
+import { AssetTypeController } from './asset-type.controller';
 
 import { IdempotencyMiddleware } from './shared/idempotency.middleware';
 import { MetricsMiddleware } from './shared/metrics.middleware';
@@ -22,7 +23,7 @@ import { AuditService } from './shared/audit.service';
 
 @Module({
   imports: [AuthModule],
-  controllers: [AssetController, AnalyticsController, HealthController],
+  controllers: [AssetController, AnalyticsController, AssetTypeController, HealthController],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },

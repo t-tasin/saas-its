@@ -46,6 +46,7 @@ model Ticket {
   type            TicketType     @default(incident)
   status          TicketStatus   @default(open)
   priority        TicketPriority @default(medium)
+  source          String         @default("manual") // manual, portal, nl_gateway, api
   requestedBy     String?        // email or name for general users (no login)
   requestedByUser String?        // user ID if authenticated
   requesterName   String?        // Separate field for requester name
@@ -56,6 +57,9 @@ model Ticket {
   categoryId      String?
   subcategoryId   String?
   targetDate      DateTime?      // SLA target
+  firstResponseAt DateTime?      // When an operator first engaged
+  firstResponseBy String?        // Operator user ID for first response
+  reopenCount     Int            @default(0) // Number of times ticket was reopened
   resolvedAt      DateTime?      // When ticket was resolved
   closedAt        DateTime?      // When ticket was closed
   attachments     Json?          @default("[]") // Array of {id, key, filename, size, contentType, uploadedAt, uploadedBy}
@@ -70,6 +74,7 @@ model Ticket {
   @@index([assignedTo])
   @@index([assetId])
   @@index([createdAt])
+  @@index([source])
   @@map("Ticket")
   @@schema("ticket")
 }

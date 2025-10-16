@@ -131,13 +131,19 @@ export class TicketController {
       const requesterEmail = user?.email || dto.requesterEmail || null;
       const requesterName = user?.name || dto.requesterName || null;
 
+      const headerSource = (req.headers?.['x-ticket-source'] as string) || (req.headers?.['x-ticket-source'.toLowerCase()] as string);
+      const inferredSource = dto.source
+        ?? (headerSource ? headerSource.toLowerCase() : user ? 'portal' : 'manual');
+      const slaTarget = new Date();
+      slaTarget.setHours(slaTarget.getHours() + 48);
+
       const ticket = await tx.ticket.create({
         data: {
           number,
           title: dto.title,
           description: dto.description ?? null,
-          type: dto.type,
-          priority: dto.priority,
+          type: dto.type ?? 'incident',
+          priority: dto.priority ?? 'medium',
           requestedBy: dto.requestedBy ?? null,
           requestedByUser: user?.sub ?? null,
           requesterName,
@@ -146,6 +152,8 @@ export class TicketController {
           subcategoryId: dto.subcategoryId ?? null,
           assetId: dto.assetId ?? null, // NEW: Associate asset
           assignedTechnicians: [], // NEW: Initialize empty array
+          source: inferredSource,
+          targetDate: slaTarget,
         },
       });
 
@@ -221,14 +229,43 @@ export class TicketController {
   ) {
     return withTx(async (tx) => {
       const user = req.user;
+      const ticketBefore = await tx.ticket.findUniqueOrThrow({
+        where: { id },
+        select: {
+          status: true,
+          firstResponseAt: true,
+          reopenCount: true,
+          resolvedAt: true,
+        },
+      });
+
       const updateData: any = { status: dto.status };
-      
+
       // Auto-set timestamps based on status
-      if (dto.status === 'resolved' && !dto.status.includes('resolved')) {
+      if (dto.status === 'resolved') {
         updateData.resolvedAt = new Date();
       }
       if (dto.status === 'closed') {
         updateData.closedAt = new Date();
+        if (!ticketBefore.resolvedAt) {
+          updateData.resolvedAt = new Date();
+        }
+      }
+
+      if (
+        (!ticketBefore.firstResponseAt) &&
+        user &&
+        (user.role === 'operator' || user.role === 'admin')
+      ) {
+        updateData.firstResponseAt = new Date();
+        updateData.firstResponseBy = user.sub ?? null;
+      }
+
+      if (
+        (ticketBefore.status === 'resolved' || ticketBefore.status === 'closed') &&
+        (dto.status === 'open' || dto.status === 'in_progress')
+      ) {
+        updateData.reopenCount = (ticketBefore.reopenCount ?? 0) + 1;
       }
 
       const t = await tx.ticket.update({
@@ -285,6 +322,21 @@ export class TicketController {
         metadata: { assignedTo: body.operatorId },
       });
 
+      if (
+        req.user &&
+        (req.user.role === 'operator' || req.user.role === 'admin')
+      ) {
+        if (!ticket.firstResponseAt) {
+          await tx.ticket.update({
+            where: { id },
+            data: {
+              firstResponseAt: new Date(),
+              firstResponseBy: req.user.sub ?? null,
+            },
+          });
+        }
+      }
+
       return {
         success: true,
         message: 'Ticket assigned successfully',
@@ -300,7 +352,13 @@ export class TicketController {
     @Body() body: { technicianId: string },
   ) {
     return withTx(async (tx) => {
-      const ticket = await tx.ticket.findUniqueOrThrow({ where: { id } });
+      const ticket = await tx.ticket.findUniqueOrThrow({
+        where: { id },
+        select: {
+          assignedTechnicians: true,
+          firstResponseAt: true,
+        },
+      });
       const techs = (ticket.assignedTechnicians as string[]) || [];
       
       // Add technician if not already assigned
@@ -312,6 +370,21 @@ export class TicketController {
           data: { assignedTechnicians: techs },
         });
         
+        if (
+          req.user &&
+          (req.user.role === 'operator' || req.user.role === 'admin')
+        ) {
+          if (!ticket.firstResponseAt) {
+            await tx.ticket.update({
+              where: { id },
+              data: {
+                firstResponseAt: new Date(),
+                firstResponseBy: req.user.sub ?? null,
+              },
+            });
+          }
+        }
+
         await this.audit.log(tx, {
           entity: 'ticket',
           entityId: id,
@@ -394,6 +467,22 @@ export class TicketController {
           body: dto.body,
         },
       });
+
+      if (user && (user.role === 'operator' || user.role === 'admin')) {
+        const ticketMeta = await tx.ticket.findUnique({
+          where: { id },
+          select: { firstResponseAt: true },
+        });
+        if (ticketMeta && !ticketMeta.firstResponseAt) {
+          await tx.ticket.update({
+            where: { id },
+            data: {
+              firstResponseAt: new Date(),
+              firstResponseBy: user.sub ?? null,
+            },
+          });
+        }
+      }
 
       await this.audit.log(tx, {
         entity: 'ticket',

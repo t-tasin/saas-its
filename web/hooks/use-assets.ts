@@ -284,6 +284,57 @@ export function useAssetTypes() {
   })
 }
 
+export function useAssetTypeCatalog() {
+  const { isAuthenticated, loading } = useAuth()
+
+  return useQuery({
+    queryKey: ["asset-type-catalog"],
+    queryFn: async () => {
+      const response = await assetApi.get("/asset-types")
+      return { data: response.data }
+    },
+    enabled: !loading && isAuthenticated,
+  })
+}
+
+export function useCreateAssetType() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ name }: { name: string }) => {
+      const response = await assetApi.post("/asset-types", { name })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset-type-catalog"] })
+      toast.success("Asset type created")
+    },
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || error.message || "Failed to create asset type"
+      toast.error(message)
+    },
+  })
+}
+
+export function useDeleteAssetType() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      await assetApi.delete(`/asset-types/${id}`)
+      return id
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["asset-type-catalog"] })
+      toast.success("Asset type removed")
+    },
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || error.message || "Failed to delete asset type"
+      toast.error(message)
+    },
+  })
+}
+
 export function useAssetAnalytics() {
   const { isAuthenticated, loading } = useAuth()
   
@@ -291,27 +342,8 @@ export function useAssetAnalytics() {
     queryKey: ["analytics", "assets"],
     queryFn: async () => {
       try {
-        const response = await assetApi.get("/assets", {
-          params: { limit: 1000 },
-        })
-
-        const assets = response.data.data
-        const byType: Record<string, number> = {}
-
-        assets.forEach((asset: any) => {
-          const type = transformAssetType(asset.assetType)
-          byType[type] = (byType[type] || 0) + 1
-        })
-
-        return {
-          data: {
-            total: assets.length,
-            available: assets.filter((a: any) => a.status === "AVAILABLE").length,
-            assigned: assets.filter((a: any) => a.status === "IN_USE").length,
-            maintenance: assets.filter((a: any) => a.status === "MAINTENANCE").length,
-            byType,
-          },
-        }
+        const response = await assetApi.get("/analytics/assets")
+        return response.data
       } catch (error: any) {
         toast.error(error.message || "Failed to load asset analytics")
         throw error

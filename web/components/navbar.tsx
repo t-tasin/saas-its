@@ -19,7 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { Headset, User, LogOut, LayoutDashboard, Ticket, Calendar, Package, Users, Menu } from "lucide-react"
+import { Headset, User, LogOut, LayoutDashboard, Ticket, Calendar, Package, Users, Menu, Layers } from "lucide-react"
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth()
@@ -80,6 +80,14 @@ export function Navbar() {
                         <Button variant="ghost" size="sm">
                           <Users className="h-4 w-4 mr-2" />
                           Users
+                        </Button>
+                      </Link>
+                    )}
+                    {user?.role === "admin" && (
+                      <Link href="/dashboard/catalog">
+                        <Button variant="ghost" size="sm">
+                          <Layers className="h-4 w-4 mr-2" />
+                          Catalog
                         </Button>
                       </Link>
                     )}
@@ -152,6 +160,14 @@ export function Navbar() {
                               <Button variant="ghost" className="w-full justify-start">
                                 <Users className="h-4 w-4 mr-2" />
                                 Users
+                              </Button>
+                            </Link>
+                          )}
+                          {user?.role === "admin" && (
+                            <Link href="/dashboard/catalog" onClick={() => setMobileMenuOpen(false)}>
+                              <Button variant="ghost" className="w-full justify-start">
+                                <Layers className="h-4 w-4 mr-2" />
+                                Catalog
                               </Button>
                             </Link>
                           )}

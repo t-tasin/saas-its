@@ -28,30 +28,31 @@ export class AnalyticsController {
         retired: await tx.asset.count({ where: { status: 'retired' } }),
       };
 
-      // By type
-      const assetTypes = await tx.assetType.findMany({
+      // Fetch detailed asset info once for financial/compliance metrics
+      const detailedAssets = await tx.asset.findMany({
         include: {
-          assets: {
-            select: { id: true, status: true },
+          assignments: {
+            select: { assignedAt: true, unassignedAt: true },
           },
+          assetType: { select: { name: true } },
         },
       });
 
-      const byType = assetTypes.map((type) => ({
-        type: type.name,
-        total: type.assets.length,
-        available: type.assets.filter((a) => a.status === 'available').length,
-        assigned: type.assets.filter((a) => a.status === 'assigned').length,
-        maintenance: type.assets.filter((a) => a.status === 'maintenance').length,
-        retired: type.assets.filter((a) => a.status === 'retired').length,
-      }));
+      // By type
+      const byTypeMap = new Map<string, { total: number; available: number; assigned: number; maintenance: number; retired: number }>();
+      detailedAssets.forEach((asset) => {
+        const key = asset.assetType?.name || asset.type || 'Unknown';
+        if (!byTypeMap.has(key)) {
+          byTypeMap.set(key, { total: 0, available: 0, assigned: 0, maintenance: 0, retired: 0 });
+        }
+        const bucket = byTypeMap.get(key)!;
+        bucket.total += 1;
+        bucket[asset.status as 'available' | 'assigned' | 'maintenance' | 'retired'] += 1;
+      });
+      const byType = Array.from(byTypeMap.entries()).map(([type, counts]) => ({ type, ...counts }));
 
       // By location
-      const allAssets = await tx.asset.findMany({
-        select: { location: true, status: true },
-      });
-
-      const locationMap = allAssets.reduce((acc, asset) => {
+      const locationMap = detailedAssets.reduce((acc, asset) => {
         const loc = asset.location || 'Unassigned';
         if (!acc[loc]) {
           acc[loc] = { total: 0, available: 0, assigned: 0 };
@@ -61,21 +62,83 @@ export class AnalyticsController {
         if (asset.status === 'assigned') acc[loc].assigned++;
         return acc;
       }, {} as Record<string, { total: number; available: number; assigned: number }>);
+      const byLocation = Object.entries(locationMap).map(([location, counts]) => ({ location, ...counts }));
 
-      const byLocation = Object.entries(locationMap).map(([location, counts]) => ({
-        location,
-        ...counts,
-      }));
-
-      // Utilization rate
       const utilizationRate = total > 0
         ? parseFloat(((byStatus.assigned / total) * 100).toFixed(2))
         : 0;
 
-      // Active assignments
       const activeAssignments = await tx.assetAssignment.count({
         where: { unassignedAt: null },
       });
+
+      // Financial & compliance metrics
+      const now = new Date();
+      const warrantyHorizonDays = 90;
+      const defaultWarrantyYears = 3;
+
+      let totalBookValue = 0;
+      let totalAssignedDays = 0;
+      const warrantyExpiringSoon: any[] = [];
+      const warrantyExpired: any[] = [];
+      const costPerType = new Map<string, { totalCost: number; count: number }>();
+      const policyViolations: Array<{ assetId: string; issue: string }> = [];
+
+      detailedAssets.forEach((asset) => {
+        const cost = asset.cost ?? 0;
+        totalBookValue += cost;
+
+        const typeName = asset.assetType?.name || asset.type || 'Unknown';
+        if (!costPerType.has(typeName)) {
+          costPerType.set(typeName, { totalCost: 0, count: 0 });
+        }
+        const bucket = costPerType.get(typeName)!;
+        bucket.totalCost += cost;
+        bucket.count += 1;
+
+        if (asset.receivedDate) {
+          const expiry = new Date(asset.receivedDate);
+          expiry.setFullYear(expiry.getFullYear() + defaultWarrantyYears);
+          const daysUntilExpiry = Math.floor((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          if (daysUntilExpiry <= warrantyHorizonDays && daysUntilExpiry >= 0) {
+            warrantyExpiringSoon.push({ assetId: asset.assetId, type: typeName, daysUntilExpiry });
+          } else if (daysUntilExpiry < 0) {
+            warrantyExpired.push({ assetId: asset.assetId, type: typeName, daysSinceExpiry: Math.abs(daysUntilExpiry) });
+          }
+        }
+
+        let assignedDaysForAsset = 0;
+        asset.assignments.forEach((assignment) => {
+          const start = assignment.assignedAt;
+          const end = assignment.unassignedAt ?? now;
+          const durationDays = Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+          assignedDaysForAsset += durationDays;
+        });
+        totalAssignedDays += assignedDaysForAsset;
+
+        // Policy checks
+        if (asset.status === 'assigned' && assignedDaysForAsset === 0) {
+          policyViolations.push({ assetId: asset.assetId, issue: 'Asset marked as assigned without assignment history' });
+        }
+        if (!asset.fundingDepartment) {
+          policyViolations.push({ assetId: asset.assetId, issue: 'Missing funding department' });
+        }
+        if (asset.status === 'maintenance') {
+          const daysInMaintenance = Math.floor((now.getTime() - asset.updatedAt.getTime()) / (1000 * 60 * 60 * 24));
+          if (daysInMaintenance > 30) {
+            policyViolations.push({ assetId: asset.assetId, issue: `Maintenance exceeded 30 days (${daysInMaintenance}d)` });
+          }
+        }
+      });
+
+      const avgCostByType = Array.from(costPerType.entries()).map(([type, value]) => ({
+        type,
+        averageCost: value.count ? parseFloat((value.totalCost / value.count).toFixed(2)) : 0,
+      }));
+
+      const utilizationCostRatio = totalAssignedDays > 0
+        ? parseFloat((totalBookValue / totalAssignedDays).toFixed(2))
+        : 0;
 
       return {
         summary: {
@@ -87,6 +150,20 @@ export class AnalyticsController {
         breakdown: {
           byType,
           byLocation,
+        },
+        financial: {
+          totalBookValue: parseFloat(totalBookValue.toFixed(2)),
+          avgCostByType,
+          costPerUtilizedDay: utilizationCostRatio,
+          warranty: {
+            expiringSoon: warrantyExpiringSoon.slice(0, 20),
+            expiringSoonCount: warrantyExpiringSoon.length,
+            expiredCount: warrantyExpired.length,
+          },
+        },
+        compliance: {
+          policyViolationCount: policyViolations.length,
+          policyViolations: policyViolations.slice(0, 20),
         },
       };
     });
@@ -289,4 +366,3 @@ export class AnalyticsController {
     });
   }
 }
-

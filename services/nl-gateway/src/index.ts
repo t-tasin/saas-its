@@ -369,6 +369,7 @@ app.post("/nl/tickets/finalize", async (req, res) => {
       ...(parsed.categoryId ? { categoryId: parsed.categoryId } : {}),
       ...(parsed.subcategoryId ? { subcategoryId: parsed.subcategoryId } : {}),
       assetId: assetId || undefined,
+      source: 'nl_gateway',
     };
 
     // Create ticket
@@ -494,7 +495,7 @@ app.post("/nl/tickets", async (req, res) => {
     const dto = CreateTicketDto.parse(parsed);
 
     // 5) Forward to ticket-svc
-    const created = await httpJson(`${TICKET_BASE}/tickets`, { method: "POST", body: dto });
+    const created = await httpJson(`${TICKET_BASE}/tickets`, { method: "POST", body: { ...dto, source: 'nl_gateway' } });
 
     return res.status(201).json(created);
   } catch (err: any) {
@@ -505,4 +506,3 @@ app.post("/nl/tickets", async (req, res) => {
 });
 
 app.listen(PORT, () => log.info({ PORT }, "nl-gateway listening"));
-

@@ -114,11 +114,42 @@ export class AnalyticsController {
       const processedReservations = allReservations.filter(
         (r) => r.status !== 'pending' && r.status !== 'cancelled'
       );
-      const approvedCount = allReservations.filter((r) => 
+      const approvedReservations = allReservations.filter((r) => 
         r.status === 'approved' || r.status === 'active' || r.status === 'returned'
-      ).length;
+      );
       const approvalRate = processedReservations.length > 0
-        ? (approvedCount / processedReservations.length) * 100
+        ? (approvedReservations.length / processedReservations.length) * 100
+        : 0;
+
+      const autoApproved = approvedReservations.filter((r) => !r.approvedBy);
+      const autoApprovalRate = approvedReservations.length > 0
+        ? (autoApproved.length / approvedReservations.length) * 100
+        : 0;
+
+      const approvalLeadTimes: number[] = [];
+      approvedReservations.forEach((reservation) => {
+        if (reservation.approvedDate) {
+          approvalLeadTimes.push(
+            reservation.approvedDate.getTime() - reservation.createdAt.getTime(),
+          );
+        }
+      });
+      const meanLeadHours = approvalLeadTimes.length
+        ? approvalLeadTimes.reduce((sum, value) => sum + value, 0) / approvalLeadTimes.length
+        : 0;
+      const sortedLead = approvalLeadTimes.slice().sort((a, b) => a - b);
+      const medianLead = sortedLead.length
+        ? (sortedLead.length % 2 === 0
+            ? (sortedLead[sortedLead.length / 2 - 1] + sortedLead[sortedLead.length / 2]) / 2
+            : sortedLead[Math.floor(sortedLead.length / 2)])
+        : 0;
+
+      const conflictRegex = /(insufficient|unavailable|conflict|inventory)/i;
+      const deniedConflicts = allReservations.filter(
+        (r) => r.status === 'denied' && (r.denialReason && conflictRegex.test(r.denialReason)),
+      );
+      const conflictRate = processedReservations.length > 0
+        ? (deniedConflicts.length / processedReservations.length) * 100
         : 0;
 
       // Trend data (daily)
@@ -163,6 +194,14 @@ export class AnalyticsController {
           lateCount: lateReturns.length,
           avgUsageDays: parseFloat(avgUsageDays.toFixed(2)),
           avgDelayDays: parseFloat(avgDelayDays.toFixed(2)),
+        },
+        readiness: {
+          autoApprovalRate: parseFloat(autoApprovalRate.toFixed(2)),
+          autoApprovedCount: autoApproved.length,
+          avgApprovalLeadHours: parseFloat((meanLeadHours / (1000 * 60 * 60)).toFixed(2)),
+          medianApprovalLeadHours: parseFloat((medianLead / (1000 * 60 * 60)).toFixed(2)),
+          conflictRate: parseFloat(conflictRate.toFixed(2)),
+          conflictCount: deniedConflicts.length,
         },
         upcoming: {
           dueWithin7Days: upcomingDue.length,
@@ -224,4 +263,3 @@ export class AnalyticsController {
     });
   }
 }
-

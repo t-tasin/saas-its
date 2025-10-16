@@ -140,6 +140,7 @@ export function useCreateTicket() {
         type: data.type || "incident", // Required by backend
         priority: data.priority?.toLowerCase() || "medium", // Backend expects lowercase
         requestedBy: userEmail, // Required by backend
+        source: "portal",
         // Only include categoryId if it's a valid UUID, otherwise omit
         ...(data.categoryId && { categoryId: data.categoryId }),
         ...(data.subcategoryId && { subcategoryId: data.subcategoryId }),
@@ -257,16 +258,53 @@ export function useCategories() {
   return useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      // Categories are static enums in backend
+      const response = await ticketApi.get("/categories")
+      const categories = Array.isArray(response.data) ? response.data : response.data?.items || []
       return {
-        data: [
-          { id: "HARDWARE", name: "Hardware" },
-          { id: "SOFTWARE", name: "Software" },
-          { id: "NETWORK", name: "Network" },
-          { id: "ACCESS", name: "Access" },
-          { id: "OTHER", name: "Other" },
-        ],
+        data: categories.map((category: any) => ({
+          id: category.id,
+          name: category.name,
+          subcategories: category.subcategories || [],
+        })),
       }
+    },
+  })
+}
+
+export function useCreateCategory() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ name }: { name: string }) => {
+      const response = await ticketApi.post("/categories", { name })
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] })
+      toast.success("Category created")
+    },
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || error.message || "Failed to create category"
+      toast.error(message)
+    },
+  })
+}
+
+export function useDeleteCategory() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ id }: { id: string }) => {
+      await ticketApi.delete(`/categories/${id}`)
+      return id
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] })
+      toast.success("Category deleted")
+    },
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || error.message || "Failed to remove category"
+      toast.error(message)
     },
   })
 }
@@ -288,25 +326,8 @@ export function useTicketAnalytics(days = 30) {
   return useQuery({
     queryKey: ["analytics", "tickets", days],
     queryFn: async () => {
-      // Get all tickets and calculate analytics client-side
-      const response = await ticketApi.get("/tickets", { params: { limit: 1000 } })
-      const tickets = response.data.data || []
-
-      return {
-        data: {
-          total: tickets.length,
-          open: tickets.filter((t: any) => t.status === "OPEN").length,
-          inProgress: tickets.filter((t: any) => t.status === "IN_PROGRESS").length,
-          resolved: tickets.filter((t: any) => t.status === "RESOLVED").length,
-          byPriority: {
-            low: tickets.filter((t: any) => t.priority === "LOW").length,
-            medium: tickets.filter((t: any) => t.priority === "MEDIUM").length,
-            high: tickets.filter((t: any) => t.priority === "HIGH").length,
-            urgent: tickets.filter((t: any) => t.priority === "CRITICAL").length,
-          },
-          trend: [],
-        },
-      }
+      const response = await ticketApi.get("/tickets/analytics", { params: { days } })
+      return response.data
     },
     enabled: !loading && isAuthenticated,
   })

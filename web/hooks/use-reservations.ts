@@ -272,19 +272,11 @@ export function useReservationAnalytics(days = 30) {
   return useQuery({
     queryKey: ["analytics", "reservations", days],
     queryFn: async () => {
-      const response = await reservationApi.get("/")
-      const reservations = response.data.data || []
+      const response = await reservationApi.get("/analytics/reservations", {
+        params: { days },
+      })
 
-      return {
-        data: {
-          total: reservations.length,
-          pending: reservations.filter((r: any) => r.status === "PENDING").length,
-          approved: reservations.filter((r: any) => r.status === "APPROVED").length,
-          rejected: reservations.filter((r: any) => r.status === "REJECTED").length,
-          cancelled: reservations.filter((r: any) => r.status === "CANCELLED").length,
-          trend: [],
-        },
-      }
+      return response.data
     },
     enabled: !loading && isAuthenticated,
   })

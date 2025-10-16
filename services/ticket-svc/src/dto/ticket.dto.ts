@@ -8,6 +8,7 @@ import { Type } from 'class-transformer';
 export enum TicketStatus { open='open', in_progress='in_progress', resolved='resolved', closed='closed' }
 export enum TicketType   { incident='incident', request='request' }
 export enum TicketPriority { low='low', medium='medium', high='high', urgent='urgent' }
+export enum TicketSource { manual='manual', portal='portal', nl_gateway='nl_gateway', api='api' }
 
 export class CreateTicketDto {
   @ApiProperty() @IsString() @Length(3, 120)
@@ -47,6 +48,10 @@ export class CreateTicketDto {
   @ApiPropertyOptional({ description: 'Asset UUID to associate with this ticket' })
   @IsOptional() @IsUUID()
   assetId?: string;
+
+  @ApiPropertyOptional({ enum: TicketSource, description: 'Origin of the ticket (defaults to manual)' })
+  @IsOptional() @IsEnum(TicketSource)
+  source?: TicketSource;
 }
 
 export class PatchStatusDto {
