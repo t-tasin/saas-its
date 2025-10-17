@@ -4,15 +4,15 @@ import { Roles } from './auth/roles.decorator';
 import { withTx } from './with-tenant';
 import { ParseUUIDPipe } from '@nestjs/common';
 
-@ApiTags('asset-types')
+@ApiTags('assets')
 @ApiBearerAuth()
-@Controller('asset-types')
+@Controller('assets')
 export class AssetTypeController {
   /**
    * List all asset types (operators and admins)
    */
   @Roles('operator', 'admin')
-  @Get()
+  @Get('asset-types')
   async list() {
     return withTx((tx) =>
       tx.assetType.findMany({
@@ -33,7 +33,7 @@ export class AssetTypeController {
    * Create a new asset type (admin only)
    */
   @Roles('admin')
-  @Post()
+  @Post('asset-types')
   async create(@Body() body: { name: string }) {
     const name = (body.name || '').trim();
     if (!name) {
@@ -57,7 +57,7 @@ export class AssetTypeController {
    * Delete an asset type (admin only)
    */
   @Roles('admin')
-  @Delete(':id')
+  @Delete('asset-types/:id')
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     return withTx(async (tx) => {
       const assetCount = await tx.asset.count({ where: { assetTypeId: id } });

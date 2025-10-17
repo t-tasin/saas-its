@@ -290,7 +290,7 @@ export function useAssetTypeCatalog() {
   return useQuery({
     queryKey: ["asset-type-catalog"],
     queryFn: async () => {
-      const response = await assetApi.get("/asset-types")
+      const response = await assetApi.get("/assets/asset-types")
       return { data: response.data }
     },
     enabled: !loading && isAuthenticated,
@@ -302,7 +302,7 @@ export function useCreateAssetType() {
 
   return useMutation({
     mutationFn: async ({ name }: { name: string }) => {
-      const response = await assetApi.post("/asset-types", { name })
+      const response = await assetApi.post("/assets/asset-types", { name })
       return response.data
     },
     onSuccess: () => {
@@ -321,7 +321,7 @@ export function useDeleteAssetType() {
 
   return useMutation({
     mutationFn: async ({ id }: { id: string }) => {
-      await assetApi.delete(`/asset-types/${id}`)
+      await assetApi.delete(`/assets/asset-types/${id}`)
       return id
     },
     onSuccess: () => {

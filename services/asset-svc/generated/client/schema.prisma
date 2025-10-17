@@ -79,8 +79,10 @@ model Asset {
   status   AssetStatus @default(available)
 
   // Assignment tracking (flattened from AssetAssignment)
-  assignedToId String? // User ID
-  assignedDate DateTime?
+  assignedToId    String? // User ID
+  assignedToName  String? // User name
+  assignedToEmail String? // User email
+  assignedDate    DateTime?
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -104,6 +106,8 @@ model AssetAssignment {
   id           String    @id @default(uuid())
   assetId      String
   personId     String // user ID
+  personName   String? // user name
+  personEmail  String? // user email
   assignedAt   DateTime  @default(now())
   unassignedAt DateTime?
 

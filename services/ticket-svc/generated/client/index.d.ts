@@ -1425,8 +1425,18 @@ export namespace Prisma {
 
   export type AggregateTicket = {
     _count: TicketCountAggregateOutputType | null
+    _avg: TicketAvgAggregateOutputType | null
+    _sum: TicketSumAggregateOutputType | null
     _min: TicketMinAggregateOutputType | null
     _max: TicketMaxAggregateOutputType | null
+  }
+
+  export type TicketAvgAggregateOutputType = {
+    reopenCount: number | null
+  }
+
+  export type TicketSumAggregateOutputType = {
+    reopenCount: number | null
   }
 
   export type TicketMinAggregateOutputType = {
@@ -1437,14 +1447,19 @@ export namespace Prisma {
     type: $Enums.TicketType | null
     status: $Enums.TicketStatus | null
     priority: $Enums.TicketPriority | null
+    source: string | null
     requestedBy: string | null
     requestedByUser: string | null
     requesterName: string | null
     requesterEmail: string | null
     assignedTo: string | null
+    assetId: string | null
     categoryId: string | null
     subcategoryId: string | null
     targetDate: Date | null
+    firstResponseAt: Date | null
+    firstResponseBy: string | null
+    reopenCount: number | null
     resolvedAt: Date | null
     closedAt: Date | null
     createdAt: Date | null
@@ -1459,14 +1474,19 @@ export namespace Prisma {
     type: $Enums.TicketType | null
     status: $Enums.TicketStatus | null
     priority: $Enums.TicketPriority | null
+    source: string | null
     requestedBy: string | null
     requestedByUser: string | null
     requesterName: string | null
     requesterEmail: string | null
     assignedTo: string | null
+    assetId: string | null
     categoryId: string | null
     subcategoryId: string | null
     targetDate: Date | null
+    firstResponseAt: Date | null
+    firstResponseBy: string | null
+    reopenCount: number | null
     resolvedAt: Date | null
     closedAt: Date | null
     createdAt: Date | null
@@ -1481,14 +1501,20 @@ export namespace Prisma {
     type: number
     status: number
     priority: number
+    source: number
     requestedBy: number
     requestedByUser: number
     requesterName: number
     requesterEmail: number
     assignedTo: number
+    assignedTechnicians: number
+    assetId: number
     categoryId: number
     subcategoryId: number
     targetDate: number
+    firstResponseAt: number
+    firstResponseBy: number
+    reopenCount: number
     resolvedAt: number
     closedAt: number
     attachments: number
@@ -1498,6 +1524,14 @@ export namespace Prisma {
   }
 
 
+  export type TicketAvgAggregateInputType = {
+    reopenCount?: true
+  }
+
+  export type TicketSumAggregateInputType = {
+    reopenCount?: true
+  }
+
   export type TicketMinAggregateInputType = {
     id?: true
     number?: true
@@ -1506,14 +1540,19 @@ export namespace Prisma {
     type?: true
     status?: true
     priority?: true
+    source?: true
     requestedBy?: true
     requestedByUser?: true
     requesterName?: true
     requesterEmail?: true
     assignedTo?: true
+    assetId?: true
     categoryId?: true
     subcategoryId?: true
     targetDate?: true
+    firstResponseAt?: true
+    firstResponseBy?: true
+    reopenCount?: true
     resolvedAt?: true
     closedAt?: true
     createdAt?: true
@@ -1528,14 +1567,19 @@ export namespace Prisma {
     type?: true
     status?: true
     priority?: true
+    source?: true
     requestedBy?: true
     requestedByUser?: true
     requesterName?: true
     requesterEmail?: true
     assignedTo?: true
+    assetId?: true
     categoryId?: true
     subcategoryId?: true
     targetDate?: true
+    firstResponseAt?: true
+    firstResponseBy?: true
+    reopenCount?: true
     resolvedAt?: true
     closedAt?: true
     createdAt?: true
@@ -1550,14 +1594,20 @@ export namespace Prisma {
     type?: true
     status?: true
     priority?: true
+    source?: true
     requestedBy?: true
     requestedByUser?: true
     requesterName?: true
     requesterEmail?: true
     assignedTo?: true
+    assignedTechnicians?: true
+    assetId?: true
     categoryId?: true
     subcategoryId?: true
     targetDate?: true
+    firstResponseAt?: true
+    firstResponseBy?: true
+    reopenCount?: true
     resolvedAt?: true
     closedAt?: true
     attachments?: true
@@ -1604,6 +1654,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TicketAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TicketSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TicketMinAggregateInputType
@@ -1634,6 +1696,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TicketCountAggregateInputType | true
+    _avg?: TicketAvgAggregateInputType
+    _sum?: TicketSumAggregateInputType
     _min?: TicketMinAggregateInputType
     _max?: TicketMaxAggregateInputType
   }
@@ -1646,20 +1710,28 @@ export namespace Prisma {
     type: $Enums.TicketType
     status: $Enums.TicketStatus
     priority: $Enums.TicketPriority
+    source: string
     requestedBy: string | null
     requestedByUser: string | null
     requesterName: string | null
     requesterEmail: string | null
     assignedTo: string | null
+    assignedTechnicians: JsonValue | null
+    assetId: string | null
     categoryId: string | null
     subcategoryId: string | null
     targetDate: Date | null
+    firstResponseAt: Date | null
+    firstResponseBy: string | null
+    reopenCount: number
     resolvedAt: Date | null
     closedAt: Date | null
     attachments: JsonValue | null
     createdAt: Date
     updatedAt: Date
     _count: TicketCountAggregateOutputType | null
+    _avg: TicketAvgAggregateOutputType | null
+    _sum: TicketSumAggregateOutputType | null
     _min: TicketMinAggregateOutputType | null
     _max: TicketMaxAggregateOutputType | null
   }
@@ -1686,14 +1758,20 @@ export namespace Prisma {
     type?: boolean
     status?: boolean
     priority?: boolean
+    source?: boolean
     requestedBy?: boolean
     requestedByUser?: boolean
     requesterName?: boolean
     requesterEmail?: boolean
     assignedTo?: boolean
+    assignedTechnicians?: boolean
+    assetId?: boolean
     categoryId?: boolean
     subcategoryId?: boolean
     targetDate?: boolean
+    firstResponseAt?: boolean
+    firstResponseBy?: boolean
+    reopenCount?: boolean
     resolvedAt?: boolean
     closedAt?: boolean
     attachments?: boolean
@@ -1713,14 +1791,20 @@ export namespace Prisma {
     type?: boolean
     status?: boolean
     priority?: boolean
+    source?: boolean
     requestedBy?: boolean
     requestedByUser?: boolean
     requesterName?: boolean
     requesterEmail?: boolean
     assignedTo?: boolean
+    assignedTechnicians?: boolean
+    assetId?: boolean
     categoryId?: boolean
     subcategoryId?: boolean
     targetDate?: boolean
+    firstResponseAt?: boolean
+    firstResponseBy?: boolean
+    reopenCount?: boolean
     resolvedAt?: boolean
     closedAt?: boolean
     attachments?: boolean
@@ -1738,14 +1822,20 @@ export namespace Prisma {
     type?: boolean
     status?: boolean
     priority?: boolean
+    source?: boolean
     requestedBy?: boolean
     requestedByUser?: boolean
     requesterName?: boolean
     requesterEmail?: boolean
     assignedTo?: boolean
+    assignedTechnicians?: boolean
+    assetId?: boolean
     categoryId?: boolean
     subcategoryId?: boolean
     targetDate?: boolean
+    firstResponseAt?: boolean
+    firstResponseBy?: boolean
+    reopenCount?: boolean
     resolvedAt?: boolean
     closedAt?: boolean
     attachments?: boolean
@@ -1779,14 +1869,20 @@ export namespace Prisma {
       type: $Enums.TicketType
       status: $Enums.TicketStatus
       priority: $Enums.TicketPriority
+      source: string
       requestedBy: string | null
       requestedByUser: string | null
       requesterName: string | null
       requesterEmail: string | null
       assignedTo: string | null
+      assignedTechnicians: Prisma.JsonValue | null
+      assetId: string | null
       categoryId: string | null
       subcategoryId: string | null
       targetDate: Date | null
+      firstResponseAt: Date | null
+      firstResponseBy: string | null
+      reopenCount: number
       resolvedAt: Date | null
       closedAt: Date | null
       attachments: Prisma.JsonValue | null
@@ -2195,14 +2291,20 @@ export namespace Prisma {
     readonly type: FieldRef<"Ticket", 'TicketType'>
     readonly status: FieldRef<"Ticket", 'TicketStatus'>
     readonly priority: FieldRef<"Ticket", 'TicketPriority'>
+    readonly source: FieldRef<"Ticket", 'String'>
     readonly requestedBy: FieldRef<"Ticket", 'String'>
     readonly requestedByUser: FieldRef<"Ticket", 'String'>
     readonly requesterName: FieldRef<"Ticket", 'String'>
     readonly requesterEmail: FieldRef<"Ticket", 'String'>
     readonly assignedTo: FieldRef<"Ticket", 'String'>
+    readonly assignedTechnicians: FieldRef<"Ticket", 'Json'>
+    readonly assetId: FieldRef<"Ticket", 'String'>
     readonly categoryId: FieldRef<"Ticket", 'String'>
     readonly subcategoryId: FieldRef<"Ticket", 'String'>
     readonly targetDate: FieldRef<"Ticket", 'DateTime'>
+    readonly firstResponseAt: FieldRef<"Ticket", 'DateTime'>
+    readonly firstResponseBy: FieldRef<"Ticket", 'String'>
+    readonly reopenCount: FieldRef<"Ticket", 'Int'>
     readonly resolvedAt: FieldRef<"Ticket", 'DateTime'>
     readonly closedAt: FieldRef<"Ticket", 'DateTime'>
     readonly attachments: FieldRef<"Ticket", 'Json'>
@@ -7238,14 +7340,20 @@ export namespace Prisma {
     type: 'type',
     status: 'status',
     priority: 'priority',
+    source: 'source',
     requestedBy: 'requestedBy',
     requestedByUser: 'requestedByUser',
     requesterName: 'requesterName',
     requesterEmail: 'requesterEmail',
     assignedTo: 'assignedTo',
+    assignedTechnicians: 'assignedTechnicians',
+    assetId: 'assetId',
     categoryId: 'categoryId',
     subcategoryId: 'subcategoryId',
     targetDate: 'targetDate',
+    firstResponseAt: 'firstResponseAt',
+    firstResponseBy: 'firstResponseBy',
+    reopenCount: 'reopenCount',
     resolvedAt: 'resolvedAt',
     closedAt: 'closedAt',
     attachments: 'attachments',
@@ -7412,6 +7520,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -7422,13 +7537,6 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Json'
-   */
-  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
     
 
 
@@ -7474,14 +7582,20 @@ export namespace Prisma {
     type?: EnumTicketTypeFilter<"Ticket"> | $Enums.TicketType
     status?: EnumTicketStatusFilter<"Ticket"> | $Enums.TicketStatus
     priority?: EnumTicketPriorityFilter<"Ticket"> | $Enums.TicketPriority
+    source?: StringFilter<"Ticket"> | string
     requestedBy?: StringNullableFilter<"Ticket"> | string | null
     requestedByUser?: StringNullableFilter<"Ticket"> | string | null
     requesterName?: StringNullableFilter<"Ticket"> | string | null
     requesterEmail?: StringNullableFilter<"Ticket"> | string | null
     assignedTo?: StringNullableFilter<"Ticket"> | string | null
+    assignedTechnicians?: JsonNullableFilter<"Ticket">
+    assetId?: StringNullableFilter<"Ticket"> | string | null
     categoryId?: StringNullableFilter<"Ticket"> | string | null
     subcategoryId?: StringNullableFilter<"Ticket"> | string | null
     targetDate?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    firstResponseAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    firstResponseBy?: StringNullableFilter<"Ticket"> | string | null
+    reopenCount?: IntFilter<"Ticket"> | number
     resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     attachments?: JsonNullableFilter<"Ticket">
@@ -7500,14 +7614,20 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    source?: SortOrder
     requestedBy?: SortOrderInput | SortOrder
     requestedByUser?: SortOrderInput | SortOrder
     requesterName?: SortOrderInput | SortOrder
     requesterEmail?: SortOrderInput | SortOrder
     assignedTo?: SortOrderInput | SortOrder
+    assignedTechnicians?: SortOrderInput | SortOrder
+    assetId?: SortOrderInput | SortOrder
     categoryId?: SortOrderInput | SortOrder
     subcategoryId?: SortOrderInput | SortOrder
     targetDate?: SortOrderInput | SortOrder
+    firstResponseAt?: SortOrderInput | SortOrder
+    firstResponseBy?: SortOrderInput | SortOrder
+    reopenCount?: SortOrder
     resolvedAt?: SortOrderInput | SortOrder
     closedAt?: SortOrderInput | SortOrder
     attachments?: SortOrderInput | SortOrder
@@ -7529,14 +7649,20 @@ export namespace Prisma {
     type?: EnumTicketTypeFilter<"Ticket"> | $Enums.TicketType
     status?: EnumTicketStatusFilter<"Ticket"> | $Enums.TicketStatus
     priority?: EnumTicketPriorityFilter<"Ticket"> | $Enums.TicketPriority
+    source?: StringFilter<"Ticket"> | string
     requestedBy?: StringNullableFilter<"Ticket"> | string | null
     requestedByUser?: StringNullableFilter<"Ticket"> | string | null
     requesterName?: StringNullableFilter<"Ticket"> | string | null
     requesterEmail?: StringNullableFilter<"Ticket"> | string | null
     assignedTo?: StringNullableFilter<"Ticket"> | string | null
+    assignedTechnicians?: JsonNullableFilter<"Ticket">
+    assetId?: StringNullableFilter<"Ticket"> | string | null
     categoryId?: StringNullableFilter<"Ticket"> | string | null
     subcategoryId?: StringNullableFilter<"Ticket"> | string | null
     targetDate?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    firstResponseAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    firstResponseBy?: StringNullableFilter<"Ticket"> | string | null
+    reopenCount?: IntFilter<"Ticket"> | number
     resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     attachments?: JsonNullableFilter<"Ticket">
@@ -7555,22 +7681,30 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    source?: SortOrder
     requestedBy?: SortOrderInput | SortOrder
     requestedByUser?: SortOrderInput | SortOrder
     requesterName?: SortOrderInput | SortOrder
     requesterEmail?: SortOrderInput | SortOrder
     assignedTo?: SortOrderInput | SortOrder
+    assignedTechnicians?: SortOrderInput | SortOrder
+    assetId?: SortOrderInput | SortOrder
     categoryId?: SortOrderInput | SortOrder
     subcategoryId?: SortOrderInput | SortOrder
     targetDate?: SortOrderInput | SortOrder
+    firstResponseAt?: SortOrderInput | SortOrder
+    firstResponseBy?: SortOrderInput | SortOrder
+    reopenCount?: SortOrder
     resolvedAt?: SortOrderInput | SortOrder
     closedAt?: SortOrderInput | SortOrder
     attachments?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TicketCountOrderByAggregateInput
+    _avg?: TicketAvgOrderByAggregateInput
     _max?: TicketMaxOrderByAggregateInput
     _min?: TicketMinOrderByAggregateInput
+    _sum?: TicketSumOrderByAggregateInput
   }
 
   export type TicketScalarWhereWithAggregatesInput = {
@@ -7584,14 +7718,20 @@ export namespace Prisma {
     type?: EnumTicketTypeWithAggregatesFilter<"Ticket"> | $Enums.TicketType
     status?: EnumTicketStatusWithAggregatesFilter<"Ticket"> | $Enums.TicketStatus
     priority?: EnumTicketPriorityWithAggregatesFilter<"Ticket"> | $Enums.TicketPriority
+    source?: StringWithAggregatesFilter<"Ticket"> | string
     requestedBy?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     requestedByUser?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     requesterName?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     requesterEmail?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     assignedTo?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
+    assignedTechnicians?: JsonNullableWithAggregatesFilter<"Ticket">
+    assetId?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     categoryId?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     subcategoryId?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     targetDate?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
+    firstResponseAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
+    firstResponseBy?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
+    reopenCount?: IntWithAggregatesFilter<"Ticket"> | number
     resolvedAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
     closedAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
     attachments?: JsonNullableWithAggregatesFilter<"Ticket">
@@ -7875,12 +8015,18 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -7899,14 +8045,20 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     categoryId?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -7923,12 +8075,18 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -7947,14 +8105,20 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -7971,14 +8135,20 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     categoryId?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -7994,12 +8164,18 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -8015,14 +8191,20 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -8356,17 +8538,6 @@ export namespace Prisma {
     notIn?: $Enums.TicketPriority[] | ListEnumTicketPriorityFieldRefInput<$PrismaModel>
     not?: NestedEnumTicketPriorityFilter<$PrismaModel> | $Enums.TicketPriority
   }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
   export type JsonNullableFilter<$PrismaModel = never> = 
     | PatchUndefined<
         Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -8388,6 +8559,28 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type DateTimeFilter<$PrismaModel = never> = {
@@ -8434,19 +8627,29 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    source?: SortOrder
     requestedBy?: SortOrder
     requestedByUser?: SortOrder
     requesterName?: SortOrder
     requesterEmail?: SortOrder
     assignedTo?: SortOrder
+    assignedTechnicians?: SortOrder
+    assetId?: SortOrder
     categoryId?: SortOrder
     subcategoryId?: SortOrder
     targetDate?: SortOrder
+    firstResponseAt?: SortOrder
+    firstResponseBy?: SortOrder
+    reopenCount?: SortOrder
     resolvedAt?: SortOrder
     closedAt?: SortOrder
     attachments?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type TicketAvgOrderByAggregateInput = {
+    reopenCount?: SortOrder
   }
 
   export type TicketMaxOrderByAggregateInput = {
@@ -8457,14 +8660,19 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    source?: SortOrder
     requestedBy?: SortOrder
     requestedByUser?: SortOrder
     requesterName?: SortOrder
     requesterEmail?: SortOrder
     assignedTo?: SortOrder
+    assetId?: SortOrder
     categoryId?: SortOrder
     subcategoryId?: SortOrder
     targetDate?: SortOrder
+    firstResponseAt?: SortOrder
+    firstResponseBy?: SortOrder
+    reopenCount?: SortOrder
     resolvedAt?: SortOrder
     closedAt?: SortOrder
     createdAt?: SortOrder
@@ -8479,18 +8687,27 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     priority?: SortOrder
+    source?: SortOrder
     requestedBy?: SortOrder
     requestedByUser?: SortOrder
     requesterName?: SortOrder
     requesterEmail?: SortOrder
     assignedTo?: SortOrder
+    assetId?: SortOrder
     categoryId?: SortOrder
     subcategoryId?: SortOrder
     targetDate?: SortOrder
+    firstResponseAt?: SortOrder
+    firstResponseBy?: SortOrder
+    reopenCount?: SortOrder
     resolvedAt?: SortOrder
     closedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type TicketSumOrderByAggregateInput = {
+    reopenCount?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -8558,20 +8775,6 @@ export namespace Prisma {
     _min?: NestedEnumTicketPriorityFilter<$PrismaModel>
     _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
   }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
     | PatchUndefined<
         Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
@@ -8596,6 +8799,36 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -8716,17 +8949,6 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type TicketDayCounterCountOrderByAggregateInput = {
     yymmdd?: SortOrder
     seq?: SortOrder
@@ -8748,22 +8970,6 @@ export namespace Prisma {
 
   export type TicketDayCounterSumOrderByAggregateInput = {
     seq?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type AuditLogCountOrderByAggregateInput = {
@@ -8842,6 +9048,14 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -9050,14 +9264,6 @@ export namespace Prisma {
     deleteMany?: TicketScalarWhereInput | TicketScalarWhereInput[]
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -9118,6 +9324,17 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -9144,17 +9361,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -9214,20 +9420,6 @@ export namespace Prisma {
     _min?: NestedEnumTicketPriorityFilter<$PrismaModel>
     _max?: NestedEnumTicketPriorityFilter<$PrismaModel>
   }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
   export type NestedJsonNullableFilter<$PrismaModel = never> = 
     | PatchUndefined<
         Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -9251,18 +9443,18 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -9290,6 +9482,20 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type TicketCommentCreateWithoutTicketInput = {
@@ -9445,12 +9651,18 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9468,14 +9680,20 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     categoryId?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9507,12 +9725,18 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9530,14 +9754,20 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9553,12 +9783,18 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9576,13 +9812,19 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9652,14 +9894,20 @@ export namespace Prisma {
     type?: EnumTicketTypeFilter<"Ticket"> | $Enums.TicketType
     status?: EnumTicketStatusFilter<"Ticket"> | $Enums.TicketStatus
     priority?: EnumTicketPriorityFilter<"Ticket"> | $Enums.TicketPriority
+    source?: StringFilter<"Ticket"> | string
     requestedBy?: StringNullableFilter<"Ticket"> | string | null
     requestedByUser?: StringNullableFilter<"Ticket"> | string | null
     requesterName?: StringNullableFilter<"Ticket"> | string | null
     requesterEmail?: StringNullableFilter<"Ticket"> | string | null
     assignedTo?: StringNullableFilter<"Ticket"> | string | null
+    assignedTechnicians?: JsonNullableFilter<"Ticket">
+    assetId?: StringNullableFilter<"Ticket"> | string | null
     categoryId?: StringNullableFilter<"Ticket"> | string | null
     subcategoryId?: StringNullableFilter<"Ticket"> | string | null
     targetDate?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    firstResponseAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    firstResponseBy?: StringNullableFilter<"Ticket"> | string | null
+    reopenCount?: IntFilter<"Ticket"> | number
     resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     attachments?: JsonNullableFilter<"Ticket">
@@ -9720,12 +9968,18 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9743,13 +9997,19 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     categoryId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9853,13 +10113,19 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     subcategoryId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9881,12 +10147,18 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9904,13 +10176,19 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9927,13 +10205,19 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9969,13 +10253,19 @@ export namespace Prisma {
     type?: $Enums.TicketType
     status?: $Enums.TicketStatus
     priority?: $Enums.TicketPriority
+    source?: string
     requestedBy?: string | null
     requestedByUser?: string | null
     requesterName?: string | null
     requesterEmail?: string | null
     assignedTo?: string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: string | null
     categoryId?: string | null
     targetDate?: Date | string | null
+    firstResponseAt?: Date | string | null
+    firstResponseBy?: string | null
+    reopenCount?: number
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -9991,12 +10281,18 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -10014,13 +10310,19 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
@@ -10037,13 +10339,19 @@ export namespace Prisma {
     type?: EnumTicketTypeFieldUpdateOperationsInput | $Enums.TicketType
     status?: EnumTicketStatusFieldUpdateOperationsInput | $Enums.TicketStatus
     priority?: EnumTicketPriorityFieldUpdateOperationsInput | $Enums.TicketPriority
+    source?: StringFieldUpdateOperationsInput | string
     requestedBy?: NullableStringFieldUpdateOperationsInput | string | null
     requestedByUser?: NullableStringFieldUpdateOperationsInput | string | null
     requesterName?: NullableStringFieldUpdateOperationsInput | string | null
     requesterEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTechnicians?: NullableJsonNullValueInput | InputJsonValue
+    assetId?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     targetDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstResponseBy?: NullableStringFieldUpdateOperationsInput | string | null
+    reopenCount?: IntFieldUpdateOperationsInput | number
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue

@@ -258,7 +258,7 @@ export function useCategories() {
   return useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const response = await ticketApi.get("/categories")
+      const response = await ticketApi.get("/tickets/categories")
       const categories = Array.isArray(response.data) ? response.data : response.data?.items || []
       return {
         data: categories.map((category: any) => ({
@@ -276,7 +276,7 @@ export function useCreateCategory() {
 
   return useMutation({
     mutationFn: async ({ name }: { name: string }) => {
-      const response = await ticketApi.post("/categories", { name })
+      const response = await ticketApi.post("/tickets/categories", { name })
       return response.data
     },
     onSuccess: () => {
@@ -295,7 +295,7 @@ export function useDeleteCategory() {
 
   return useMutation({
     mutationFn: async ({ id }: { id: string }) => {
-      await ticketApi.delete(`/categories/${id}`)
+      await ticketApi.delete(`/tickets/categories/${id}`)
       return id
     },
     onSuccess: () => {

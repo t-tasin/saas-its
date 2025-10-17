@@ -158,6 +158,8 @@ exports.Prisma.AssetScalarFieldEnum = {
   location: 'location',
   status: 'status',
   assignedToId: 'assignedToId',
+  assignedToName: 'assignedToName',
+  assignedToEmail: 'assignedToEmail',
   assignedDate: 'assignedDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -168,6 +170,8 @@ exports.Prisma.AssetAssignmentScalarFieldEnum = {
   id: 'id',
   assetId: 'assetId',
   personId: 'personId',
+  personName: 'personName',
+  personEmail: 'personEmail',
   assignedAt: 'assignedAt',
   unassignedAt: 'unassignedAt'
 };

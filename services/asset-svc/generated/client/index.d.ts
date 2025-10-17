@@ -2250,6 +2250,8 @@ export namespace Prisma {
     location: string | null
     status: $Enums.AssetStatus | null
     assignedToId: string | null
+    assignedToName: string | null
+    assignedToEmail: string | null
     assignedDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2286,6 +2288,8 @@ export namespace Prisma {
     location: string | null
     status: $Enums.AssetStatus | null
     assignedToId: string | null
+    assignedToName: string | null
+    assignedToEmail: string | null
     assignedDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2322,6 +2326,8 @@ export namespace Prisma {
     location: number
     status: number
     assignedToId: number
+    assignedToName: number
+    assignedToEmail: number
     assignedDate: number
     createdAt: number
     updatedAt: number
@@ -2368,6 +2374,8 @@ export namespace Prisma {
     location?: true
     status?: true
     assignedToId?: true
+    assignedToName?: true
+    assignedToEmail?: true
     assignedDate?: true
     createdAt?: true
     updatedAt?: true
@@ -2404,6 +2412,8 @@ export namespace Prisma {
     location?: true
     status?: true
     assignedToId?: true
+    assignedToName?: true
+    assignedToEmail?: true
     assignedDate?: true
     createdAt?: true
     updatedAt?: true
@@ -2440,6 +2450,8 @@ export namespace Prisma {
     location?: true
     status?: true
     assignedToId?: true
+    assignedToName?: true
+    assignedToEmail?: true
     assignedDate?: true
     createdAt?: true
     updatedAt?: true
@@ -2563,6 +2575,8 @@ export namespace Prisma {
     location: string | null
     status: $Enums.AssetStatus
     assignedToId: string | null
+    assignedToName: string | null
+    assignedToEmail: string | null
     assignedDate: Date | null
     createdAt: Date
     updatedAt: Date
@@ -2618,6 +2632,8 @@ export namespace Prisma {
     location?: boolean
     status?: boolean
     assignedToId?: boolean
+    assignedToName?: boolean
+    assignedToEmail?: boolean
     assignedDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2658,6 +2674,8 @@ export namespace Prisma {
     location?: boolean
     status?: boolean
     assignedToId?: boolean
+    assignedToName?: boolean
+    assignedToEmail?: boolean
     assignedDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2695,6 +2713,8 @@ export namespace Prisma {
     location?: boolean
     status?: boolean
     assignedToId?: boolean
+    assignedToName?: boolean
+    assignedToEmail?: boolean
     assignedDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2748,6 +2768,8 @@ export namespace Prisma {
       location: string | null
       status: $Enums.AssetStatus
       assignedToId: string | null
+      assignedToName: string | null
+      assignedToEmail: string | null
       assignedDate: Date | null
       createdAt: Date
       updatedAt: Date
@@ -3177,6 +3199,8 @@ export namespace Prisma {
     readonly location: FieldRef<"Asset", 'String'>
     readonly status: FieldRef<"Asset", 'AssetStatus'>
     readonly assignedToId: FieldRef<"Asset", 'String'>
+    readonly assignedToName: FieldRef<"Asset", 'String'>
+    readonly assignedToEmail: FieldRef<"Asset", 'String'>
     readonly assignedDate: FieldRef<"Asset", 'DateTime'>
     readonly createdAt: FieldRef<"Asset", 'DateTime'>
     readonly updatedAt: FieldRef<"Asset", 'DateTime'>
@@ -3582,6 +3606,8 @@ export namespace Prisma {
     id: string | null
     assetId: string | null
     personId: string | null
+    personName: string | null
+    personEmail: string | null
     assignedAt: Date | null
     unassignedAt: Date | null
   }
@@ -3590,6 +3616,8 @@ export namespace Prisma {
     id: string | null
     assetId: string | null
     personId: string | null
+    personName: string | null
+    personEmail: string | null
     assignedAt: Date | null
     unassignedAt: Date | null
   }
@@ -3598,6 +3626,8 @@ export namespace Prisma {
     id: number
     assetId: number
     personId: number
+    personName: number
+    personEmail: number
     assignedAt: number
     unassignedAt: number
     _all: number
@@ -3608,6 +3638,8 @@ export namespace Prisma {
     id?: true
     assetId?: true
     personId?: true
+    personName?: true
+    personEmail?: true
     assignedAt?: true
     unassignedAt?: true
   }
@@ -3616,6 +3648,8 @@ export namespace Prisma {
     id?: true
     assetId?: true
     personId?: true
+    personName?: true
+    personEmail?: true
     assignedAt?: true
     unassignedAt?: true
   }
@@ -3624,6 +3658,8 @@ export namespace Prisma {
     id?: true
     assetId?: true
     personId?: true
+    personName?: true
+    personEmail?: true
     assignedAt?: true
     unassignedAt?: true
     _all?: true
@@ -3705,6 +3741,8 @@ export namespace Prisma {
     id: string
     assetId: string
     personId: string
+    personName: string | null
+    personEmail: string | null
     assignedAt: Date
     unassignedAt: Date | null
     _count: AssetAssignmentCountAggregateOutputType | null
@@ -3730,6 +3768,8 @@ export namespace Prisma {
     id?: boolean
     assetId?: boolean
     personId?: boolean
+    personName?: boolean
+    personEmail?: boolean
     assignedAt?: boolean
     unassignedAt?: boolean
     asset?: boolean | AssetDefaultArgs<ExtArgs>
@@ -3739,6 +3779,8 @@ export namespace Prisma {
     id?: boolean
     assetId?: boolean
     personId?: boolean
+    personName?: boolean
+    personEmail?: boolean
     assignedAt?: boolean
     unassignedAt?: boolean
     asset?: boolean | AssetDefaultArgs<ExtArgs>
@@ -3748,6 +3790,8 @@ export namespace Prisma {
     id?: boolean
     assetId?: boolean
     personId?: boolean
+    personName?: boolean
+    personEmail?: boolean
     assignedAt?: boolean
     unassignedAt?: boolean
   }
@@ -3768,6 +3812,8 @@ export namespace Prisma {
       id: string
       assetId: string
       personId: string
+      personName: string | null
+      personEmail: string | null
       assignedAt: Date
       unassignedAt: Date | null
     }, ExtArgs["result"]["assetAssignment"]>
@@ -4167,6 +4213,8 @@ export namespace Prisma {
     readonly id: FieldRef<"AssetAssignment", 'String'>
     readonly assetId: FieldRef<"AssetAssignment", 'String'>
     readonly personId: FieldRef<"AssetAssignment", 'String'>
+    readonly personName: FieldRef<"AssetAssignment", 'String'>
+    readonly personEmail: FieldRef<"AssetAssignment", 'String'>
     readonly assignedAt: FieldRef<"AssetAssignment", 'DateTime'>
     readonly unassignedAt: FieldRef<"AssetAssignment", 'DateTime'>
   }
@@ -6393,6 +6441,8 @@ export namespace Prisma {
     location: 'location',
     status: 'status',
     assignedToId: 'assignedToId',
+    assignedToName: 'assignedToName',
+    assignedToEmail: 'assignedToEmail',
     assignedDate: 'assignedDate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -6406,6 +6456,8 @@ export namespace Prisma {
     id: 'id',
     assetId: 'assetId',
     personId: 'personId',
+    personName: 'personName',
+    personEmail: 'personEmail',
     assignedAt: 'assignedAt',
     unassignedAt: 'unassignedAt'
   };
@@ -6642,6 +6694,8 @@ export namespace Prisma {
     location?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetStatusFilter<"Asset"> | $Enums.AssetStatus
     assignedToId?: StringNullableFilter<"Asset"> | string | null
+    assignedToName?: StringNullableFilter<"Asset"> | string | null
+    assignedToEmail?: StringNullableFilter<"Asset"> | string | null
     assignedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     updatedAt?: DateTimeFilter<"Asset"> | Date | string
@@ -6681,6 +6735,8 @@ export namespace Prisma {
     location?: SortOrderInput | SortOrder
     status?: SortOrder
     assignedToId?: SortOrderInput | SortOrder
+    assignedToName?: SortOrderInput | SortOrder
+    assignedToEmail?: SortOrderInput | SortOrder
     assignedDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -6723,6 +6779,8 @@ export namespace Prisma {
     location?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetStatusFilter<"Asset"> | $Enums.AssetStatus
     assignedToId?: StringNullableFilter<"Asset"> | string | null
+    assignedToName?: StringNullableFilter<"Asset"> | string | null
+    assignedToEmail?: StringNullableFilter<"Asset"> | string | null
     assignedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     updatedAt?: DateTimeFilter<"Asset"> | Date | string
@@ -6762,6 +6820,8 @@ export namespace Prisma {
     location?: SortOrderInput | SortOrder
     status?: SortOrder
     assignedToId?: SortOrderInput | SortOrder
+    assignedToName?: SortOrderInput | SortOrder
+    assignedToEmail?: SortOrderInput | SortOrder
     assignedDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -6806,6 +6866,8 @@ export namespace Prisma {
     location?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     status?: EnumAssetStatusWithAggregatesFilter<"Asset"> | $Enums.AssetStatus
     assignedToId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    assignedToName?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    assignedToEmail?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     assignedDate?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
@@ -6819,6 +6881,8 @@ export namespace Prisma {
     id?: StringFilter<"AssetAssignment"> | string
     assetId?: StringFilter<"AssetAssignment"> | string
     personId?: StringFilter<"AssetAssignment"> | string
+    personName?: StringNullableFilter<"AssetAssignment"> | string | null
+    personEmail?: StringNullableFilter<"AssetAssignment"> | string | null
     assignedAt?: DateTimeFilter<"AssetAssignment"> | Date | string
     unassignedAt?: DateTimeNullableFilter<"AssetAssignment"> | Date | string | null
     asset?: XOR<AssetRelationFilter, AssetWhereInput>
@@ -6828,6 +6892,8 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     personId?: SortOrder
+    personName?: SortOrderInput | SortOrder
+    personEmail?: SortOrderInput | SortOrder
     assignedAt?: SortOrder
     unassignedAt?: SortOrderInput | SortOrder
     asset?: AssetOrderByWithRelationInput
@@ -6840,6 +6906,8 @@ export namespace Prisma {
     NOT?: AssetAssignmentWhereInput | AssetAssignmentWhereInput[]
     assetId?: StringFilter<"AssetAssignment"> | string
     personId?: StringFilter<"AssetAssignment"> | string
+    personName?: StringNullableFilter<"AssetAssignment"> | string | null
+    personEmail?: StringNullableFilter<"AssetAssignment"> | string | null
     assignedAt?: DateTimeFilter<"AssetAssignment"> | Date | string
     unassignedAt?: DateTimeNullableFilter<"AssetAssignment"> | Date | string | null
     asset?: XOR<AssetRelationFilter, AssetWhereInput>
@@ -6849,6 +6917,8 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     personId?: SortOrder
+    personName?: SortOrderInput | SortOrder
+    personEmail?: SortOrderInput | SortOrder
     assignedAt?: SortOrder
     unassignedAt?: SortOrderInput | SortOrder
     _count?: AssetAssignmentCountOrderByAggregateInput
@@ -6863,6 +6933,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"AssetAssignment"> | string
     assetId?: StringWithAggregatesFilter<"AssetAssignment"> | string
     personId?: StringWithAggregatesFilter<"AssetAssignment"> | string
+    personName?: StringNullableWithAggregatesFilter<"AssetAssignment"> | string | null
+    personEmail?: StringNullableWithAggregatesFilter<"AssetAssignment"> | string | null
     assignedAt?: DateTimeWithAggregatesFilter<"AssetAssignment"> | Date | string
     unassignedAt?: DateTimeNullableWithAggregatesFilter<"AssetAssignment"> | Date | string | null
   }
@@ -7065,6 +7137,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7103,6 +7177,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7141,6 +7217,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7179,6 +7257,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7217,6 +7297,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7253,6 +7335,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7288,6 +7372,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7297,6 +7383,8 @@ export namespace Prisma {
   export type AssetAssignmentCreateInput = {
     id?: string
     personId: string
+    personName?: string | null
+    personEmail?: string | null
     assignedAt?: Date | string
     unassignedAt?: Date | string | null
     asset: AssetCreateNestedOneWithoutAssignmentsInput
@@ -7306,6 +7394,8 @@ export namespace Prisma {
     id?: string
     assetId: string
     personId: string
+    personName?: string | null
+    personEmail?: string | null
     assignedAt?: Date | string
     unassignedAt?: Date | string | null
   }
@@ -7313,6 +7403,8 @@ export namespace Prisma {
   export type AssetAssignmentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     personId?: StringFieldUpdateOperationsInput | string
+    personName?: NullableStringFieldUpdateOperationsInput | string | null
+    personEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unassignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     asset?: AssetUpdateOneRequiredWithoutAssignmentsNestedInput
@@ -7322,6 +7414,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     personId?: StringFieldUpdateOperationsInput | string
+    personName?: NullableStringFieldUpdateOperationsInput | string | null
+    personEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unassignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -7330,6 +7424,8 @@ export namespace Prisma {
     id?: string
     assetId: string
     personId: string
+    personName?: string | null
+    personEmail?: string | null
     assignedAt?: Date | string
     unassignedAt?: Date | string | null
   }
@@ -7337,6 +7433,8 @@ export namespace Prisma {
   export type AssetAssignmentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     personId?: StringFieldUpdateOperationsInput | string
+    personName?: NullableStringFieldUpdateOperationsInput | string | null
+    personEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unassignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -7345,6 +7443,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     personId?: StringFieldUpdateOperationsInput | string
+    personName?: NullableStringFieldUpdateOperationsInput | string | null
+    personEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unassignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -7671,6 +7771,8 @@ export namespace Prisma {
     location?: SortOrder
     status?: SortOrder
     assignedToId?: SortOrder
+    assignedToName?: SortOrder
+    assignedToEmail?: SortOrder
     assignedDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -7711,6 +7813,8 @@ export namespace Prisma {
     location?: SortOrder
     status?: SortOrder
     assignedToId?: SortOrder
+    assignedToName?: SortOrder
+    assignedToEmail?: SortOrder
     assignedDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -7747,6 +7851,8 @@ export namespace Prisma {
     location?: SortOrder
     status?: SortOrder
     assignedToId?: SortOrder
+    assignedToName?: SortOrder
+    assignedToEmail?: SortOrder
     assignedDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -7824,6 +7930,8 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     personId?: SortOrder
+    personName?: SortOrder
+    personEmail?: SortOrder
     assignedAt?: SortOrder
     unassignedAt?: SortOrder
   }
@@ -7832,6 +7940,8 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     personId?: SortOrder
+    personName?: SortOrder
+    personEmail?: SortOrder
     assignedAt?: SortOrder
     unassignedAt?: SortOrder
   }
@@ -7840,6 +7950,8 @@ export namespace Prisma {
     id?: SortOrder
     assetId?: SortOrder
     personId?: SortOrder
+    personName?: SortOrder
+    personEmail?: SortOrder
     assignedAt?: SortOrder
     unassignedAt?: SortOrder
   }
@@ -8372,6 +8484,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8409,6 +8523,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8475,6 +8591,8 @@ export namespace Prisma {
     location?: StringNullableFilter<"Asset"> | string | null
     status?: EnumAssetStatusFilter<"Asset"> | $Enums.AssetStatus
     assignedToId?: StringNullableFilter<"Asset"> | string | null
+    assignedToName?: StringNullableFilter<"Asset"> | string | null
+    assignedToEmail?: StringNullableFilter<"Asset"> | string | null
     assignedDate?: DateTimeNullableFilter<"Asset"> | Date | string | null
     createdAt?: DateTimeFilter<"Asset"> | Date | string
     updatedAt?: DateTimeFilter<"Asset"> | Date | string
@@ -8501,6 +8619,8 @@ export namespace Prisma {
   export type AssetAssignmentCreateWithoutAssetInput = {
     id?: string
     personId: string
+    personName?: string | null
+    personEmail?: string | null
     assignedAt?: Date | string
     unassignedAt?: Date | string | null
   }
@@ -8508,6 +8628,8 @@ export namespace Prisma {
   export type AssetAssignmentUncheckedCreateWithoutAssetInput = {
     id?: string
     personId: string
+    personName?: string | null
+    personEmail?: string | null
     assignedAt?: Date | string
     unassignedAt?: Date | string | null
   }
@@ -8594,6 +8716,8 @@ export namespace Prisma {
     id?: StringFilter<"AssetAssignment"> | string
     assetId?: StringFilter<"AssetAssignment"> | string
     personId?: StringFilter<"AssetAssignment"> | string
+    personName?: StringNullableFilter<"AssetAssignment"> | string | null
+    personEmail?: StringNullableFilter<"AssetAssignment"> | string | null
     assignedAt?: DateTimeFilter<"AssetAssignment"> | Date | string
     unassignedAt?: DateTimeNullableFilter<"AssetAssignment"> | Date | string | null
   }
@@ -8656,6 +8780,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8693,6 +8819,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8746,6 +8874,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8783,6 +8913,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8820,6 +8952,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8857,6 +8991,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8910,6 +9046,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8947,6 +9085,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8984,6 +9124,8 @@ export namespace Prisma {
     location?: string | null
     status?: $Enums.AssetStatus
     assignedToId?: string | null
+    assignedToName?: string | null
+    assignedToEmail?: string | null
     assignedDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9019,6 +9161,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9056,6 +9200,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9093,6 +9239,8 @@ export namespace Prisma {
     location?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAssetStatusFieldUpdateOperationsInput | $Enums.AssetStatus
     assignedToId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToName?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedToEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9101,6 +9249,8 @@ export namespace Prisma {
   export type AssetAssignmentCreateManyAssetInput = {
     id?: string
     personId: string
+    personName?: string | null
+    personEmail?: string | null
     assignedAt?: Date | string
     unassignedAt?: Date | string | null
   }
@@ -9116,6 +9266,8 @@ export namespace Prisma {
   export type AssetAssignmentUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     personId?: StringFieldUpdateOperationsInput | string
+    personName?: NullableStringFieldUpdateOperationsInput | string | null
+    personEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unassignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -9123,6 +9275,8 @@ export namespace Prisma {
   export type AssetAssignmentUncheckedUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     personId?: StringFieldUpdateOperationsInput | string
+    personName?: NullableStringFieldUpdateOperationsInput | string | null
+    personEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unassignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -9130,6 +9284,8 @@ export namespace Prisma {
   export type AssetAssignmentUncheckedUpdateManyWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     personId?: StringFieldUpdateOperationsInput | string
+    personName?: NullableStringFieldUpdateOperationsInput | string | null
+    personEmail?: NullableStringFieldUpdateOperationsInput | string | null
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unassignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }

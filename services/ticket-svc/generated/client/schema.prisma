@@ -39,26 +39,32 @@ enum TicketPriority {
 }
 
 model Ticket {
-  id              String         @id @default(uuid())
-  number          String         @unique // TKT-YYYY-NNNNNN globally unique
-  title           String
-  description     String?
-  type            TicketType     @default(incident)
-  status          TicketStatus   @default(open)
-  priority        TicketPriority @default(medium)
-  requestedBy     String? // email or name for general users (no login)
-  requestedByUser String? // user ID if authenticated
-  requesterName   String? // Separate field for requester name
-  requesterEmail  String? // Separate field for requester email
-  assignedTo      String? // operator/admin user ID
-  categoryId      String?
-  subcategoryId   String?
-  targetDate      DateTime? // SLA target
-  resolvedAt      DateTime? // When ticket was resolved
-  closedAt        DateTime? // When ticket was closed
-  attachments     Json?          @default("[]") // Array of {id, key, filename, size, contentType, uploadedAt, uploadedBy}
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id                  String         @id @default(uuid())
+  number              String         @unique // TKT-YYYY-NNNNNN globally unique
+  title               String
+  description         String?
+  type                TicketType     @default(incident)
+  status              TicketStatus   @default(open)
+  priority            TicketPriority @default(medium)
+  source              String         @default("manual") // manual, portal, nl_gateway, api
+  requestedBy         String? // email or name for general users (no login)
+  requestedByUser     String? // user ID if authenticated
+  requesterName       String? // Separate field for requester name
+  requesterEmail      String? // Separate field for requester email
+  assignedTo          String? // operator/admin user ID (single tech - backward compat)
+  assignedTechnicians Json?          @default("[]") // NEW: Array of technician user IDs for multi-assignment
+  assetId             String? // NEW: Associated asset ID
+  categoryId          String?
+  subcategoryId       String?
+  targetDate          DateTime? // SLA target
+  firstResponseAt     DateTime? // When an operator first engaged
+  firstResponseBy     String? // Operator user ID for first response
+  reopenCount         Int            @default(0) // Number of times ticket was reopened
+  resolvedAt          DateTime? // When ticket was resolved
+  closedAt            DateTime? // When ticket was closed
+  attachments         Json?          @default("[]") // Array of {id, key, filename, size, contentType, uploadedAt, uploadedBy}
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   comments    TicketComment[]
   category    Category?       @relation(fields: [categoryId], references: [id])
@@ -66,7 +72,9 @@ model Ticket {
 
   @@index([status, updatedAt])
   @@index([assignedTo])
+  @@index([assetId])
   @@index([createdAt])
+  @@index([source])
   @@map("Ticket")
   @@schema("ticket")
 }
