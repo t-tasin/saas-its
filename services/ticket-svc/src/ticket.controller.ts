@@ -202,10 +202,16 @@ export class TicketController {
       if (dto.title) updateData.title = dto.title;
       if (dto.description !== undefined) updateData.description = dto.description;
       if (dto.priority) updateData.priority = dto.priority;
+      if (dto.categoryId !== undefined) updateData.categoryId = dto.categoryId;
+      if (dto.subcategoryId !== undefined) updateData.subcategoryId = dto.subcategoryId;
 
       const ticket = await tx.ticket.update({
         where: { id },
         data: updateData,
+        include: {
+          category: true,
+          subcategory: true,
+        },
       });
 
       await this.audit.log(tx, {

@@ -19,7 +19,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useAuth } from "@/contexts/auth-context"
-import { useTicket, useTicketComments, useAddComment, useUpdateTicketStatus } from "@/hooks/use-tickets"
+import {
+  useTicket,
+  useTicketComments,
+  useAddComment,
+  useUpdateTicketStatus,
+  useCategories,
+} from "@/hooks/use-tickets"
 import { useUser, useAssignableUsers } from "@/hooks/use-users"
 import { useAssets } from "@/hooks/use-assets"
 import { useToast } from "@/hooks/use-toast"
@@ -37,12 +43,14 @@ export default function TicketDetailPage() {
   const { toast } = useToast()
 
   const ticketId = params.id as string
-  const { data: ticket, isLoading: ticketLoading } = useTicket(ticketId)
+  const { data: ticket, isLoading: ticketLoading, refetch: refetchTicket } = useTicket(ticketId)
   const { data: comments, isLoading: commentsLoading } = useTicketComments(ticketId)
   const { data: assetsData } = useAssets({ limit: 100 })
   const assets = assetsData?.data || []
   const { data: assignableUsersData } = useAssignableUsers()
   const assignableUsers = assignableUsersData?.data || []
+  const { data: categoriesData } = useCategories()
+  const categories = categoriesData?.data || []
   const addComment = useAddComment()
   const updateStatus = useUpdateTicketStatus()
   
@@ -62,6 +70,9 @@ export default function TicketDetailPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [commentFiles, setCommentFiles] = useState<File[]>([])
   const [isUploadingAttachments, setIsUploadingAttachments] = useState(false)
+  const [selectedCategoryId, setSelectedCategoryId] = useState("")
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState("")
+  const [isUpdatingCategory, setIsUpdatingCategory] = useState(false)
 
   // Update newStatus when ticket data loads
   useEffect(() => {
@@ -83,6 +94,27 @@ export default function TicketDetailPage() {
       setNewPriority(ticket.data.priority)
     }
   }, [ticket?.data?.priority])
+
+  useEffect(() => {
+    if (ticket?.data) {
+      const initialCategoryId =
+        ticket.data.categoryId ??
+        (typeof ticket.data.category === "object" ? ticket.data.category?.id : "") ??
+        ""
+      const initialSubcategoryId =
+        ticket.data.subcategoryId ??
+        (typeof ticket.data.subcategory === "object" ? ticket.data.subcategory?.id : "") ??
+        ""
+
+      setSelectedCategoryId(initialCategoryId || "")
+      setSelectedSubcategoryId(initialSubcategoryId || "")
+    }
+  }, [
+    ticket?.data?.categoryId,
+    ticket?.data?.subcategoryId,
+    ticket?.data?.category,
+    ticket?.data?.subcategory,
+  ])
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -217,6 +249,52 @@ export default function TicketDetailPage() {
       })
     } finally {
       setIsUpdatingAsset(false)
+    }
+  }
+
+  const handleCategorySelect = (value: string) => {
+    if (value === "none") {
+      setSelectedCategoryId("")
+      setSelectedSubcategoryId("")
+      return
+    }
+
+    setSelectedCategoryId(value)
+
+    const category = categories.find((cat: any) => cat.id === value)
+    if (!category?.subcategories?.some((sub: any) => sub.id === selectedSubcategoryId)) {
+      setSelectedSubcategoryId("")
+    }
+  }
+
+  const handleSubcategorySelect = (value: string) => {
+    if (value === "none") {
+      setSelectedSubcategoryId("")
+      return
+    }
+    setSelectedSubcategoryId(value)
+  }
+
+  const handleUpdateCategory = async () => {
+    setIsUpdatingCategory(true)
+    try {
+      await ticketApi.patch(`/tickets/${ticketId}`, {
+        categoryId: selectedCategoryId || null,
+        subcategoryId: selectedSubcategoryId || null,
+      })
+      await refetchTicket()
+      toast({
+        title: "Success",
+        description: "Category updated successfully.",
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update category. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsUpdatingCategory(false)
     }
   }
 
@@ -378,6 +456,20 @@ export default function TicketDetailPage() {
   }
 
   const ticketData = ticket.data
+  const currentCategoryId =
+    ticketData.categoryId ??
+    (typeof ticketData.category === "object" ? ticketData.category?.id : "") ??
+    ""
+  const currentSubcategoryId =
+    ticketData.subcategoryId ??
+    (typeof ticketData.subcategory === "object" ? ticketData.subcategory?.id : "") ??
+    ""
+
+  const selectedCategory = categories.find((cat: any) => cat.id === selectedCategoryId)
+  const availableSubcategories = selectedCategory?.subcategories || []
+  const hasCategoryChanged =
+    (selectedCategoryId || "") !== (currentCategoryId || "") ||
+    (selectedSubcategoryId || "") !== (currentSubcategoryId || "")
 
   return (
     <div className="min-h-screen bg-background">
@@ -418,6 +510,78 @@ export default function TicketDetailPage() {
                 )}
                 <InfoRow label="Created">{formatDateTime(ticketData.createdAt)}</InfoRow>
                 <InfoRow label="Last Updated">{formatDateTime(ticketData.updatedAt)}</InfoRow>
+                {isOperator && categories.length > 0 && (
+                  <div className="pt-4 border-t mt-4 space-y-3">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="space-y-1">
+                        <Label htmlFor="ticket-category-select" className="text-xs font-medium text-muted-foreground">
+                          Category
+                        </Label>
+                        <Select
+                          value={selectedCategoryId || "none"}
+                          onValueChange={handleCategorySelect}
+                        >
+                          <SelectTrigger id="ticket-category-select">
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">No category</SelectItem>
+                            {categories.map((category: any) => (
+                              <SelectItem key={category.id} value={category.id}>
+                                {category.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label
+                          htmlFor="ticket-subcategory-select"
+                          className="text-xs font-medium text-muted-foreground"
+                        >
+                          Subcategory
+                        </Label>
+                        <Select
+                          value={selectedSubcategoryId || "none"}
+                          onValueChange={handleSubcategorySelect}
+                          disabled={availableSubcategories.length === 0 || !selectedCategoryId}
+                        >
+                          <SelectTrigger id="ticket-subcategory-select">
+                            <SelectValue placeholder="Select subcategory" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">No subcategory</SelectItem>
+                            {availableSubcategories.map((subcategory: any) => (
+                              <SelectItem key={subcategory.id} value={subcategory.id}>
+                                {subcategory.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={handleUpdateCategory}
+                        disabled={!hasCategoryChanged || isUpdatingCategory}
+                      >
+                        {isUpdatingCategory ? "Saving..." : "Save Category"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedCategoryId(currentCategoryId || "")
+                          setSelectedSubcategoryId(currentSubcategoryId || "")
+                        }}
+                        disabled={!hasCategoryChanged || isUpdatingCategory}
+                      >
+                        Reset
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 {ticketData.description && (
                   <div className="pt-4 border-t">
                     <h4 className="font-medium text-sm mb-2">Description</h4>

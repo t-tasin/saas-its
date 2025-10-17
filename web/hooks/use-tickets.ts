@@ -85,13 +85,28 @@ export function useTicket(id: string) {
         uploadedBy: att.uploadedBy,
       }))
 
+      const category =
+        ticket.category && typeof ticket.category === "object"
+          ? ticket.category
+          : ticket.category
+            ? { name: ticket.category }
+            : undefined
+
+      const subcategory =
+        ticket.subcategory && typeof ticket.subcategory === "object"
+          ? ticket.subcategory
+          : ticket.subcategory
+            ? { name: ticket.subcategory }
+            : undefined
+
       // Transform data to match UI expectations
       return {
         data: {
           ...ticket,
           status: transformStatus(ticket.status),
-          priority: ticket.priority.toLowerCase(),
-          category: { name: ticket.category },
+          priority: ticket.priority?.toLowerCase?.() ?? "medium",
+          category,
+          subcategory,
           attachments: transformedAttachments,
         },
       }

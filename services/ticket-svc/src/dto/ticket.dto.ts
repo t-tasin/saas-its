@@ -2,7 +2,16 @@
  * DTOs for Ticket endpoints with validation and OpenAPI tags.
  */
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString, IsUUID, Length, MaxLength, IsInt, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  MaxLength,
+  IsInt,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum TicketStatus { open='open', in_progress='in_progress', resolved='resolved', closed='closed' }
@@ -75,6 +84,14 @@ export class UpdateTicketDto {
   @ApiPropertyOptional({ enum: TicketPriority })
   @IsOptional() @IsEnum(TicketPriority)
   priority?: TicketPriority;
+
+  @ApiPropertyOptional({ description: 'Category UUID (null to remove category)' })
+  @IsOptional() @IsUUID()
+  categoryId?: string | null;
+
+  @ApiPropertyOptional({ description: 'SubCategory UUID (null to remove subcategory)' })
+  @IsOptional() @IsUUID()
+  subcategoryId?: string | null;
 }
 
 export class CreateCommentDto {
