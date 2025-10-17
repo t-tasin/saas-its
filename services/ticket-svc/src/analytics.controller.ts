@@ -273,6 +273,45 @@ export class AnalyticsController {
         urgent: recentTickets.filter((t) => t.priority === 'urgent').length,
       };
 
+      // Customer Feedback (CSAT) metrics
+      const csatTickets = completedTickets.filter((t) => t.csat !== null && t.csat !== undefined);
+      const csatScores = csatTickets.map((t) => t.csat!);
+      const avgCsat = csatScores.length > 0
+        ? parseFloat((csatScores.reduce((sum, score) => sum + score, 0) / csatScores.length).toFixed(2))
+        : 0;
+      const csatResponseRate = completedCount > 0
+        ? parseFloat(((csatTickets.length / completedCount) * 100).toFixed(2))
+        : 0;
+
+      const csatDistribution = {
+        excellent: csatScores.filter((s) => s === 5).length,
+        good: csatScores.filter((s) => s === 4).length,
+        neutral: csatScores.filter((s) => s === 3).length,
+        poor: csatScores.filter((s) => s === 2).length,
+        veryPoor: csatScores.filter((s) => s === 1).length,
+      };
+
+      // Impact Level distribution
+      const byImpact = {
+        P1: recentTickets.filter((t) => t.impactLevel === 'P1').length,
+        P2: recentTickets.filter((t) => t.impactLevel === 'P2').length,
+        P3: recentTickets.filter((t) => t.impactLevel === 'P3').length,
+        P4: recentTickets.filter((t) => t.impactLevel === 'P4').length,
+      };
+
+      // Escalation metrics
+      const escalatedTickets = recentTickets.filter((t) => t.escalationCount > 0);
+      const totalEscalations = escalatedTickets.reduce((sum, t) => sum + t.escalationCount, 0);
+      const escalationRate = recentTickets.length > 0
+        ? parseFloat(((escalatedTickets.length / recentTickets.length) * 100).toFixed(2))
+        : 0;
+
+      const escalationReasons = {
+        sla_breach: escalatedTickets.filter((t) => t.escalationReason === 'sla_breach').length,
+        impact_level: escalatedTickets.filter((t) => t.escalationReason === 'impact_level').length,
+        manual: escalatedTickets.filter((t) => t.escalationReason === 'manual').length,
+      };
+
       const unassignedOpen = recentTickets.filter((t) => {
         if (!openStatuses.has(t.status)) return false;
         const extra = Array.isArray(t.assignedTechnicians) ? t.assignedTechnicians : [];
@@ -318,6 +357,9 @@ export class AnalyticsController {
           backlogAging,
           unassignedOpen,
           urgentOrPastDue: urgentOrPastDue.length,
+          totalEscalations,
+          escalationRate,
+          escalationReasons,
         },
         aiImpact: {
           totalAiTickets: aiTicketCount,
@@ -333,11 +375,18 @@ export class AnalyticsController {
         trends: {
           backlog: backlogTrend,
           byPriority,
+          byImpact,
           aiUsage: backlogTrend.map((row) => ({
             date: row.date,
             created: row.aiCreated,
             resolved: row.aiResolved,
           })),
+        },
+        customerFeedback: {
+          avgCsat,
+          csatResponseRate,
+          csatDistribution,
+          totalResponses: csatTickets.length,
         },
         categories: perCategoryVolume,
         period: {

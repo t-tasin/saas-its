@@ -147,6 +147,13 @@ exports.Prisma.TicketScalarFieldEnum = {
   resolvedAt: 'resolvedAt',
   closedAt: 'closedAt',
   attachments: 'attachments',
+  csat: 'csat',
+  csatComment: 'csatComment',
+  csatSubmittedAt: 'csatSubmittedAt',
+  impactLevel: 'impactLevel',
+  escalationCount: 'escalationCount',
+  lastEscalatedAt: 'lastEscalatedAt',
+  escalationReason: 'escalationReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -231,6 +238,13 @@ exports.TicketPriority = exports.$Enums.TicketPriority = {
   medium: 'medium',
   high: 'high',
   urgent: 'urgent'
+};
+
+exports.ImpactLevel = exports.$Enums.ImpactLevel = {
+  P1: 'P1',
+  P2: 'P2',
+  P3: 'P3',
+  P4: 'P4'
 };
 
 exports.Prisma.ModelName = {

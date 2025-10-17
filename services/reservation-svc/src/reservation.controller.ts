@@ -559,5 +559,171 @@ export class ReservationController {
       availableCount: available,
     };
   }
+
+  /**
+   * Get reservation analytics and KPIs (Admin/Operator only)
+   */
+  @Get('analytics/reservations')
+  @Roles('operator', 'admin')
+  async getAnalytics(@Query('days') days?: string) {
+    const dayCount = parseInt(days || '30', 10);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - dayCount);
+
+    return withTx(async (tx) => {
+      // Get reservations in time range
+      const reservations = await tx.reservation.findMany({
+        where: { createdAt: { gte: startDate } },
+      });
+
+      const totalReservations = reservations.length;
+      const approved = reservations.filter((r) => r.status === 'approved').length;
+      const pending = reservations.filter((r) => r.status === 'pending').length;
+      const denied = reservations.filter((r) => r.status === 'denied').length;
+      const cancelled = reservations.filter((r) => r.status === 'cancelled').length;
+      const active = reservations.filter((r) => r.status === 'active').length;
+      const returned = reservations.filter((r) => r.status === 'returned').length;
+
+      // Approval metrics
+      const approvalRate = totalReservations > 0
+        ? parseFloat(((approved / totalReservations) * 100).toFixed(2))
+        : 0;
+
+      const autoApprovals = reservations.filter((r) =>
+        r.status === 'approved' && r.approvedBy === 'system'
+      ).length;
+      const autoApprovalRate = approved > 0
+        ? parseFloat(((autoApprovals / approved) * 100).toFixed(2))
+        : 0;
+
+      // Lead time metrics (time from request to approval)
+      const approvedReservations = reservations.filter((r) =>
+        r.status === 'approved' && r.approvedDate
+      );
+      const leadTimes = approvedReservations.map((r) => {
+        const approvalDate = r.approvedDate || r.createdAt;
+        return approvalDate.getTime() - r.createdAt.getTime();
+      });
+      const mean = (values: number[]) => values.length > 0
+        ? values.reduce((sum, val) => sum + val, 0) / values.length
+        : 0;
+      const median = (values: number[]) => {
+        if (!values.length) return 0;
+        const sorted = [...values].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 === 0
+          ? (sorted[mid - 1] + sorted[mid]) / 2
+          : sorted[mid];
+      };
+      const msToHours = (ms: number) => ms / (1000 * 60 * 60);
+
+      const avgApprovalLeadHours = msToHours(mean(leadTimes));
+      const medianApprovalLeadHours = msToHours(median(leadTimes));
+
+      // On-time return metrics
+      const returnedReservations = reservations.filter((r) =>
+        r.actualReturnDate !== null
+      );
+      const onTimeReturns = returnedReservations.filter((r) => {
+        if (!r.actualReturnDate || !r.returnDate) return false;
+        return r.actualReturnDate <= r.returnDate;
+      }).length;
+      const onTimeReturnRate = returnedReservations.length > 0
+        ? parseFloat(((onTimeReturns / returnedReservations.length) * 100).toFixed(2))
+        : 0;
+
+      // Usage metrics
+      const usageDurations = returnedReservations
+        .filter((r) => r.actualReturnDate && r.requestDate)
+        .map((r) => {
+          const start = new Date(r.requestDate);
+          const end = r.actualReturnDate!;
+          return (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24); // days
+        });
+      const avgUsageDays = usageDurations.length > 0
+        ? parseFloat((mean(usageDurations)).toFixed(2))
+        : 0;
+
+      // Conflict metrics (approximate - checking for overlapping dates)
+      const conflicts = reservations.filter((r) => {
+        // This is a simplified conflict check
+        return r.status === 'denied' && r.denialReason?.includes('conflict');
+      }).length;
+      const conflictRate = totalReservations > 0
+        ? parseFloat(((conflicts / totalReservations) * 100).toFixed(2))
+        : 0;
+
+      // Daily trend data
+      const trend = [];
+      for (let i = Math.min(dayCount - 1, 13); i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+
+        const nextDate = new Date(date);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const created = reservations.filter(
+          (r) => r.createdAt >= date && r.createdAt < nextDate
+        ).length;
+        const approvedCount = reservations.filter(
+          (r) => r.approvedDate && r.approvedDate >= date && r.approvedDate < nextDate
+        ).length;
+        const returned = reservations.filter(
+          (r) => r.actualReturnDate && r.actualReturnDate >= date && r.actualReturnDate < nextDate
+        ).length;
+
+        trend.push({
+          date: date.toISOString().split('T')[0],
+          created,
+          approved: approvedCount,
+          returned,
+        });
+      }
+
+      // Most requested equipment
+      const equipmentCounts = reservations.reduce((acc, r) => {
+        acc[r.equipmentType] = (acc[r.equipmentType] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const mostRequested = Object.entries(equipmentCounts)
+        .map(([equipmentType, count]) => ({ equipmentType, count }))
+        .sort((a, b) => b.count - a.count);
+
+      return {
+        summary: {
+          total: totalReservations,
+          approved,
+          pending,
+          denied,
+          cancelled,
+          active,
+          returned,
+          approvalRate,
+        },
+        performance: {
+          onTimeReturnRate,
+          avgUsageDays,
+        },
+        readiness: {
+          autoApprovalRate,
+          avgApprovalLeadHours: parseFloat(avgApprovalLeadHours.toFixed(2)),
+          medianApprovalLeadHours: parseFloat(medianApprovalLeadHours.toFixed(2)),
+          conflictRate,
+          conflictCount: conflicts,
+        },
+        trend,
+        equipment: {
+          mostRequested,
+        },
+        period: {
+          days: dayCount,
+          startDate: startDate.toISOString(),
+          endDate: new Date().toISOString(),
+        },
+      };
+    });
+  }
 }
 

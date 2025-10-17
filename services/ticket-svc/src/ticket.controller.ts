@@ -597,4 +597,129 @@ export class TicketController {
       return { success: true, message: 'Attachment deleted successfully' };
     });
   }
+
+  /**
+   * Submit CSAT (Customer Satisfaction) feedback for a ticket
+   * Allows users to rate their experience on a scale of 1-5
+   */
+  @Post(':id/feedback')
+  @Public() // Allow public access so customers can provide feedback
+  async submitFeedback(
+    @Param('id') ticketId: string,
+    @Body() body: { csat: number; comment?: string },
+  ) {
+    return withTx(async (tx) => {
+      // Validate CSAT score (1-5)
+      if (!body.csat || body.csat < 1 || body.csat > 5) {
+        throw new Error('CSAT score must be between 1 and 5');
+      }
+
+      const ticket = await tx.ticket.findUniqueOrThrow({ where: { id: ticketId } });
+
+      // Only allow feedback for resolved or closed tickets
+      if (ticket.status !== 'resolved' && ticket.status !== 'closed') {
+        throw new Error('Feedback can only be submitted for resolved or closed tickets');
+      }
+
+      const updated = await tx.ticket.update({
+        where: { id: ticketId },
+        data: {
+          csat: body.csat,
+          csatComment: body.comment || null,
+          csatSubmittedAt: new Date(),
+        },
+      });
+
+      await this.audit.log(tx, {
+        entity: 'ticket',
+        entityId: ticketId,
+        action: 'csat-submit',
+        actorId: null, // Public endpoint
+        metadata: { csat: body.csat, hasComment: !!body.comment },
+      });
+
+      return { success: true, ticket: updated };
+    });
+  }
+
+  /**
+   * Update ticket impact level (operators/admins only)
+   * Impact levels: P1 (Critical), P2 (High), P3 (Medium), P4 (Low)
+   */
+  @Patch(':id/impact')
+  @Roles('operator', 'admin')
+  async updateImpactLevel(
+    @Req() req: any,
+    @Param('id') ticketId: string,
+    @Body() body: { impactLevel: 'P1' | 'P2' | 'P3' | 'P4' },
+  ) {
+    return withTx(async (tx) => {
+      const validLevels = ['P1', 'P2', 'P3', 'P4'];
+      if (!validLevels.includes(body.impactLevel)) {
+        throw new Error('Invalid impact level. Must be P1, P2, P3, or P4');
+      }
+
+      const ticket = await tx.ticket.findUniqueOrThrow({ where: { id: ticketId } });
+
+      const updated = await tx.ticket.update({
+        where: { id: ticketId },
+        data: { impactLevel: body.impactLevel },
+      });
+
+      await this.audit.log(tx, {
+        entity: 'ticket',
+        entityId: ticketId,
+        action: 'impact-update',
+        actorId: req.user?.sub,
+        metadata: { oldLevel: ticket.impactLevel, newLevel: body.impactLevel },
+      });
+
+      // Auto-escalate if P1 or P2
+      if (body.impactLevel === 'P1' || body.impactLevel === 'P2') {
+        await tx.ticket.update({
+          where: { id: ticketId },
+          data: {
+            escalationCount: { increment: 1 },
+            lastEscalatedAt: new Date(),
+            escalationReason: 'impact_level',
+          },
+        });
+      }
+
+      return { success: true, ticket: updated };
+    });
+  }
+
+  /**
+   * Manually escalate a ticket (operators/admins only)
+   */
+  @Post(':id/escalate')
+  @Roles('operator', 'admin')
+  async escalateTicket(
+    @Req() req: any,
+    @Param('id') ticketId: string,
+    @Body() body: { reason?: string },
+  ) {
+    return withTx(async (tx) => {
+      const ticket = await tx.ticket.update({
+        where: { id: ticketId },
+        data: {
+          escalationCount: { increment: 1 },
+          lastEscalatedAt: new Date(),
+          escalationReason: body.reason || 'manual',
+          priority: 'urgent', // Auto-bump to urgent
+        },
+      });
+
+      await this.audit.log(tx, {
+        entity: 'ticket',
+        entityId: ticketId,
+        action: 'escalate',
+        actorId: req.user?.sub,
+        metadata: { reason: body.reason || 'manual' },
+      });
+
+      return { success: true, ticket };
+    });
+  }
 }

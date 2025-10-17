@@ -38,6 +38,15 @@ enum TicketPriority {
   @@schema("ticket")
 }
 
+enum ImpactLevel {
+  P1 // Critical - Business stopped
+  P2 // High - Major functionality impaired
+  P3 // Medium - Minor functionality impaired
+  P4 // Low - Cosmetic or minimal impact
+
+  @@schema("ticket")
+}
+
 model Ticket {
   id                  String         @id @default(uuid())
   number              String         @unique // TKT-YYYY-NNNNNN globally unique
@@ -63,6 +72,15 @@ model Ticket {
   resolvedAt          DateTime? // When ticket was resolved
   closedAt            DateTime? // When ticket was closed
   attachments         Json?          @default("[]") // Array of {id, key, filename, size, contentType, uploadedAt, uploadedBy}
+  // Customer Feedback & Impact
+  csat                Int? // Customer Satisfaction Score (1-5)
+  csatComment         String? // Optional CSAT feedback comment
+  csatSubmittedAt     DateTime? // When CSAT was submitted
+  impactLevel         ImpactLevel?   @default(P4) // Business impact level
+  // Auto-escalation tracking
+  escalationCount     Int            @default(0) // Number of times escalated
+  lastEscalatedAt     DateTime? // When last escalated
+  escalationReason    String? // Reason for escalation (sla_breach, impact_level, manual)
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 

@@ -75,6 +75,16 @@ export const TicketPriority: {
 
 export type TicketPriority = (typeof TicketPriority)[keyof typeof TicketPriority]
 
+
+export const ImpactLevel: {
+  P1: 'P1',
+  P2: 'P2',
+  P3: 'P3',
+  P4: 'P4'
+};
+
+export type ImpactLevel = (typeof ImpactLevel)[keyof typeof ImpactLevel]
+
 }
 
 export type TicketType = $Enums.TicketType
@@ -88,6 +98,10 @@ export const TicketStatus: typeof $Enums.TicketStatus
 export type TicketPriority = $Enums.TicketPriority
 
 export const TicketPriority: typeof $Enums.TicketPriority
+
+export type ImpactLevel = $Enums.ImpactLevel
+
+export const ImpactLevel: typeof $Enums.ImpactLevel
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1433,10 +1447,14 @@ export namespace Prisma {
 
   export type TicketAvgAggregateOutputType = {
     reopenCount: number | null
+    csat: number | null
+    escalationCount: number | null
   }
 
   export type TicketSumAggregateOutputType = {
     reopenCount: number | null
+    csat: number | null
+    escalationCount: number | null
   }
 
   export type TicketMinAggregateOutputType = {
@@ -1462,6 +1480,13 @@ export namespace Prisma {
     reopenCount: number | null
     resolvedAt: Date | null
     closedAt: Date | null
+    csat: number | null
+    csatComment: string | null
+    csatSubmittedAt: Date | null
+    impactLevel: $Enums.ImpactLevel | null
+    escalationCount: number | null
+    lastEscalatedAt: Date | null
+    escalationReason: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1489,6 +1514,13 @@ export namespace Prisma {
     reopenCount: number | null
     resolvedAt: Date | null
     closedAt: Date | null
+    csat: number | null
+    csatComment: string | null
+    csatSubmittedAt: Date | null
+    impactLevel: $Enums.ImpactLevel | null
+    escalationCount: number | null
+    lastEscalatedAt: Date | null
+    escalationReason: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1518,6 +1550,13 @@ export namespace Prisma {
     resolvedAt: number
     closedAt: number
     attachments: number
+    csat: number
+    csatComment: number
+    csatSubmittedAt: number
+    impactLevel: number
+    escalationCount: number
+    lastEscalatedAt: number
+    escalationReason: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1526,10 +1565,14 @@ export namespace Prisma {
 
   export type TicketAvgAggregateInputType = {
     reopenCount?: true
+    csat?: true
+    escalationCount?: true
   }
 
   export type TicketSumAggregateInputType = {
     reopenCount?: true
+    csat?: true
+    escalationCount?: true
   }
 
   export type TicketMinAggregateInputType = {
@@ -1555,6 +1598,13 @@ export namespace Prisma {
     reopenCount?: true
     resolvedAt?: true
     closedAt?: true
+    csat?: true
+    csatComment?: true
+    csatSubmittedAt?: true
+    impactLevel?: true
+    escalationCount?: true
+    lastEscalatedAt?: true
+    escalationReason?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1582,6 +1632,13 @@ export namespace Prisma {
     reopenCount?: true
     resolvedAt?: true
     closedAt?: true
+    csat?: true
+    csatComment?: true
+    csatSubmittedAt?: true
+    impactLevel?: true
+    escalationCount?: true
+    lastEscalatedAt?: true
+    escalationReason?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1611,6 +1668,13 @@ export namespace Prisma {
     resolvedAt?: true
     closedAt?: true
     attachments?: true
+    csat?: true
+    csatComment?: true
+    csatSubmittedAt?: true
+    impactLevel?: true
+    escalationCount?: true
+    lastEscalatedAt?: true
+    escalationReason?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1727,6 +1791,13 @@ export namespace Prisma {
     resolvedAt: Date | null
     closedAt: Date | null
     attachments: JsonValue | null
+    csat: number | null
+    csatComment: string | null
+    csatSubmittedAt: Date | null
+    impactLevel: $Enums.ImpactLevel | null
+    escalationCount: number
+    lastEscalatedAt: Date | null
+    escalationReason: string | null
     createdAt: Date
     updatedAt: Date
     _count: TicketCountAggregateOutputType | null
@@ -1775,6 +1846,13 @@ export namespace Prisma {
     resolvedAt?: boolean
     closedAt?: boolean
     attachments?: boolean
+    csat?: boolean
+    csatComment?: boolean
+    csatSubmittedAt?: boolean
+    impactLevel?: boolean
+    escalationCount?: boolean
+    lastEscalatedAt?: boolean
+    escalationReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     comments?: boolean | Ticket$commentsArgs<ExtArgs>
@@ -1808,6 +1886,13 @@ export namespace Prisma {
     resolvedAt?: boolean
     closedAt?: boolean
     attachments?: boolean
+    csat?: boolean
+    csatComment?: boolean
+    csatSubmittedAt?: boolean
+    impactLevel?: boolean
+    escalationCount?: boolean
+    lastEscalatedAt?: boolean
+    escalationReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     category?: boolean | Ticket$categoryArgs<ExtArgs>
@@ -1839,6 +1924,13 @@ export namespace Prisma {
     resolvedAt?: boolean
     closedAt?: boolean
     attachments?: boolean
+    csat?: boolean
+    csatComment?: boolean
+    csatSubmittedAt?: boolean
+    impactLevel?: boolean
+    escalationCount?: boolean
+    lastEscalatedAt?: boolean
+    escalationReason?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -1886,6 +1978,13 @@ export namespace Prisma {
       resolvedAt: Date | null
       closedAt: Date | null
       attachments: Prisma.JsonValue | null
+      csat: number | null
+      csatComment: string | null
+      csatSubmittedAt: Date | null
+      impactLevel: $Enums.ImpactLevel | null
+      escalationCount: number
+      lastEscalatedAt: Date | null
+      escalationReason: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["ticket"]>
@@ -2308,6 +2407,13 @@ export namespace Prisma {
     readonly resolvedAt: FieldRef<"Ticket", 'DateTime'>
     readonly closedAt: FieldRef<"Ticket", 'DateTime'>
     readonly attachments: FieldRef<"Ticket", 'Json'>
+    readonly csat: FieldRef<"Ticket", 'Int'>
+    readonly csatComment: FieldRef<"Ticket", 'String'>
+    readonly csatSubmittedAt: FieldRef<"Ticket", 'DateTime'>
+    readonly impactLevel: FieldRef<"Ticket", 'ImpactLevel'>
+    readonly escalationCount: FieldRef<"Ticket", 'Int'>
+    readonly lastEscalatedAt: FieldRef<"Ticket", 'DateTime'>
+    readonly escalationReason: FieldRef<"Ticket", 'String'>
     readonly createdAt: FieldRef<"Ticket", 'DateTime'>
     readonly updatedAt: FieldRef<"Ticket", 'DateTime'>
   }
@@ -7357,6 +7463,13 @@ export namespace Prisma {
     resolvedAt: 'resolvedAt',
     closedAt: 'closedAt',
     attachments: 'attachments',
+    csat: 'csat',
+    csatComment: 'csatComment',
+    csatSubmittedAt: 'csatSubmittedAt',
+    impactLevel: 'impactLevel',
+    escalationCount: 'escalationCount',
+    lastEscalatedAt: 'lastEscalatedAt',
+    escalationReason: 'escalationReason',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7555,6 +7668,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ImpactLevel'
+   */
+  export type EnumImpactLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImpactLevel'>
+    
+
+
+  /**
+   * Reference to a field of type 'ImpactLevel[]'
+   */
+  export type ListEnumImpactLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImpactLevel[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -7599,6 +7726,13 @@ export namespace Prisma {
     resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     attachments?: JsonNullableFilter<"Ticket">
+    csat?: IntNullableFilter<"Ticket"> | number | null
+    csatComment?: StringNullableFilter<"Ticket"> | string | null
+    csatSubmittedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    impactLevel?: EnumImpactLevelNullableFilter<"Ticket"> | $Enums.ImpactLevel | null
+    escalationCount?: IntFilter<"Ticket"> | number
+    lastEscalatedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    escalationReason?: StringNullableFilter<"Ticket"> | string | null
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
     updatedAt?: DateTimeFilter<"Ticket"> | Date | string
     comments?: TicketCommentListRelationFilter
@@ -7631,6 +7765,13 @@ export namespace Prisma {
     resolvedAt?: SortOrderInput | SortOrder
     closedAt?: SortOrderInput | SortOrder
     attachments?: SortOrderInput | SortOrder
+    csat?: SortOrderInput | SortOrder
+    csatComment?: SortOrderInput | SortOrder
+    csatSubmittedAt?: SortOrderInput | SortOrder
+    impactLevel?: SortOrderInput | SortOrder
+    escalationCount?: SortOrder
+    lastEscalatedAt?: SortOrderInput | SortOrder
+    escalationReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     comments?: TicketCommentOrderByRelationAggregateInput
@@ -7666,6 +7807,13 @@ export namespace Prisma {
     resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     attachments?: JsonNullableFilter<"Ticket">
+    csat?: IntNullableFilter<"Ticket"> | number | null
+    csatComment?: StringNullableFilter<"Ticket"> | string | null
+    csatSubmittedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    impactLevel?: EnumImpactLevelNullableFilter<"Ticket"> | $Enums.ImpactLevel | null
+    escalationCount?: IntFilter<"Ticket"> | number
+    lastEscalatedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    escalationReason?: StringNullableFilter<"Ticket"> | string | null
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
     updatedAt?: DateTimeFilter<"Ticket"> | Date | string
     comments?: TicketCommentListRelationFilter
@@ -7698,6 +7846,13 @@ export namespace Prisma {
     resolvedAt?: SortOrderInput | SortOrder
     closedAt?: SortOrderInput | SortOrder
     attachments?: SortOrderInput | SortOrder
+    csat?: SortOrderInput | SortOrder
+    csatComment?: SortOrderInput | SortOrder
+    csatSubmittedAt?: SortOrderInput | SortOrder
+    impactLevel?: SortOrderInput | SortOrder
+    escalationCount?: SortOrder
+    lastEscalatedAt?: SortOrderInput | SortOrder
+    escalationReason?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TicketCountOrderByAggregateInput
@@ -7735,6 +7890,13 @@ export namespace Prisma {
     resolvedAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
     closedAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
     attachments?: JsonNullableWithAggregatesFilter<"Ticket">
+    csat?: IntNullableWithAggregatesFilter<"Ticket"> | number | null
+    csatComment?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
+    csatSubmittedAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
+    impactLevel?: EnumImpactLevelNullableWithAggregatesFilter<"Ticket"> | $Enums.ImpactLevel | null
+    escalationCount?: IntWithAggregatesFilter<"Ticket"> | number
+    lastEscalatedAt?: DateTimeNullableWithAggregatesFilter<"Ticket"> | Date | string | null
+    escalationReason?: StringNullableWithAggregatesFilter<"Ticket"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Ticket"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Ticket"> | Date | string
   }
@@ -8030,6 +8192,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentCreateNestedManyWithoutTicketInput
@@ -8062,6 +8231,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentUncheckedCreateNestedManyWithoutTicketInput
@@ -8090,6 +8266,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUpdateManyWithoutTicketNestedInput
@@ -8122,6 +8305,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUncheckedUpdateManyWithoutTicketNestedInput
@@ -8152,6 +8342,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -8179,6 +8376,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8208,6 +8412,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8583,6 +8794,24 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type EnumImpactLevelNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImpactLevel | EnumImpactLevelFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ImpactLevel[] | ListEnumImpactLevelFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ImpactLevel[] | ListEnumImpactLevelFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumImpactLevelNullableFilter<$PrismaModel> | $Enums.ImpactLevel | null
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -8644,12 +8873,21 @@ export namespace Prisma {
     resolvedAt?: SortOrder
     closedAt?: SortOrder
     attachments?: SortOrder
+    csat?: SortOrder
+    csatComment?: SortOrder
+    csatSubmittedAt?: SortOrder
+    impactLevel?: SortOrder
+    escalationCount?: SortOrder
+    lastEscalatedAt?: SortOrder
+    escalationReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type TicketAvgOrderByAggregateInput = {
     reopenCount?: SortOrder
+    csat?: SortOrder
+    escalationCount?: SortOrder
   }
 
   export type TicketMaxOrderByAggregateInput = {
@@ -8675,6 +8913,13 @@ export namespace Prisma {
     reopenCount?: SortOrder
     resolvedAt?: SortOrder
     closedAt?: SortOrder
+    csat?: SortOrder
+    csatComment?: SortOrder
+    csatSubmittedAt?: SortOrder
+    impactLevel?: SortOrder
+    escalationCount?: SortOrder
+    lastEscalatedAt?: SortOrder
+    escalationReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -8702,12 +8947,21 @@ export namespace Prisma {
     reopenCount?: SortOrder
     resolvedAt?: SortOrder
     closedAt?: SortOrder
+    csat?: SortOrder
+    csatComment?: SortOrder
+    csatSubmittedAt?: SortOrder
+    impactLevel?: SortOrder
+    escalationCount?: SortOrder
+    lastEscalatedAt?: SortOrder
+    escalationReason?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type TicketSumOrderByAggregateInput = {
     reopenCount?: SortOrder
+    csat?: SortOrder
+    escalationCount?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -8829,6 +9083,32 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type EnumImpactLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImpactLevel | EnumImpactLevelFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ImpactLevel[] | ListEnumImpactLevelFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ImpactLevel[] | ListEnumImpactLevelFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumImpactLevelNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImpactLevel | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumImpactLevelNullableFilter<$PrismaModel>
+    _max?: NestedEnumImpactLevelNullableFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -9056,6 +9336,18 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableEnumImpactLevelFieldUpdateOperationsInput = {
+    set?: $Enums.ImpactLevel | null
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -9335,6 +9627,24 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumImpactLevelNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImpactLevel | EnumImpactLevelFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ImpactLevel[] | ListEnumImpactLevelFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ImpactLevel[] | ListEnumImpactLevelFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumImpactLevelNullableFilter<$PrismaModel> | $Enums.ImpactLevel | null
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -9378,17 +9688,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type NestedEnumTicketTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -9482,6 +9781,43 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumImpactLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImpactLevel | EnumImpactLevelFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ImpactLevel[] | ListEnumImpactLevelFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ImpactLevel[] | ListEnumImpactLevelFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumImpactLevelNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImpactLevel | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumImpactLevelNullableFilter<$PrismaModel>
+    _max?: NestedEnumImpactLevelNullableFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -9666,6 +10002,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     category?: CategoryCreateNestedOneWithoutTicketsInput
@@ -9697,6 +10040,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -9740,6 +10090,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: CategoryUpdateOneWithoutTicketsNestedInput
@@ -9771,6 +10128,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9798,6 +10162,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentCreateNestedManyWithoutTicketInput
@@ -9828,6 +10199,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentUncheckedCreateNestedManyWithoutTicketInput
@@ -9911,6 +10289,13 @@ export namespace Prisma {
     resolvedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     closedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
     attachments?: JsonNullableFilter<"Ticket">
+    csat?: IntNullableFilter<"Ticket"> | number | null
+    csatComment?: StringNullableFilter<"Ticket"> | string | null
+    csatSubmittedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    impactLevel?: EnumImpactLevelNullableFilter<"Ticket"> | $Enums.ImpactLevel | null
+    escalationCount?: IntFilter<"Ticket"> | number
+    lastEscalatedAt?: DateTimeNullableFilter<"Ticket"> | Date | string | null
+    escalationReason?: StringNullableFilter<"Ticket"> | string | null
     createdAt?: DateTimeFilter<"Ticket"> | Date | string
     updatedAt?: DateTimeFilter<"Ticket"> | Date | string
   }
@@ -9983,6 +10368,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentCreateNestedManyWithoutTicketInput
@@ -10013,6 +10405,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: TicketCommentUncheckedCreateNestedManyWithoutTicketInput
@@ -10129,6 +10528,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10162,6 +10568,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUpdateManyWithoutTicketNestedInput
@@ -10192,6 +10605,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUncheckedUpdateManyWithoutTicketNestedInput
@@ -10221,6 +10641,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10269,6 +10696,13 @@ export namespace Prisma {
     resolvedAt?: Date | string | null
     closedAt?: Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: number | null
+    csatComment?: string | null
+    csatSubmittedAt?: Date | string | null
+    impactLevel?: $Enums.ImpactLevel | null
+    escalationCount?: number
+    lastEscalatedAt?: Date | string | null
+    escalationReason?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10296,6 +10730,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUpdateManyWithoutTicketNestedInput
@@ -10326,6 +10767,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: TicketCommentUncheckedUpdateManyWithoutTicketNestedInput
@@ -10355,6 +10803,13 @@ export namespace Prisma {
     resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     closedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     attachments?: NullableJsonNullValueInput | InputJsonValue
+    csat?: NullableIntFieldUpdateOperationsInput | number | null
+    csatComment?: NullableStringFieldUpdateOperationsInput | string | null
+    csatSubmittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    impactLevel?: NullableEnumImpactLevelFieldUpdateOperationsInput | $Enums.ImpactLevel | null
+    escalationCount?: IntFieldUpdateOperationsInput | number
+    lastEscalatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    escalationReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
