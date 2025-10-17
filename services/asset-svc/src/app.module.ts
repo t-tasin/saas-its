@@ -20,6 +20,7 @@ import { AssetTypeController } from './asset-type.controller';
 import { IdempotencyMiddleware } from './shared/idempotency.middleware';
 import { MetricsMiddleware } from './shared/metrics.middleware';
 import { AuditService } from './shared/audit.service';
+import { MigrationService } from './migration.service';
 
 @Module({
   imports: [AuthModule],
@@ -28,6 +29,7 @@ import { AuditService } from './shared/audit.service';
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     AuditService,
+    MigrationService,
   ],
 })
 export class AppModule implements NestModule {

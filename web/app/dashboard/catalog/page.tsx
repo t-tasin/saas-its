@@ -115,8 +115,13 @@ function CatalogContent() {
               <Button type="submit" disabled={createAssetType.isPending}>Add</Button>
             </form>
 
+            {assetTypes.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No asset types defined. Add a type above to get started.
+              </p>
+            )}
+
             <div className="space-y-2 max-h-80 overflow-y-auto">
-              {assetTypes.length === 0 && <p className="text-sm text-muted-foreground">No asset types defined.</p>}
               {assetTypes.map((type: any) => (
                 <div
                   key={type.id}
