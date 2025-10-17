@@ -43,12 +43,19 @@ function DashboardReservationsContent() {
   const reservations = reservationsResponse?.data || []
   const assets = assetsResponse?.data || []
 
+  const assetTypeNameFor = (asset: any) => {
+    if (asset?.assetType && typeof asset.assetType === "object" && asset.assetType.name) {
+      return asset.assetType.name
+    }
+    return asset?.type || "Unknown"
+  }
+
   // Calculate availability by category
   const availabilityByType = useMemo(() => {
     const typeMap = new Map<string, { total: number; available: number }>()
 
     assets.forEach((asset) => {
-      const type = asset.type
+      const type = assetTypeNameFor(asset)
       const current = typeMap.get(type) || { total: 0, available: 0 }
       
       typeMap.set(type, {
@@ -75,7 +82,7 @@ function DashboardReservationsContent() {
   })
 
   const assetsForType = selectedAssetType
-    ? assets.filter((asset) => asset.type === selectedAssetType)
+    ? assets.filter((asset) => assetTypeNameFor(asset) === selectedAssetType)
     : []
 
   const handleAssetTypeClick = (assetTypeName: string) => {
