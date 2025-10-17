@@ -29,7 +29,7 @@ function CatalogContent() {
   }
 
   const categories = categoryData?.data ?? []
-  const assetTypes = assetTypeData ?? []
+  const assetTypes = assetTypeData?.data ?? []
 
   return (
     <main className="container mx-auto p-8">
