@@ -30,12 +30,13 @@ const transformAssetStatusToBackend = (status: string): string => {
 }
 
 const transformAssetType = (type: string): string => {
+  if (!type || typeof type !== 'string') return 'Unknown'
   return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
 }
 
 export function useAssets(params?: any) {
   const { isAuthenticated, loading, token } = useAuth()
-  
+
   return useQuery({
     queryKey: ["assets", params],
     queryFn: async () => {
@@ -46,19 +47,29 @@ export function useAssets(params?: any) {
         }
 
         const response = await assetApi.get("/", { params })
-        
+
         // Backend returns { items: [], nextCursor: string }
         const assets = response.data.items || response.data.data || []
 
-        const transformedData = assets.map((asset: any) => ({
-          ...asset,
-          status: transformAssetStatus(asset.status),
-          type: transformAssetType(asset.assetType || asset.type),
-          assetType: {
-            id: (asset.assetType || asset.type || 'other').toLowerCase(),
-            name: transformAssetType(asset.assetType || asset.type),
-          },
-        }))
+        const transformedData = assets.map((asset: any) => {
+          // Determine the type name from either assetType object or type string
+          let typeName = asset.type || 'Unknown'
+          if (asset.assetType && typeof asset.assetType === 'object' && asset.assetType.name) {
+            typeName = asset.assetType.name
+          }
+
+          return {
+            ...asset,
+            status: transformAssetStatus(asset.status),
+            type: transformAssetType(typeName),
+            assetType: asset.assetType && typeof asset.assetType === 'object'
+              ? asset.assetType
+              : {
+                  id: asset.assetTypeId || 'unknown',
+                  name: transformAssetType(typeName),
+                },
+          }
+        })
 
         return {
           data: transformedData,
