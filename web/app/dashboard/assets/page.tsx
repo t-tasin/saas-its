@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Plus, Search, Package, Loader2 } from "lucide-react"
-import { useAssets, useAssetTypes, useCreateAsset } from "@/hooks/use-assets"
+import { useAssets, useAssetTypeCatalog, useCreateAsset } from "@/hooks/use-assets"
 import { useUser } from "@/hooks/use-users"
 import toast from "react-hot-toast"
 import { useRouter } from "next/navigation"
@@ -75,9 +75,9 @@ function DashboardAssetsContent() {
   
   // Fetch assets from backend
   const { data: assetsResponse, isLoading, error } = useAssets()
-  const { data: assetTypesResponse } = useAssetTypes()
+  const { data: assetTypesResponse } = useAssetTypeCatalog()
   const createAssetMutation = useCreateAsset()
-  
+
   const assets = assetsResponse?.data || []
   const assetTypes = assetTypesResponse?.data || []
 
@@ -131,10 +131,15 @@ function DashboardAssetsContent() {
       return
     }
 
+    // Find the selected asset type to get its name
+    const selectedAssetType = assetTypes.find((t: any) => t.id === assetTypeId)
+    const typeName = selectedAssetType?.name || assetTypeId
+
     try {
       await createAssetMutation.mutateAsync({
         assetId: assetTag,
-        type: assetTypeId,
+        type: typeName,
+        assetTypeId: assetTypeId,
         description,
         fundingDepartment,
         manufacturer: manufacturer || undefined,

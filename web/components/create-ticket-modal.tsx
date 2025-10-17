@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useCreateTicket } from "@/hooks/use-tickets"
+import { useCreateTicket, useCategories } from "@/hooks/use-tickets"
 import { useAssets } from "@/hooks/use-assets"
 import { useAuth } from "@/contexts/auth-context"
-import { Loader2, Upload, X, FileIcon, CheckCircle2, Package } from "lucide-react"
+import { Loader2, Upload, X, FileIcon, CheckCircle2, Package, FolderTree } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 interface CreateTicketModalProps {
@@ -23,17 +23,25 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
   const { user } = useAuth()
   const createTicket = useCreateTicket()
   const { data: assetsData } = useAssets({ limit: 100 })
+  const { data: categoriesData } = useCategories()
   const assets = assetsData?.data || []
-  
+  const categories = categoriesData?.data || []
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     email: user?.email || "",
     assetId: "",
+    categoryId: "",
+    subcategoryId: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+
+  // Get subcategories for the selected category
+  const selectedCategory = categories.find((cat: any) => cat.id === formData.categoryId)
+  const subcategories = selectedCategory?.subcategories || []
 
   const validateFile = (file: File): { valid: boolean; error?: string } => {
     const maxSize = 10 * 1024 * 1024 // 10MB
@@ -109,17 +117,18 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
         title: formData.title,
         description: formData.description,
         requestedBy: formData.email,
-        status: "open",
         priority: "medium",
-        assetId: formData.assetId || undefined, // NEW: Include asset ID
-        attachments: selectedFiles, // Pass files to mutation
-      })
+        assetId: formData.assetId || undefined,
+        categoryId: formData.categoryId || undefined,
+        subcategoryId: formData.subcategoryId || undefined,
+        attachments: selectedFiles,
+      } as any)
 
       setIsSuccess(true)
       // Toast is shown by the mutation hook
 
       setTimeout(() => {
-        setFormData({ title: "", description: "", email: user?.email || "", assetId: "" })
+        setFormData({ title: "", description: "", email: user?.email || "", assetId: "", categoryId: "", subcategoryId: "" })
         setSelectedFiles([])
         setIsSuccess(false)
         onOpenChange(false)
@@ -182,12 +191,62 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="category" className="flex items-center gap-2">
+              <FolderTree className="h-4 w-4" />
+              Category (Optional)
+            </Label>
+            <Select
+              value={formData.categoryId}
+              onValueChange={(value) => {
+                setFormData({ ...formData, categoryId: value, subcategoryId: "" })
+              }}
+            >
+              <SelectTrigger id="category">
+                <SelectValue placeholder="Select a category (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No category</SelectItem>
+                {categories.map((category: any) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Helps us route your ticket to the right team
+            </p>
+          </div>
+
+          {formData.categoryId && formData.categoryId !== "none" && subcategories.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="subcategory">Subcategory (Optional)</Label>
+              <Select
+                value={formData.subcategoryId}
+                onValueChange={(value) => setFormData({ ...formData, subcategoryId: value })}
+              >
+                <SelectTrigger id="subcategory">
+                  <SelectValue placeholder="Select a subcategory (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No subcategory</SelectItem>
+                  {subcategories.map((subcategory: any) => (
+                    <SelectItem key={subcategory.id} value={subcategory.id}>
+                      {subcategory.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="space-y-2">
             <Label htmlFor="asset" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               Associated Asset (Optional)
             </Label>
-            <Select 
-              value={formData.assetId} 
+            <Select
+              value={formData.assetId}
               onValueChange={(value) => setFormData({ ...formData, assetId: value })}
             >
               <SelectTrigger id="asset">

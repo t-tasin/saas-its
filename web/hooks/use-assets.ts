@@ -112,7 +112,7 @@ export function useCreateAsset() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (data: CreateAssetData) => {
+    mutationFn: async (data: any) => {
       try {
         // Backend requires: assetId, type, description, fundingDepartment as mandatory
         const backendData = {
@@ -120,6 +120,7 @@ export function useCreateAsset() {
           type: data.type || "Laptop",
           description: data.description || `${data.type} - ${data.model || "Unknown Model"}`,
           fundingDepartment: data.fundingDepartment || "IT Department",
+          assetTypeId: data.assetTypeId || undefined,
           // Optional fields
           manufacturer: data.brand || data.manufacturer,
           model: data.model,
@@ -151,13 +152,14 @@ export function useUpdateAsset() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<CreateAssetData> }) => {
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
       try {
         // Transform frontend data to backend format
         const backendData: any = {}
-        
+
         if (data.assetId) backendData.assetId = data.assetId
         if (data.type) backendData.type = data.type
+        if (data.assetTypeId) backendData.assetTypeId = data.assetTypeId
         if (data.description) backendData.description = data.description
         if (data.fundingDepartment) backendData.fundingDepartment = data.fundingDepartment
         if (data.manufacturer) backendData.manufacturer = data.manufacturer

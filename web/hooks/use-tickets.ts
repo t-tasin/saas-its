@@ -40,7 +40,12 @@ export function useTickets(params?: any) {
           ...ticket,
           status: transformStatus(ticket.status),
           priority: ticket.priority?.toLowerCase() || 'medium',
-          category: { name: ticket.category || ticket.type || 'other' },
+          // If category is already an object with name, use it; otherwise create one
+          category: ticket.category && typeof ticket.category === 'object'
+            ? ticket.category
+            : ticket.category
+              ? { name: ticket.category }
+              : undefined,
         }))
 
         return { data: transformedData, total: tickets.length, nextCursor }
@@ -129,7 +134,7 @@ export function useCreateTicket() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (data: CreateTicketData & { attachments?: File[] }) => {
+    mutationFn: async (data: any) => {
       // Get user email from localStorage for requestedBy field
       const user = typeof window !== "undefined" ? localStorage.getItem("user") : null
       const userEmail = user ? JSON.parse(user).email : "anonymous@example.com"
