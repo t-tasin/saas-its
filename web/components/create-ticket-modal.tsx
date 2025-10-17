@@ -190,6 +190,26 @@ export function CreateTicketModal({ open, onOpenChange }: CreateTicketModalProps
             />
           </div>
 
+          {/* Priority Selection - Commented out as per requirements
+          <div className="space-y-2">
+            <Label htmlFor="priority">Priority (Optional)</Label>
+            <Select
+              value={formData.priority}
+              onValueChange={(value) => setFormData({ ...formData, priority: value })}
+            >
+              <SelectTrigger id="priority">
+                <SelectValue placeholder="Select priority (default: medium)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+                <SelectItem value="urgent">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          */}
+
           <div className="space-y-2">
             <Label htmlFor="category" className="flex items-center gap-2">
               <FolderTree className="h-4 w-4" />

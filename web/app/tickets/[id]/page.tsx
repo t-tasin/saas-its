@@ -16,16 +16,19 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useAuth } from "@/contexts/auth-context"
 import { useTicket, useTicketComments, useAddComment, useUpdateTicketStatus } from "@/hooks/use-tickets"
-import { useUser } from "@/hooks/use-users"
+import { useUser, useAssignableUsers } from "@/hooks/use-users"
 import { useAssets } from "@/hooks/use-assets"
 import { useToast } from "@/hooks/use-toast"
-import { formatDateTime } from "@/lib/utils"
-import { ArrowLeft, MessageSquare, Paperclip, Download, UserPlus, Package } from "lucide-react"
+import { formatDateTime, cn } from "@/lib/utils"
+import { ArrowLeft, MessageSquare, Paperclip, Download, UserPlus, Package, Check, ChevronsUpDown, Upload, X, FileIcon } from "lucide-react"
 import Link from "next/link"
 import { ticketApi } from "@/lib/api-client"
 import { TechnicianBadge } from "@/components/technician-badge"
+import { toast as hotToast } from "react-hot-toast"
 
 export default function TicketDetailPage() {
   const params = useParams()
@@ -38,6 +41,8 @@ export default function TicketDetailPage() {
   const { data: comments, isLoading: commentsLoading } = useTicketComments(ticketId)
   const { data: assetsData } = useAssets({ limit: 100 })
   const assets = assetsData?.data || []
+  const { data: assignableUsersData } = useAssignableUsers()
+  const assignableUsers = assignableUsersData?.data || []
   const addComment = useAddComment()
   const updateStatus = useUpdateTicketStatus()
   
@@ -51,6 +56,12 @@ export default function TicketDetailPage() {
   const [newTechId, setNewTechId] = useState("")
   const [selectedAssetId, setSelectedAssetId] = useState("")
   const [isUpdatingAsset, setIsUpdatingAsset] = useState(false)
+  const [assetSearchOpen, setAssetSearchOpen] = useState(false)
+  const [newPriority, setNewPriority] = useState("")
+  const [isUpdatingPriority, setIsUpdatingPriority] = useState(false)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [commentFiles, setCommentFiles] = useState<File[]>([])
+  const [isUploadingAttachments, setIsUploadingAttachments] = useState(false)
 
   // Update newStatus when ticket data loads
   useEffect(() => {
@@ -66,12 +77,25 @@ export default function TicketDetailPage() {
     }
   }, [ticket?.data?.assetId])
 
+  // Initialize priority when ticket data loads
+  useEffect(() => {
+    if (ticket?.data?.priority) {
+      setNewPriority(ticket.data.priority)
+    }
+  }, [ticket?.data?.priority])
+
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!commentBody.trim()) return
 
     try {
+      // First upload attachments if any
+      if (commentFiles.length > 0) {
+        await uploadAttachments(commentFiles)
+      }
+
+      // Then add the comment
       await addComment.mutateAsync({
         ticketId,
         body: commentBody,
@@ -80,6 +104,7 @@ export default function TicketDetailPage() {
 
       setCommentBody("")
       setAuthorName("")
+      setCommentFiles([])
 
       toast({
         title: "Success",
@@ -195,6 +220,141 @@ export default function TicketDetailPage() {
     }
   }
 
+  const handleUpdatePriority = async () => {
+    if (!newPriority || newPriority === ticketData.priority) return
+
+    setIsUpdatingPriority(true)
+    try {
+      await ticketApi.patch(`/tickets/${ticketId}`, {
+        priority: newPriority,
+      })
+
+      toast({
+        title: "Success",
+        description: "Ticket priority updated successfully.",
+      })
+
+      // Refresh ticket data
+      window.location.reload()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update priority. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsUpdatingPriority(false)
+    }
+  }
+
+  const validateFile = (file: File): { valid: boolean; error?: string } => {
+    const maxSize = 10 * 1024 * 1024 // 10MB
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ]
+
+    if (file.size > maxSize) {
+      return { valid: false, error: "File size must be less than 10MB" }
+    }
+
+    if (!allowedTypes.includes(file.type)) {
+      return { valid: false, error: "File type not allowed. Only JPG, PNG, GIF, PDF, DOC, DOCX are supported." }
+    }
+
+    return { valid: true }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, isComment: boolean = false) => {
+    const files = Array.from(e.target.files || [])
+
+    for (const file of files) {
+      const validation = validateFile(file)
+      if (!validation.valid) {
+        hotToast.error(validation.error || "Invalid file")
+        return
+      }
+    }
+
+    if (isComment) {
+      setCommentFiles((prev) => [...prev, ...files])
+    } else {
+      setSelectedFiles((prev) => [...prev, ...files])
+    }
+    e.target.value = "" // Reset input
+  }
+
+  const removeFile = (index: number, isComment: boolean = false) => {
+    if (isComment) {
+      setCommentFiles((prev) => prev.filter((_, i) => i !== index))
+    } else {
+      setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
+    }
+  }
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + " B"
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB"
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB"
+  }
+
+  const uploadAttachments = async (files: File[]) => {
+    for (const file of files) {
+      try {
+        // Get presigned URL
+        const urlResponse = await ticketApi.post(`/tickets/${ticketId}/attachments/upload-url`, {
+          fileName: file.name,
+          contentType: file.type,
+          fileSize: file.size,
+        })
+
+        const { uploadUrl, key } = urlResponse.data
+
+        // Upload to S3
+        await fetch(uploadUrl, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        })
+      } catch (error) {
+        console.error(`Failed to upload ${file.name}:`, error)
+        throw error
+      }
+    }
+  }
+
+  const handleUploadNewAttachments = async () => {
+    if (selectedFiles.length === 0) return
+
+    setIsUploadingAttachments(true)
+    try {
+      await uploadAttachments(selectedFiles)
+
+      toast({
+        title: "Success",
+        description: `${selectedFiles.length} file(s) uploaded successfully.`,
+      })
+
+      setSelectedFiles([])
+      // Refresh ticket data
+      window.location.reload()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload attachments. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsUploadingAttachments(false)
+    }
+  }
+
   if (ticketLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -297,19 +457,30 @@ export default function TicketDetailPage() {
                   {showAddTechModal && isOperator && (
                     <form onSubmit={handleAddTechnician} className="space-y-3 pt-3 border-t">
                       <div className="space-y-2">
-                        <Label htmlFor="techId">Technician User ID</Label>
-                        <Input
-                          id="techId"
-                          value={newTechId}
-                          onChange={(e) => setNewTechId(e.target.value)}
-                          placeholder="Enter technician user ID"
-                        />
+                        <Label htmlFor="techId">Select Technician</Label>
+                        <Select value={newTechId} onValueChange={setNewTechId}>
+                          <SelectTrigger id="techId">
+                            <SelectValue placeholder="Choose an operator or admin" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {assignableUsers.map((user: any) => (
+                              <SelectItem key={user.id} value={user.id}>
+                                {user.name || user.email} ({user.role})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Only operators and admins can be assigned
+                        </p>
                       </div>
                       <div className="flex gap-2">
-                        <Button type="submit" size="sm">Assign</Button>
-                        <Button 
-                          type="button" 
-                          size="sm" 
+                        <Button type="submit" size="sm" disabled={!newTechId}>
+                          Assign
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
                           variant="outline"
                           onClick={() => {
                             setShowAddTechModal(false)
@@ -336,25 +507,73 @@ export default function TicketDetailPage() {
               <CardContent className="space-y-4">
                 {isOperator && (
                   <div className="space-y-2">
-                    <Label htmlFor="asset-select">Select Asset</Label>
-                    <Select 
-                      value={selectedAssetId} 
-                      onValueChange={setSelectedAssetId}
-                    >
-                      <SelectTrigger id="asset-select">
-                        <SelectValue placeholder="Select an asset (optional)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No asset</SelectItem>
-                        {assets.map((asset: any) => (
-                          <SelectItem key={asset.id} value={asset.id}>
-                            {asset.name} ({asset.type}) - {asset.serialNumber || asset.id.slice(0, 8)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="asset-select">Search & Select Asset</Label>
+                    <Popover open={assetSearchOpen} onOpenChange={setAssetSearchOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={assetSearchOpen}
+                          className="w-full justify-between"
+                        >
+                          {selectedAssetId && selectedAssetId !== "none"
+                            ? assets.find((asset: any) => asset.id === selectedAssetId)?.name || "Select asset..."
+                            : "Select asset..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Search assets by name or tag..." />
+                          <CommandEmpty>No asset found.</CommandEmpty>
+                          <CommandGroup className="max-h-64 overflow-auto">
+                            <CommandItem
+                              value="none"
+                              onSelect={() => {
+                                setSelectedAssetId("none")
+                                setAssetSearchOpen(false)
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedAssetId === "none" ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              No asset
+                            </CommandItem>
+                            {assets.map((asset: any) => (
+                              <CommandItem
+                                key={asset.id}
+                                value={`${asset.name} ${asset.serialNumber || ""} ${asset.type || ""}`}
+                                onSelect={() => {
+                                  setSelectedAssetId(asset.id)
+                                  setAssetSearchOpen(false)
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedAssetId === asset.id ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{asset.name}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {asset.type} {asset.serialNumber ? `• ${asset.serialNumber}` : ""}
+                                  </span>
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <p className="text-xs text-muted-foreground">
+                      Search by asset name, serial number, or type
+                    </p>
                     {selectedAssetId && selectedAssetId !== "none" && selectedAssetId !== ticketData.assetId && (
-                      <Button 
+                      <Button
                         onClick={handleUpdateAsset}
                         disabled={isUpdatingAsset}
                         className="w-full"
@@ -363,7 +582,7 @@ export default function TicketDetailPage() {
                       </Button>
                     )}
                     {selectedAssetId === "none" && ticketData.assetId && (
-                      <Button 
+                      <Button
                         onClick={handleUpdateAsset}
                         disabled={isUpdatingAsset}
                         variant="destructive"
@@ -384,16 +603,19 @@ export default function TicketDetailPage() {
               </CardContent>
             </Card>
 
-            {ticketData.attachments && ticketData.attachments.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Paperclip className="h-5 w-5" />
-                    Attachments ({ticketData.attachments.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+            {/* Attachments Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Paperclip className="h-5 w-5" />
+                  Attachments ({ticketData.attachments?.length || 0})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Existing Attachments */}
+                {ticketData.attachments && ticketData.attachments.length > 0 && (
                   <div className="space-y-2">
+                    <Label className="text-sm font-medium">Existing Files</Label>
                     {ticketData.attachments.map((attachment: any) => (
                       <div
                         key={attachment.id}
@@ -408,9 +630,9 @@ export default function TicketDetailPage() {
                             </p>
                           </div>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={async () => {
                             try {
                               const { ticketApi } = await import("@/lib/api-client")
@@ -426,9 +648,76 @@ export default function TicketDetailPage() {
                       </div>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                )}
+
+                {/* Upload New Attachments (Operators only) */}
+                {isOperator && (
+                  <div className="space-y-2 pt-4 border-t">
+                    <Label htmlFor="new-attachments">Add New Attachments</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="new-attachments"
+                        type="file"
+                        onChange={(e) => handleFileChange(e, false)}
+                        accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx"
+                        multiple
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById("new-attachments")?.click()}
+                        className="w-full"
+                      >
+                        <Upload className="mr-2 h-4 w-4" />
+                        Choose Files
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Max 10MB per file. Supported: JPG, PNG, GIF, PDF, DOC, DOCX
+                    </p>
+
+                    {selectedFiles.length > 0 && (
+                      <div className="space-y-2 mt-3">
+                        {selectedFiles.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-md">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <FileIcon className="h-4 w-4 flex-shrink-0" />
+                              <span className="text-sm truncate">{file.name}</span>
+                              <span className="text-xs text-muted-foreground flex-shrink-0">
+                                {formatFileSize(file.size)}
+                              </span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFile(index, false)}
+                              className="flex-shrink-0"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          onClick={handleUploadNewAttachments}
+                          disabled={isUploadingAttachments}
+                          className="w-full"
+                        >
+                          {isUploadingAttachments ? "Uploading..." : `Upload ${selectedFiles.length} File(s)`}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {!ticketData.attachments?.length && !isOperator && (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No attachments yet.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Comments Section */}
             <Card>
@@ -481,6 +770,58 @@ export default function TicketDetailPage() {
                     </div>
                   )}
 
+                  {/* Comment Attachments (Optional) */}
+                  <div className="space-y-2">
+                    <Label htmlFor="comment-attachments">Attachments (Optional)</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="comment-attachments"
+                        type="file"
+                        onChange={(e) => handleFileChange(e, true)}
+                        accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx"
+                        multiple
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById("comment-attachments")?.click()}
+                      >
+                        <Paperclip className="mr-2 h-4 w-4" />
+                        Attach Files
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Max 10MB per file. Supported: JPG, PNG, GIF, PDF, DOC, DOCX
+                    </p>
+
+                    {commentFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {commentFiles.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-muted rounded-md">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <FileIcon className="h-4 w-4 flex-shrink-0" />
+                              <span className="text-sm truncate">{file.name}</span>
+                              <span className="text-xs text-muted-foreground flex-shrink-0">
+                                {formatFileSize(file.size)}
+                              </span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFile(index, true)}
+                              className="flex-shrink-0"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   <Button type="submit" disabled={addComment.isPending}>
                     {addComment.isPending ? "Adding..." : "Add Comment"}
                   </Button>
@@ -499,7 +840,7 @@ export default function TicketDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="status">Current Status</Label>
+                    <Label htmlFor="status">Update Status</Label>
                     <Select value={newStatus} onValueChange={setNewStatus}>
                       <SelectTrigger>
                         <SelectValue>
@@ -520,6 +861,30 @@ export default function TicketDetailPage() {
                     className="w-full"
                   >
                     {updateStatus.isPending ? "Updating..." : "Update Status"}
+                  </Button>
+
+                  <div className="space-y-2 pt-2 border-t">
+                    <Label htmlFor="priority">Update Priority</Label>
+                    <Select value={newPriority} onValueChange={setNewPriority}>
+                      <SelectTrigger>
+                        <SelectValue>
+                          {newPriority ? newPriority.charAt(0).toUpperCase() + newPriority.slice(1) : "Select priority"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="urgent">Urgent</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    onClick={handleUpdatePriority}
+                    disabled={!newPriority || isUpdatingPriority || newPriority === ticketData.priority}
+                    className="w-full"
+                  >
+                    {isUpdatingPriority ? "Updating..." : "Update Priority"}
                   </Button>
                 </CardContent>
               </Card>
