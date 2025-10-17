@@ -11,9 +11,9 @@ import { Public } from './auth/public.decorator';
 import { CreateCategoryDto, UpdateCategoryDto, CreateSubCategoryDto, UpdateSubCategoryDto } from './dto/category.dto';
 import { Prisma } from '../generated/client';
 
-@ApiTags('tickets')
+@ApiTags('ticket-catalog')
 @ApiBearerAuth()
-@Controller('tickets')
+@Controller('tickets/catalog')
 export class CategoryController {
   /**
    * List all categories with their subcategories

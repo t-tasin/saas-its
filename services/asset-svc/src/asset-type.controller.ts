@@ -6,13 +6,13 @@ import { ParseUUIDPipe } from '@nestjs/common';
 
 @ApiTags('assets')
 @ApiBearerAuth()
-@Controller('assets')
+@Controller('assets/asset-types')
 export class AssetTypeController {
   /**
    * List all asset types (operators and admins)
    */
   @Roles('operator', 'admin')
-  @Get('asset-types')
+  @Get()
   async list() {
     return withTx((tx) =>
       tx.assetType.findMany({
@@ -33,7 +33,7 @@ export class AssetTypeController {
    * Create a new asset type (admin only)
    */
   @Roles('admin')
-  @Post('asset-types')
+  @Post()
   async create(@Body() body: { name: string }) {
     const name = (body.name || '').trim();
     if (!name) {
@@ -57,7 +57,7 @@ export class AssetTypeController {
    * Delete an asset type (admin only)
    */
   @Roles('admin')
-  @Delete('asset-types/:id')
+  @Delete(':id')
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     return withTx(async (tx) => {
       const assetCount = await tx.asset.count({ where: { assetTypeId: id } });
