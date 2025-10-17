@@ -4,9 +4,9 @@ import { Roles } from './auth/roles.decorator';
 import { withTx } from './with-tenant';
 import { ParseUUIDPipe } from '@nestjs/common';
 
-@ApiTags('assets')
+@ApiTags('asset-types')
 @ApiBearerAuth()
-@Controller('assets/asset-types')
+@Controller('asset-types')
 export class AssetTypeController {
   /**
    * List all asset types (operators and admins)

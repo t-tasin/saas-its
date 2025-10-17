@@ -11,7 +11,7 @@ export async function getCategories(): Promise<any[]> {
   if (cache.length && now - at < TTL) return cache;
   
   try {
-    cache = await httpJson<any[]>(`${TICKET_BASE}/tickets/categories`);
+    cache = await httpJson<any[]>(`${TICKET_BASE}/tickets/catalog/categories`);
     at = now;
     return cache;
   } catch (error) {
@@ -37,4 +37,3 @@ export function flattenEnums(categories: any[]) {
     subcategoryEnum: [...subIds]
   };
 }
-

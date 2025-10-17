@@ -10,7 +10,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetSegments = ['assets', ...pathSegments]
+    const targetSegments =
+      pathSegments.length === 0
+        ? ['assets']
+        : pathSegments[0] === 'asset-types'
+          ? pathSegments
+          : ['assets', ...pathSegments]
     const targetPath = targetSegments.join('/')
     const backendUrl = getBackendUrl()
     const searchParams = request.nextUrl.searchParams.toString()
