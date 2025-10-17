@@ -625,7 +625,7 @@ export class TicketController {
         where: { id: ticketId },
         data: {
           csat: body.csat,
-          csatComment: body.comment || null,
+          csatComment: body.comment ?? null,
           csatSubmittedAt: new Date(),
         },
       });
@@ -634,7 +634,6 @@ export class TicketController {
         entity: 'ticket',
         entityId: ticketId,
         action: 'csat-submit',
-        actorId: null, // Public endpoint
         metadata: { csat: body.csat, hasComment: !!body.comment },
       });
 
