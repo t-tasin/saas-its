@@ -560,7 +560,7 @@ export default function TicketDetailPage() {
                         </Select>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mb-4">
                       <Button
                         size="sm"
                         onClick={handleUpdateCategory}
