@@ -52,7 +52,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = ['assets', ...pathSegments].join('/')
+    const targetSegments =
+      pathSegments.length === 0
+        ? ['assets']
+        : pathSegments[0] === 'asset-types'
+          ? pathSegments
+          : ['assets', ...pathSegments]
+    const targetPath = targetSegments.join('/')
     const backendUrl = getBackendUrl()
     const fullUrl = `${backendUrl}/${targetPath}`
 
@@ -86,7 +92,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = ['assets', ...pathSegments].join('/')
+    const targetSegments =
+      pathSegments.length === 0
+        ? ['assets']
+        : pathSegments[0] === 'asset-types'
+          ? pathSegments
+          : ['assets', ...pathSegments]
+    const targetPath = targetSegments.join('/')
     const backendUrl = getBackendUrl()
     const fullUrl = `${backendUrl}/${targetPath}`
 
@@ -120,7 +132,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = ['assets', ...pathSegments].join('/')
+    const targetSegments =
+      pathSegments.length === 0
+        ? ['assets']
+        : pathSegments[0] === 'asset-types'
+          ? pathSegments
+          : ['assets', ...pathSegments]
+    const targetPath = targetSegments.join('/')
     const backendUrl = getBackendUrl()
     const fullUrl = `${backendUrl}/${targetPath}`
 
@@ -154,7 +172,13 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = ['assets', ...pathSegments].join('/')
+    const targetSegments =
+      pathSegments.length === 0
+        ? ['assets']
+        : pathSegments[0] === 'asset-types'
+          ? pathSegments
+          : ['assets', ...pathSegments]
+    const targetPath = targetSegments.join('/')
     const backendUrl = getBackendUrl()
     const fullUrl = `${backendUrl}/${targetPath}`
 
