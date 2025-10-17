@@ -10,7 +10,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = pathSegments.length > 0 ? pathSegments.join("/") : "assets"
+    const targetPath = ['assets', ...pathSegments].join('/')
     const backendUrl = getBackendUrl()
     const searchParams = request.nextUrl.searchParams.toString()
     const fullUrl = `${backendUrl}/${targetPath}${searchParams ? `?${searchParams}` : ""}`
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = pathSegments.length > 0 ? pathSegments.join("/") : "assets"
+    const targetPath = ['assets', ...pathSegments].join('/')
     const backendUrl = getBackendUrl()
     const fullUrl = `${backendUrl}/${targetPath}`
 
@@ -80,7 +80,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = pathSegments.length > 0 ? pathSegments.join("/") : "assets"
+    const targetPath = ['assets', ...pathSegments].join('/')
     const backendUrl = getBackendUrl()
     const fullUrl = `${backendUrl}/${targetPath}`
 
@@ -114,7 +114,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = pathSegments.length > 0 ? pathSegments.join("/") : "assets"
+    const targetPath = ['assets', ...pathSegments].join('/')
     const backendUrl = getBackendUrl()
     const fullUrl = `${backendUrl}/${targetPath}`
 
@@ -148,7 +148,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   try {
     const { path: pathArray } = await params
     const pathSegments = pathArray ?? []
-    const targetPath = pathSegments.length > 0 ? pathSegments.join("/") : "assets"
+    const targetPath = ['assets', ...pathSegments].join('/')
     const backendUrl = getBackendUrl()
     const fullUrl = `${backendUrl}/${targetPath}`
 
