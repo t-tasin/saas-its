@@ -60,12 +60,16 @@ function DashboardTicketsContent() {
   const filteredTickets = sortedTickets.filter((ticket) => {
     if (!searchQuery) return true
     const query = searchQuery.toLowerCase()
+    const matchesCategory = ticket.category?.name
+      ? ticket.category.name.toLowerCase().includes(query)
+      : false
     return (
       ticket.number?.toLowerCase().includes(query) ||
       ticket.title?.toLowerCase().includes(query) ||
       ticket.requestedBy?.toLowerCase().includes(query) ||
       ticket.requesterEmail?.toLowerCase().includes(query) ||
-      ticket.type?.toLowerCase().includes(query)
+      ticket.type?.toLowerCase().includes(query) ||
+      matchesCategory
     )
   })
 
@@ -193,6 +197,7 @@ function DashboardTicketsContent() {
                     <TableHead className="font-semibold">Title</TableHead>
                     <TableHead className="w-[80px] font-semibold">Priority</TableHead>
                     <TableHead className="w-[100px] font-semibold">Status</TableHead>
+                    <TableHead className="w-[160px] font-semibold">Category</TableHead>
                     <TableHead className="w-[180px] font-semibold">Assign To</TableHead>
                     <TableHead className="w-[100px] font-semibold">
                       <Button
@@ -235,6 +240,12 @@ function DashboardTicketsContent() {
                       </TableCell>
                       <TableCell onClick={() => (window.location.href = `/tickets/${ticket.id}`)} className="cursor-pointer">
                         <StatusBadge status={ticket.status} type="ticket" />
+                      </TableCell>
+                      <TableCell 
+                        onClick={() => (window.location.href = `/tickets/${ticket.id}`)} 
+                        className="cursor-pointer text-sm text-muted-foreground"
+                      >
+                        {ticket.category?.name ?? "—"}
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <Select
